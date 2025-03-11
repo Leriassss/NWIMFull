@@ -1,0 +1,3 @@
+# Exclure le dossier de d�pendances
+/__pycache__/
+
