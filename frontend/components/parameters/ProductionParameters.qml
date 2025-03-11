@@ -3,9 +3,12 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 ScrollView {
+    id: scrollView
+    contentWidth: -1
+    //contentHeight: cl.implicitHeight
+
     background: Rectangle {
         color: "white"
-        border.color: "red"
         border.width: 1
     }
 
@@ -13,12 +16,13 @@ ScrollView {
         id: cl
         spacing: 10
         anchors.fill: parent
-        anchors.margins: 10 // Ajouter des marges autour de la colonne
+        anchors.margins: 10
 
         // Sélecteur de méthode
         ComboBox {
-            Layout.fillWidth: true // Prendre toute la largeur disponible
-            Layout.preferredHeight: 40 // Ajuster la hauteur si nécessaire
+            leftPadding: 10
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
             id: methodSelector
             model: productionModel.availableMethods
             onCurrentIndexChanged: {
@@ -26,21 +30,22 @@ ScrollView {
             }
         }
 
-        // Section pour les paramètres associés à la méthode sélectionnée
+
         GridLayout {
             id: parameterGrid
             width: parent.width
-            columns: 2 // Deux colonnes : une pour les labels, une pour les TextField
-            columnSpacing: 10 // Espacement entre les colonnes
-            rowSpacing: 10 // Espacement entre les lignes
+            columns: 2
+            columnSpacing: 10
+            rowSpacing: 10
 
-            // Répétiteur pour afficher les paramètres dynamiquement
+
             Repeater {
                 model: Object.keys(productionModel.parameterNames)
 
                 delegate: RowLayout {
                     Layout.column: 0 // Première colonne pour les labels
                     Layout.row: index // Ligne correspondante à l'index du paramètre
+                    Layout.alignment: Qt.AlignRight // Aligner les labels à droite
 
                     // Label pour chaque paramètre
                     Label {
@@ -79,6 +84,7 @@ ScrollView {
                     Text {
                         color: "red"
                         text: productionModel.parameterErrors[modelData]
+                        Layout.alignment: Qt.AlignLeft // Aligner les messages d'erreur à gauche
                     }
                 }
             }

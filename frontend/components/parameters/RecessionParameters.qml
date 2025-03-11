@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 ScrollView {
+    contentWidth: -1
     background: Rectangle {
         color: "white"
         border.width: 1
@@ -16,6 +17,7 @@ ScrollView {
 
         // Sélecteur de méthode
         ComboBox {
+            leftPadding: 10
             Layout.fillWidth: true // Prendre toute la largeur disponible
             Layout.preferredHeight: 40 // Ajuster la hauteur si nécessaire
             id: methodSelector

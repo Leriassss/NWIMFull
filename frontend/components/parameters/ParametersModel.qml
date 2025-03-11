@@ -3,27 +3,31 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 ScrollView {
+    id: scrollView
     contentWidth: -1
+
+    // Propriété pour le modèle
+    property var parameterModel
+
     background: Rectangle {
         color: "white"
-        border.width: 1
+        border.width: 2
     }
 
     ColumnLayout {
-        id: cl
         spacing: 10
         anchors.fill: parent
-        anchors.margins: 10 // Marges autour de la colonne
+        anchors.margins: 10
 
-        // Sélecteur de méthode de routage
+        // Sélecteur de méthode
         ComboBox {
             leftPadding: 10
             Layout.fillWidth: true // Prendre toute la largeur disponible
             Layout.preferredHeight: 40 // Ajuster la hauteur si nécessaire
             id: methodSelector
-            model: routingModel.availableMethods
+            model: parameterModel.availableMethods
             onCurrentIndexChanged: {
-                routingModel.setMethod(methodSelector.currentIndex)
+                parameterModel.setMethod(methodSelector.currentIndex)
             }
         }
 
@@ -37,32 +41,35 @@ ScrollView {
 
             // Répétiteur pour afficher les labels des paramètres
             Repeater {
-                model: Object.keys(routingModel.parameterNames)
+                model: Object.keys(parameterModel.parameterNames)
 
                 delegate: RowLayout {
                     Layout.column: 0 // Première colonne pour les labels
                     Layout.row: index // Ligne correspondante à l'index du paramètre
-
+                    Layout.preferredWidth: parent.width * 0.5
                     // Label pour chaque paramètre
                     Label {
-                        text: routingModel.parameterNames[modelData]
+                        text: parameterModel.parameterNames[modelData]
                     }
                 }
             }
 
             // Répétiteur pour afficher les TextField dynamiquement
             Repeater {
-                model: Object.keys(routingModel.parameterNames)
+                model: Object.keys(parameterModel.parameterNames)
 
                 delegate: RowLayout {
                     Layout.column: 1 // Deuxième colonne pour les TextField
                     Layout.row: index // Ligne correspondante à l'index du paramètre
+                    Layout.preferredWidth: parent.width * 0.5
+
 
                     // Zone de texte pour la saisie des valeurs
                     TextField {
-                        text: routingModel.parameters[modelData]
-                        onTextChanged: routingModel.updateParameter(modelData, text)
-                        Layout.preferredWidth: 150 // Largeur fixe pour les TextField
+                        text: parameterModel.parameters[modelData]
+                        onTextChanged: parameterModel.updateParameter(modelData, text)
+                        Layout.preferredWidth: 100 // Largeur fixe pour les TextField
+                        Layout.alignment: Qt.AlignRight
                         validator: DoubleValidator {
                             bottom: 0
                             notation: DoubleValidator.StandardNotation
@@ -71,7 +78,7 @@ ScrollView {
                         // Gestion de l'erreur de validation (bordure rouge en cas d'erreur)
                         background: Rectangle {
                             color: "white"
-                            border.color: routingModel.parameterErrors[modelData] !== "" ? "red" : "gray"
+                            border.color: parameterModel.parameterErrors[modelData] !== "" ? "red" : "gray"
                             border.width: 1
                         }
                     }
@@ -79,10 +86,11 @@ ScrollView {
                     // Affichage de l'erreur pour chaque paramètre si présent
                     Text {
                         color: "red"
-                        text: routingModel.parameterErrors[modelData]
+                        text: parameterModel.parameterErrors[modelData]
                     }
                 }
             }
         }
+
     }
 }
