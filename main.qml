@@ -21,9 +21,9 @@ ApplicationWindow {
     LoadData {
         id: loadDataDialog
     }
-    /*GAP{
+    Optimization{
         id: gapOptim
-    }*/
+    }
 
     MenuBarModel{
         height: parent.height * 0.1
@@ -35,10 +35,9 @@ ApplicationWindow {
         onLoadDataTriggred: {
             loadDataDialog.open()
         }
-        /*onGapTriggered: {
-            console.log("OK")
+        onGapTriggered: {
             gapOptim.open()
-        }*/
+        }
     }
 
     HomePage{

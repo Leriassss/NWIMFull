@@ -59,6 +59,7 @@ Row {
                     }
                 }
             }
+
         }
 
         HomePageButtons {

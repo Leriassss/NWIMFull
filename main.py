@@ -1,4 +1,3 @@
-# This Python file uses the following encoding: utf-8
 import sys
 from pathlib import Path
 import numpy as np
@@ -9,7 +8,8 @@ from api.ProductionQML import ProductionQML
 from api.InitialLossQML import InitialLossQML
 from api.RoutingQML import RoutingQML
 from api.RecessionQML import RecessionQML
-from api.GAModel import GAModel
+from api.OptimizationQML import OptimizationQML
+from api.RangeParameterQML import RangeParameterQML
 
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)
@@ -19,14 +19,19 @@ if __name__ == "__main__":
     loss_qml = InitialLossQML()
     routing_qml = RoutingQML()
     recession_qml = RecessionQML()
-    gamodel_qml  = GAModel()
+    optimization_qml  = OptimizationQML()
+    range_qml  = RangeParameterQML()
 
     engine = QQmlApplicationEngine()
     engine.rootContext().setContextProperty("productionModel", production_qml)
     engine.rootContext().setContextProperty("initialLossModel", loss_qml)
     engine.rootContext().setContextProperty("routingModel", routing_qml)
     engine.rootContext().setContextProperty("recessionModel", recession_qml)
-    engine.rootContext().setContextProperty("gaModel", gamodel_qml)
+    engine.rootContext().setContextProperty("optimizationModel", optimization_qml)
+
+    engine.rootContext().setContextProperty("productionrangeModel", range_qml)
+    #engine.rootContext().setContextProperty("initialLossrangeModel", range_qml)
+
 
     engine.load("main.qml")
 

@@ -2,10 +2,10 @@
 
 from scipy.stats.qmc import LatinHypercube, scale
 import pandas as pd 
-from optimization.models.LHCModel import LHCModel
-from simulation.models.SimulationModel import SimulationModel
 
-from simulation.Simulation import Simulation
+from backend.optimization.models.LHCModel import LHCModel
+from backend.simulation.models.SimulationModel import SimulationModel
+from backend.simulation.Simulation import Simulation
 
 class LatinHypercubeOptimization:
     def __init__(self, simulation : Simulation, param_ranges, lhc_model : LHCModel):

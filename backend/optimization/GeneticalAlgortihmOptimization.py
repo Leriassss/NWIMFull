@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from contracts.Bundle import RoutingData
-from optimization.Optimization import Optimization
-from optimization.models.GAModel import GAModel
 from geneticalgorithm import geneticalgorithm as ga
-from simulation.Simulation import Simulation
-from simulation.models.SimulationModel import SimulationModel
+
+from backend.contracts.Bundle import RoutingData
+from backend.optimization.Optimization import Optimization
+from backend.optimization.models.GAModel import GAModel
+from backend.simulation.Simulation import Simulation
+from backend.simulation.models.SimulationModel import SimulationModel
 
 class GeneticalAlgorithmOptimization(Optimization):
     def __init__(self, simulation : Simulation, kwargs : RoutingData, params_algo : GAModel):

@@ -11,7 +11,7 @@ ScrollView {
 
     background: Rectangle {
         color: "white"
-        border.width: 2
+        border.width: 1
     }
 
     ColumnLayout {
@@ -84,10 +84,10 @@ ScrollView {
                     }
 
                     // Affichage de l'erreur pour chaque paramètre si présent
-                    Text {
+                    /*Text {
                         color: "red"
                         text: parameterModel.parameterErrors[modelData]
-                    }
+                    }*/
                 }
             }
         }

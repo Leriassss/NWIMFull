@@ -26,7 +26,7 @@ MenuBar {
     Menu {
         title: qsTr("&Optimization")
         Action {
-            text: qsTr("GAP Optimization")
+            text: qsTr("Sim")
             onTriggered: gapTriggered()
         }
         Action { text: qsTr("&DE Optimization") }

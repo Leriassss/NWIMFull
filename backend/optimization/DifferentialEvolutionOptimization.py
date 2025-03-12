@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
-from contracts.Bundle import RoutingData
-from optimization.models.DEModel import DEModel
-from simulation.Simulation import Simulation
 from scipy.optimize import differential_evolution
-from simulation.models.SimulationModel import SimulationModel
+
+from backend.contracts.Bundle import RoutingData
+from backend.optimization.models.DEModel import DEModel
+from backend.simulation.Simulation import Simulation
+from backend.simulation.models.SimulationModel import SimulationModel
 
 class DifferentialEvolutionOptimization:
     def __init__(self, simulation : Simulation, kwargs : RoutingData, de_model : DEModel):

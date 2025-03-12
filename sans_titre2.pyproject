@@ -1,6 +1,9 @@
 {
     "files": [
+        "api/FactoryManager.py",
+        "api/RangeParameterQML.py",
         "frontend/components/parameters/ParametersModel.qml",
+        "frontend/components/parameters/RangeParameters.qml",
         "main.py",
         "main.qml"
     ]

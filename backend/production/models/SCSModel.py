@@ -35,8 +35,6 @@ class SCSModel:
 
     @staticmethod
     def validate_parameter(key, value):
-        print("key : " + key, "value : " + value)
-
         try:
             value = float(value)  # S'assure que la valeur est un nombre
             if key == "curve_number" and (value < 0 or value > 100):
