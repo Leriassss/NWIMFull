@@ -30,8 +30,7 @@ ScrollView {
         Label {
             id: methodSelector
             leftPadding: 10
-            Layout.fillWidth: true
-            Layout.preferredHeight: 40
+            width: 75
             text: methodName
         }
 

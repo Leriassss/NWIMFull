@@ -18,7 +18,7 @@ Dialog {
     Rectangle {
         anchors.fill: parent
         border.width: 1
-        Rectangle{
+        Row{
             anchors.fill: parent
             spacing : 5
             ScrollView{
