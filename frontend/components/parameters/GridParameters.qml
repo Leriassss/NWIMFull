@@ -9,6 +9,7 @@ ScrollView {
 
     property var parameterModel
     property string factoryName
+    property string methodName
 
     background: Rectangle {
         color: "white"
@@ -16,7 +17,8 @@ ScrollView {
     }
 
     Component.onCompleted: {
-        parameterModel.setFactory(factoryName)  // Charger la factory au démarrage
+        parameterModel.setFactory(factoryName)
+        parameterModel.setMethod(methodName)
     }
 
     ColumnLayout {
@@ -25,16 +27,12 @@ ScrollView {
         anchors.margins: 10
 
         // Sélecteur de méthode
-        ComboBox {
+        Label {
             id: methodSelector
             leftPadding: 10
             Layout.fillWidth: true
             Layout.preferredHeight: 40
-            model: parameterModel.availableMethods
-
-            onCurrentIndexChanged: {
-                parameterModel.setMethod(methodSelector.currentIndex)
-            }
+            text: methodName
         }
 
         // Section pour les paramètres associés à la méthode sélectionnée

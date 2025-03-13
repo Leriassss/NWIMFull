@@ -7,6 +7,7 @@ MenuBar {
     signal openFileTriggered
     signal loadDataTriggred
     signal gapTriggered
+    signal gridTriggered
     Menu {
         title: qsTr("File")
         Action {
@@ -29,7 +30,10 @@ MenuBar {
             text: qsTr("Sim")
             onTriggered: gapTriggered()
         }
-        Action { text: qsTr("&DE Optimization") }
+        Action {
+            text: qsTr("&Grid Optimization")
+            onTriggered: gridTriggered()
+        }
         Action { text: qsTr("&LatinHypercube Optimization") }
     }
     Menu {

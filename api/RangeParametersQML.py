@@ -1,8 +1,13 @@
+from PySide6.QtQml import QmlElement
 from PySide6.QtCore import QObject, Property, Signal, Slot
 from api.FactoryManager import FactoryManager
 import math
 
-class RangeParameterQML(QObject):
+QML_IMPORT_NAME = "io.qml"
+QML_IMPORT_MAJOR_VERSION = 1
+
+@QmlElement
+class RangeParametersQML(QObject):
     parametersChanged = Signal()
     methodChanged = Signal()
     parameterErrorChanged = Signal()
@@ -68,7 +73,6 @@ class RangeParameterQML(QObject):
         self.methodChanged.emit()
         self.parametersChanged.emit()
 
-        import math
 
     @Slot(str, float, float)
     def updateParameter(self, key, min_value, max_value):

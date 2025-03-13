@@ -1,8 +1,13 @@
 {
     "files": [
         "api/FactoryManager.py",
-        "api/RangeParameterQML.py",
-        "frontend/components/parameters/ParametersModel.qml",
+        "api/GridParametersQML.py",
+        "api/ParametersQML.py",
+        "api/RangeParametersQML.py",
+        "api/TestQML.py",
+        "frontend/components/GridParametersDialog.qml",
+        "frontend/components/parameters/GridParameters.qml",
+        "frontend/components/parameters/Parameters.qml",
         "frontend/components/parameters/RangeParameters.qml",
         "main.py",
         "main.qml"

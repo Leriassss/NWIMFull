@@ -3,9 +3,12 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 
+
 import "."
 import "./parameters"
 
+//import "../../io/qml"
+import io.qml
 Row {
     id: layout
     anchors.top: nwimMenuBar.bottom
@@ -41,21 +44,21 @@ Row {
                 spacing: 5
 
                 // Liste des modèles à afficher
-                property var models: [
-                    { name: "Production", model: productionModel },
-                    { name: "Initial Loss", model: initialLossModel },
-                    { name: "Routing", model: routingModel },
-                    { name: "Recession", model: recessionModel }
-                ]
+                property var models: ["Production","InitialLoss","Routing", "Recession"]
 
                 // Répétiteur pour afficher chaque modèle
                 Repeater {
                     model: parametersColumn.models
 
-                    delegate: ParametersModel {
+                    delegate: Parameters {
                         height: parent.height * 0.25
                         width: parent.width
-                        parameterModel: modelData.model // Passer le modèle correspondant
+                        parameterModel : TestQML{}
+                        factoryName:  modelData
+                        background: Rectangle {
+                            color: "white"
+                            border.width: 1
+                        }
                     }
                 }
             }

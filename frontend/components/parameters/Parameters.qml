@@ -6,13 +6,14 @@ ScrollView {
     id: scrollView
     contentWidth: -1
 
-    // Propriété pour le modèle
-    property var parameterModel
-
-    background: Rectangle {
-        color: "white"
-        border.width: 1
+    Component.onCompleted: {
+        parameterModel.setFactory(factoryName)
     }
+
+
+    property var parameterModel
+    property string factoryName
+
 
     ColumnLayout {
         spacing: 10
@@ -93,4 +94,6 @@ ScrollView {
         }
 
     }
+
+
 }

@@ -2,6 +2,7 @@ from backend.factory.ProductionFactory import ProductionFactory
 from backend.factory.RecessionFactory import RecessionFactory
 from backend.factory.RoutingFactory import RoutingFactory
 from backend.factory.InitialLossFactory import InitialLossFactory
+from backend.factory.OptimizationFactory import OptimizationFactory
 
 class FactoryManager:
     """Gère la sélection et l'instanciation des différentes factories."""
@@ -10,7 +11,8 @@ class FactoryManager:
         "Production": ProductionFactory,
         "Recession": RecessionFactory,
         "Routing": RoutingFactory,
-        "InitialLoss": InitialLossFactory
+        "InitialLoss": InitialLossFactory,
+        "Optimization" : OptimizationFactory
     }
 
     @classmethod

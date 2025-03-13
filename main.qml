@@ -4,6 +4,10 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 
 import "frontend/components"
+//import "./frontend/components/parameters"
+//import io.qt.test 1.0 as TestModule
+//import "io/qt/rangeqarameterqml"
+//import io.qt.rangeqarameterqml
 
 ApplicationWindow {
     visible: true
@@ -15,6 +19,7 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.accent: Material.Blue
 
+
     FileChoose{
         id: fileChooseComponent
     }
@@ -23,6 +28,9 @@ ApplicationWindow {
     }
     Optimization{
         id: gapOptim
+    }
+    GridParametersDialog{
+        id:  gridOptim
     }
 
     MenuBarModel{
@@ -37,6 +45,9 @@ ApplicationWindow {
         }
         onGapTriggered: {
             gapOptim.open()
+        }
+        onGridTriggered: {
+            gridOptim.open()
         }
     }
 

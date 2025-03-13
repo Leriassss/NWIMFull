@@ -1,0 +1,4 @@
+module io.qml
+typeinfo GridParametersQML.qmltypes
+typeinfo RangeParametersQML.qmltypes
+typeinfo TestQML.qmltypes
