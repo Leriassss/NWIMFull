@@ -8,8 +8,8 @@ from PySide6.QtQml import qmlRegisterType
 from api.RangeParametersQML import RangeParametersQML
 from api.TestQML import TestQML
 from api.GridParametersQML import GridParametersQML
+from api.load_data.FileHandler import FileHandler
 
-#import io.qt.RangeParameter
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)
 
@@ -17,10 +17,11 @@ if __name__ == "__main__":
 
     engine = QQmlApplicationEngine()
 
-    #engine.rootContext().setContextProperty("productionrangeModel", range_qml)
-    #engine.rootContext().setContextProperty("initialLossrangeModel", range_qml)
-    #qmlRegisterType(TestQML, "io.qt.test", 1, 0, "TestModel")
-   #qmlRegisterType(RangeParameterQML, "io.qt.RangeParameterQML", 1, 0, "RangeParameterModel")
+    file_handler = FileHandler()
+    engine.rootContext().setContextProperty("fileHandler", file_handler)
+
+    qmlRegisterType(GridParametersQML, "io.qml", 1, 0, "GridParametersQML")
+
 
 
     engine.load("main.qml")

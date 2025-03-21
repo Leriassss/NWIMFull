@@ -20,7 +20,6 @@ class GridParametersQML(QObject):
         self._parameters = {}
         self._methods = []
         self._parameterErrors = {}
-        print("----------------------*-*-*-")
 
     @Property('QVariant', notify=methodChanged)
     def availableMethods(self):
@@ -54,7 +53,7 @@ class GridParametersQML(QObject):
             self._methods = []
             self._parameters = {}
             self._current_method = None
-
+        print(self._factory)
         self.methodChanged.emit()
         self.parametersChanged.emit()
 
@@ -70,7 +69,7 @@ class GridParametersQML(QObject):
         # Récupération des valeurs par défaut
         default_values = self._factory.getModelParameters(method_name)
         self._parameters = {key: [None,None] for key in default_values}
-
+        print(self._parameters)
         self.methodChanged.emit()
         self.parametersChanged.emit()
 

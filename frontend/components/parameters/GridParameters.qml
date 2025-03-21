@@ -2,19 +2,11 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-ScrollView {
-    id: scrollView
-    contentWidth: -1
-
-
+Rectangle {
     property var parameterModel
     property string factoryName
     property string methodName
 
-    background: Rectangle {
-        color: "white"
-        border.width: 1
-    }
 
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)
@@ -24,7 +16,6 @@ ScrollView {
     ColumnLayout {
         spacing: 10
         anchors.fill: parent
-        anchors.margins: 10
 
         // Sélecteur de méthode
         Label {

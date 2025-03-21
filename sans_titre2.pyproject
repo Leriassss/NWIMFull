@@ -5,6 +5,8 @@
         "api/ParametersQML.py",
         "api/RangeParametersQML.py",
         "api/TestQML.py",
+        "api/load_data/FileHandler.py",
+        "api/load_data/TableModel.py",
         "frontend/components/GridParametersDialog.qml",
         "frontend/components/parameters/GridParameters.qml",
         "frontend/components/parameters/Parameters.qml",

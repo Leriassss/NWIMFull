@@ -49,15 +49,10 @@ class TestQML(QObject):
 
         self.methodChanged.emit()
         self.parametersChanged.emit()
-        print("*/*///////////////////////////////")
-        print(self._methods)
 
     @Slot(str)
     def setMethod(self, index):
         """Met à jour la méthode et initialise ses paramètres par défaut."""
-        print(".......................")
-        print(index)
-        print(self._methods[int(index)])
         method_name = self._methods[int(index)]
         if method_name in self._factory.methods:
             self._current_method =  method_name
