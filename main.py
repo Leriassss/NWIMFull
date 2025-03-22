@@ -1,8 +1,8 @@
 import sys
-from PySide6.QtGui import QGuiApplication
+
+from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQml import qmlRegisterType
-
 
 
 from api.RangeParametersQML import RangeParametersQML
@@ -11,7 +11,7 @@ from api.GridParametersQML import GridParametersQML
 from api.load_data.FileHandler import FileHandler
 
 if __name__ == "__main__":
-    app = QGuiApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     # Créer une instance de ProductionQML sans modèle spécifique
 

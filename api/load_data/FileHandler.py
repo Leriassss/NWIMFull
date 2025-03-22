@@ -53,12 +53,10 @@ class FileHandler(QObject):
 
     @Slot(str)
     def getColumn(self, index):
-        print(self._data[index])
         return self._data[index]
 
     @Slot('QVariant')
     def setDictValues(self, data_dict):
-        print(data_dict.toVariant() )
         self._data_dict = data_dict.toVariant()
 
 

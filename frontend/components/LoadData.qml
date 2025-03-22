@@ -5,6 +5,8 @@ import Qt.labs.qmlmodels
 import "."
 import io.qml
 
+
+
 Dialog {
     id: loadDataDialog
     title: "IMPORTATION"
@@ -58,6 +60,29 @@ Dialog {
         return filePath;
     }
 
+    function populateTable(columnMapping) {
+        tableModel.clear();
+
+        // Trouver la longueur maximale parmi toutes les colonnes
+        var maxLength = Math.max(
+            columnMapping.Dates ? columnMapping.Dates.length : 0,
+            columnMapping.P ? columnMapping.P.length : 0,
+            columnMapping.T ? columnMapping.T.length : 0,
+            columnMapping.Q ? columnMapping.Q.length : 0,
+            columnMapping.ETP ? columnMapping.ETP.length : 0
+        );
+
+        // Remplir le modèle avec les données
+        for (var i = 0; i < maxLength; i++) {
+            tableModel.appendRow({
+                Dates: columnMapping.Dates && i < columnMapping.Dates.length ? columnMapping.Dates[i] : "",
+                P: columnMapping.P && i < columnMapping.P.length ? columnMapping.P[i] : "",
+                T: columnMapping.T && i < columnMapping.T.length ? columnMapping.T[i] : "",
+                Q: columnMapping.Q && i < columnMapping.Q.length ? columnMapping.Q[i] : "",
+                ETP: columnMapping.ETP && i < columnMapping.ETP.length ? columnMapping.ETP[i] : ""
+            });
+        }
+    }
     Dialog {
         id: columnMappingDialog
         title: "Mapping des colonnes"
@@ -67,6 +92,23 @@ Dialog {
         standardButtons: Dialog.Ok | Dialog.Cancel
 
         property var headers: fileHandler.headers // En-têtes du fichier chargé
+
+        onAccepted: {
+            columnMapping = {
+                "Dates":datesComboBox.currentText === "Aucun" ? [] : fileHandler.data[datesComboBox.currentText],
+                "P": pComboBox.currentText === "Aucun" ? [] : fileHandler.data[pComboBox.currentText],
+                "T": tComboBox.currentText === "Aucun" ? [] : fileHandler.data[tComboBox.currentText],
+                "Q": qComboBox.currentText === "Aucun" ? [] : fileHandler.data[qComboBox.currentText],
+                "ETP": etpComboBox.currentText === "Aucun" ? [] : fileHandler.data[etpComboBox.currentText]
+            }
+            fileHandler.setDictValues(columnMapping)
+            populateTable(columnMapping)
+            tempChart.updateChart(columnMapping)
+            qchart.updateChart(columnMapping)
+            rainChart.updateChart(columnMapping)
+            etpChart.updateChart(columnMapping)
+            columnMappingDialog.close()
+        }
 
         GridLayout {
             height: parent.height
@@ -135,36 +177,6 @@ Dialog {
                 Layout.fillWidth: true
             }
 
-            // Bouton Valider
-            Button {
-                text: "Valider"
-                Layout.columnSpan: 2 // Le bouton occupe deux colonnes
-                Layout.alignment: Qt.AlignRight
-                onClicked: {
-                    // Enregistrer le mapping des colonnes
-                    columnMapping = {
-                        "Dates":datesComboBox.currentText === "Aucun" ? [] : fileHandler.data[datesComboBox.currentText],
-                        "P": pComboBox.currentText === "Aucun" ? [] : fileHandler.data[pComboBox.currentText],
-                        "T": tComboBox.currentText === "Aucun" ? [] : fileHandler.data[tComboBox.currentText],
-                        "Q": qComboBox.currentText === "Aucun" ? [] : fileHandler.data[qComboBox.currentText],
-                        "ETP": etpComboBox.currentText === "Aucun" ? [] : fileHandler.data[etpComboBox.currentText]
-                    }
-                    fileHandler.setDictValues(columnMapping)
-                    // Mettre à jour le modèle ListView avec les données
-                    listviewdata.model.clear()
-                    for (var i = 0; i < columnMapping.Dates.length; i++) {
-                        listviewdata.model.append({
-                            date: columnMapping.Dates[i],
-                            etp: columnMapping.ETP[i],
-                            p: columnMapping.P[i],
-                            q: columnMapping.Q[i],
-                            t: columnMapping.T[i]
-                        })
-                    }
-
-                    columnMappingDialog.close()
-                }
-            }
         }
     }
 
@@ -180,7 +192,7 @@ Dialog {
 
             Row {
                 width: parent.width
-                height: parent.height * 0.2
+                height: parent.height * 0.1
                 spacing: 0
 
                 Label {
@@ -209,98 +221,71 @@ Dialog {
             }
             Rectangle{
                 width: parent.width
-                height: parent.height * 0.8
-                border.width: 2
-                ListView {
-                    id: listviewdata
+                height: parent.height * 0.9 - 5
+                border.width: 1
+
+                HorizontalHeaderView {
+                    id: horizontalHeader
+                    anchors.left: tableView.left
+                    anchors.top: parent.top
+                    syncView: tableView
+                    model: [ "Dates","P","T", "Q", "ETP"]
+                    clip: true
+
+
+                }
+
+                VerticalHeaderView {
+                    id: verticalHeader
+                    anchors.top: tableView.top
+                    anchors.left: parent.left
+                    syncView: tableView
+                    clip: true
+                }
+
+                TableView {
+                    id: tableView
                     width: parent.width
                     height: parent.height
-                    model: ListModel {}
+                    anchors.left: verticalHeader.right
+                    anchors.top: horizontalHeader.bottom
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    clip: true
+
+                    columnSpacing: 0
+                    rowSpacing: 0
+
+                    model: TableModel {
+                        id: tableModel
+                        TableModelColumn { display: "Dates" }
+                        TableModelColumn { display: "P" }
+                        TableModelColumn { display: "T" }
+                        TableModelColumn { display: "Q" }
+                        TableModelColumn { display: "ETP" }
+                        rows: [
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                            ]
+                    }
 
                     delegate: Item {
-                        width: parent.width
-                        height: 50
+                        implicitWidth: 70
+                        implicitHeight: 20
 
                         Rectangle {
-                            width: parent.width
-                            height: 50
-                            border.color: "blue"
-                            border.width: 1
+                            anchors.fill: parent
+                            border.width: 0.5
+                            //color: "#fafafa"
 
-                            Row {
-                                anchors.fill: parent
-                                anchors.margins: 5
-                                spacing: 10
-
-                                // Colonne Date
-                                Rectangle {
-                                    width: parent.width * 0.2
-                                    height: parent.height
-                                    color: "lightblue"
-                                    border.color: "blue"
-                                    border.width: 1
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: model.date
-                                        font.pixelSize: 14
-                                    }
-                                }
-
-                                // Colonne ETP
-                                Rectangle {
-                                    width: parent.width * 0.2
-                                    height: parent.height
-                                    color: "lightblue"
-                                    border.color: "blue"
-                                    border.width: 1
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: model.etp
-                                        font.pixelSize: 14
-                                    }
-                                }
-
-                                // Colonne P
-                                Rectangle {
-                                    width: parent.width * 0.2
-                                    height: parent.height
-                                    color: "lightblue"
-                                    border.color: "blue"
-                                    border.width: 1
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: model.p
-                                        font.pixelSize: 14
-                                    }
-                                }
-
-                                // Colonne Q
-                                Rectangle {
-                                    width: parent.width * 0.2
-                                    height: parent.height
-                                    color: "lightblue"
-                                    border.color: "blue"
-                                    border.width: 1
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: model.q
-                                        font.pixelSize: 14
-                                    }
-                                }
-
-                                // Colonne T
-                                Rectangle {
-                                    width: parent.width * 0.2
-                                    height: parent.height
-                                    color: "lightblue"
-                                    border.color: "blue"
-                                    border.width: 1
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: model.t
-                                        font.pixelSize: 14
-                                    }
-                                }
+                            Text {
+                                anchors.centerIn: parent
+                                text: model.display
+                                font.pixelSize: 10
                             }
                         }
                     }
@@ -320,7 +305,7 @@ Dialog {
                 id: simulationPane
                 width: parent.width
                 height: parent.height
-                border.width: 2
+                border.width: 1
 
                 Column {
                     width: parent.width
@@ -330,7 +315,7 @@ Dialog {
                         id: plotOptions
                         width: parent.width
                         height: parent.height * 0.15
-                        border.width: 2
+                        border.width: 1
 
                         Row {
                             width: parent.width
@@ -340,7 +325,7 @@ Dialog {
                             Rectangle {
                                 width: parent.width * 0.5
                                 height: parent.height
-                                border.width: 2
+                                border.width: 1
                                 Text {
                                     anchors.margins: 5
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -349,83 +334,38 @@ Dialog {
                             }
 
                             Rectangle {
-                                border.width: 2
+                                border.width: 1
                                 anchors.margins: 20
                                 width: parent.width * 0.5 - 6
                                 height: parent.height
-                                Text {
-                                    anchors.margins: 5
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    text: "PLOT"
-                                }
 
-                                Row {
-                                    spacing: 6
+                                Rectangle {
                                     width: parent.width
-                                    height: parent.height
-
-                                    Rectangle {
-                                        width: parent.width * 0.5
-                                        height: parent.height * 0.7
-                                        anchors.bottom: parent.bottom
-                                        border.width: 2
-                                        Text {
-                                            anchors.horizontalCenter: parent.horizontalCenter
-                                            text: "PARAMETERS"
-                                        }
-
-                                        Row {
-                                            anchors.centerIn: parent
-                                            width: parent.width
-                                            spacing: 5
-                                            leftPadding: 10
-
-                                            CheckBox {
-                                                checked: true
-                                                text: "ETP"
-                                            }
-
-                                            CheckBox {
-                                                text: "P"
-                                            }
-
-                                            CheckBox {
-                                                text: "T"
-                                            }
-
-                                            CheckBox {
-                                                text: "Q"
-                                            }
-                                        }
+                                    height: parent.height * 0.7
+                                    border.width: 1
+                                    anchors.bottom: parent.bottom
+                                    Text {
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "PERIOD"
                                     }
 
-                                    Rectangle {
-                                        width: parent.width * 0.5 - 6
-                                        height: parent.height * 0.7
-                                        border.width: 2
-                                        anchors.bottom: parent.bottom
-                                        Text {
-                                            anchors.horizontalCenter: parent.horizontalCenter
-                                            text: "PERIOD"
+                                    Row {
+                                        leftPadding: 10
+                                        anchors.centerIn: parent
+                                        width: parent.width
+
+                                        CheckBox {
+                                            checked: true
+                                            text: "CALIBRATION"
+                                            rightPadding: 5
                                         }
 
-                                        Row {
-                                            leftPadding: 10
-                                            anchors.centerIn: parent
-                                            width: parent.width
-
-                                            CheckBox {
-                                                checked: true
-                                                text: "CALIBRATION"
-                                                rightPadding: 5
-                                            }
-
-                                            CheckBox {
-                                                text: "VALIDATION"
-                                            }
+                                        CheckBox {
+                                            text: "VALIDATION"
                                         }
                                     }
                                 }
+
                             }
                         }
                     }
@@ -434,57 +374,41 @@ Dialog {
                         id: plot
                         width: parent.width
                         height: parent.height * 0.85
-                        border.width: 2
+                        border.width: 1
+                        Column{
+                            anchors.fill: parent
 
-                        Rectangle {
-                            width: parent.width
-                            height: 25
-                            border.width: 1
-                            anchors.top: parent.top
-
-                            Row {
-                                spacing: 20
+                            Grid {
+                                id: grid
                                 anchors.fill: parent
-                                padding: 5
-
-                                Label {
-                                    leftPadding: 10
-                                    rightPadding: 10
-                                    text: "STATISTICS"
+                                columns: 2
+                                rowSpacing: 2
+                                columnSpacing: 2
+                                QobsChart{
+                                    id : qchart
+                                    width: parent.width / 2
+                                    height: parent.height / 2
                                 }
-
-                                Row {
-                                    width: parent.width * 0.8
-                                    height: parent.height
-                                    spacing: 25
-
-                                    Label {
-                                        text: "Min :     "
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    Label {
-                                        text: "Max :    "
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    Label {
-                                        text: "Sum:     "
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    Label {
-                                        text: "Mean :    "
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-
-                                    Label {
-                                        text: "SD :    "
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
+                                TempChart{
+                                    id : tempChart
+                                    width: parent.width / 2
+                                    height: parent.height / 2
+                                }
+                                ETPChart{
+                                    id : etpChart
+                                    width: parent.width / 2
+                                    height: parent.height / 2
+                                }
+                                RainChart{
+                                    id : rainChart
+                                    width: parent.width / 2
+                                    height: parent.height / 2
                                 }
                             }
+
                         }
+
+
                     }
                 }
             }

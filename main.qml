@@ -19,7 +19,6 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.accent: Material.Blue
 
-
     FileChoose{
         id: fileChooseComponent
     }
