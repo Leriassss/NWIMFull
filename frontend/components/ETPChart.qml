@@ -16,17 +16,17 @@ Rectangle {
 
         DateTimeAxis {
             id: axisX
-            format: "yyyy-MM-dd"
+            format:fileHandler.userFormat
             titleText: "Dates"
-            min: "2009-01-01"
-            max: "2009-01-07"
+            min:fileHandler.datesInfos["min"]
+            max: fileHandler.datesInfos["max"]
         }
 
         ValueAxis {
             id: axisY
             titleText: "Valeurs"
-            min: 2
-            max: 6
+            min:fileHandler.etpInfos["min"]
+            max:1.1*fileHandler.etpInfos["max"]
         }
 
         LineSeries {
@@ -36,24 +36,19 @@ Rectangle {
             axisY: axisY
         }
 
-
-        Component.onCompleted: updateChart(cmap)
     }
 
-    function updateChart(columnMapping) {
+
+
+    function updateChart() {
         seriesETP.clear();
-        var dates = columnMapping.Dates.map(function(date) {
-            return new Date(
-                Math.floor(date / 10000),
-                Math.floor((date % 10000) / 100) - 1,
-                date % 100
-            );
-        });
+        var dates = fileHandler.datesInfos["data"];
+        var etp_series = fileHandler.etpInfos["data"]
 
         for (var i = 0; i < dates.length; i++) {
-            var x = dates[i].getTime()
-            if (columnMapping.ETP && i < columnMapping.ETP.length) {
-                seriesETP.append(x, columnMapping.ETP[i]);
+            var x = new Date(dates[i]);
+            if (etp_series && i < etp_series.length) {
+                seriesETP.append(x.getTime(), etp_series[i]);
             }
         }
     }

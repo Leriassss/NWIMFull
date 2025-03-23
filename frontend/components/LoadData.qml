@@ -83,103 +83,104 @@ Dialog {
             });
         }
     }
-    Dialog {
-        id: columnMappingDialog
-        title: "Mapping des colonnes"
-        modal: true
-        width: 600
-        height: 400
-        standardButtons: Dialog.Ok | Dialog.Cancel
+        Dialog {
+            id: columnMappingDialog
+            title: "Mapping des colonnes"
+            modal: true
+            width: 600
+            height: 400
+            standardButtons: Dialog.Ok | Dialog.Cancel
 
-        property var headers: fileHandler.headers // En-têtes du fichier chargé
+            property var headers: fileHandler.headers // En-têtes du fichier chargé
 
-        onAccepted: {
-            columnMapping = {
-                "Dates":datesComboBox.currentText === "Aucun" ? [] : fileHandler.data[datesComboBox.currentText],
-                "P": pComboBox.currentText === "Aucun" ? [] : fileHandler.data[pComboBox.currentText],
-                "T": tComboBox.currentText === "Aucun" ? [] : fileHandler.data[tComboBox.currentText],
-                "Q": qComboBox.currentText === "Aucun" ? [] : fileHandler.data[qComboBox.currentText],
-                "ETP": etpComboBox.currentText === "Aucun" ? [] : fileHandler.data[etpComboBox.currentText]
+            onAccepted: {
+                columnMapping = {
+                    "Dates":datesComboBox.currentText ,
+                    "P": pComboBox.currentText,
+                    "T": tComboBox.currentText,
+                    "Q": qComboBox.currentText,
+                    "ETP": etpComboBox.currentText
+                }
+                fileHandler.setDictValues(columnMapping)
+
+                populateTable(fileHandler.dataDict)
+
+                tempChart.updateChart()
+                qchart.updateChart()
+                rainChart.updateChart()
+                etpChart.updateChart()
+                columnMappingDialog.close()
             }
-            fileHandler.setDictValues(columnMapping)
-            populateTable(columnMapping)
-            tempChart.updateChart(columnMapping)
-            qchart.updateChart(columnMapping)
-            rainChart.updateChart(columnMapping)
-            etpChart.updateChart(columnMapping)
-            columnMappingDialog.close()
+
+            GridLayout {
+                height: parent.height
+                width: parent.width * 0.5
+                columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
+                columnSpacing: 10
+                rowSpacing: 10
+
+                // Ligne pour Dates
+                Label {
+                    text: "Dates"
+                    Layout.alignment: Qt.AlignRight
+                }
+                ComboBox {
+                    id: datesComboBox
+                    model: columnMappingDialog.headers
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                }
+
+                // Ligne pour P
+                Label {
+                    text: "P"
+                    Layout.alignment: Qt.AlignRight
+                }
+                ComboBox {
+                    id: pComboBox
+                    model: columnMappingDialog.headers
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                }
+
+                // Ligne pour T
+                Label {
+                    text: "T"
+                    Layout.alignment: Qt.AlignRight
+                }
+                ComboBox {
+                    id: tComboBox
+                    model: columnMappingDialog.headers
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                }
+
+                // Ligne pour Q
+                Label {
+                    text: "Q"
+                    Layout.alignment: Qt.AlignRight
+                }
+                ComboBox {
+                    id: qComboBox
+                    model: columnMappingDialog.headers
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                }
+
+                // Ligne pour ETP
+                Label {
+                    text: "ETP"
+                    Layout.alignment: Qt.AlignRight
+                }
+                ComboBox {
+                    id: etpComboBox
+                    model: columnMappingDialog.headers
+                    currentIndex: 0
+                    Layout.fillWidth: true
+                }
+
+            }
         }
-
-        GridLayout {
-            height: parent.height
-            width: parent.width * 0.5
-            columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
-            columnSpacing: 10
-            rowSpacing: 10
-
-            // Ligne pour Dates
-            Label {
-                text: "Dates"
-                Layout.alignment: Qt.AlignRight
-            }
-            ComboBox {
-                id: datesComboBox
-                model: columnMappingDialog.headers
-                currentIndex: 0
-                Layout.fillWidth: true
-            }
-
-            // Ligne pour P
-            Label {
-                text: "P"
-                Layout.alignment: Qt.AlignRight
-            }
-            ComboBox {
-                id: pComboBox
-                model: columnMappingDialog.headers
-                currentIndex: 0
-                Layout.fillWidth: true
-            }
-
-            // Ligne pour T
-            Label {
-                text: "T"
-                Layout.alignment: Qt.AlignRight
-            }
-            ComboBox {
-                id: tComboBox
-                model: columnMappingDialog.headers
-                currentIndex: 0
-                Layout.fillWidth: true
-            }
-
-            // Ligne pour Q
-            Label {
-                text: "Q"
-                Layout.alignment: Qt.AlignRight
-            }
-            ComboBox {
-                id: qComboBox
-                model: columnMappingDialog.headers
-                currentIndex: 0
-                Layout.fillWidth: true
-            }
-
-            // Ligne pour ETP
-            Label {
-                text: "ETP"
-                Layout.alignment: Qt.AlignRight
-            }
-            ComboBox {
-                id: etpComboBox
-                model: columnMappingDialog.headers
-                currentIndex: 0
-                Layout.fillWidth: true
-            }
-
-        }
-    }
-
     Row {
         anchors.fill: parent
         spacing: 5
@@ -280,7 +281,7 @@ Dialog {
                         Rectangle {
                             anchors.fill: parent
                             border.width: 0.5
-                            //color: "#fafafa"
+                            color: "#fafafa"
 
                             Text {
                                 anchors.centerIn: parent

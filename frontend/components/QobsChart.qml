@@ -3,9 +3,9 @@ import QtQuick.Controls
 import QtCharts 2.3
 
 Rectangle {
-
-    visible: true
+    visible: keys(fileHandler.qInfos).length === 0 ? false : true
     property var chartName
+
     ChartView {
         id: chartView
         title: chartName
@@ -14,17 +14,17 @@ Rectangle {
 
         DateTimeAxis {
             id: axisX
-            format: "yyyy-MM-dd"
+            format:fileHandler.userFormat
             titleText: "Dates"
-            min: "2009-01-01"
-            max: "2023-12-31"
+            min:fileHandler.datesInfos["min"]
+            max: fileHandler.datesInfos["max"]
         }
 
         ValueAxis {
             id: axisY
             titleText: "Valeurs"
-            min: 0
-            max: 10
+            min:fileHandler.qInfos["min"]
+            max:1.1*fileHandler.qInfos["max"]
         }
 
         LineSeries {
@@ -35,20 +35,15 @@ Rectangle {
         }
     }
 
-    function updateChart(columnMapping) {
+    function updateChart() {
         seriesQ.clear();
-        var dates = columnMapping.Dates.map(function(date) {
-            return new Date(
-                Math.floor(date / 10000), // Année
-                Math.floor((date % 10000) / 100) - 1, // Mois (0-11)
-                date % 100 // Jour
-            );
-        });
+        var dates = fileHandler.datesInfos["data"];
+        var q_series = fileHandler.qInfos["data"]
 
         for (var i = 0; i < dates.length; i++) {
-            var x = dates[i].getTime()
-            if (columnMapping.Q && i < columnMapping.Q.length) {
-                seriesQ.append(x, columnMapping.Q[i]);
+            var x = new Date(dates[i]);
+            if (q_series && i < q_series.length) {
+                seriesQ.append(x.getTime(), q_series[i]);
             }
         }
     }
