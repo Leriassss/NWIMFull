@@ -40,7 +40,7 @@ ApplicationWindow {
             fileChooseComponent.openDialog()
         }
         onLoadDataTriggred: {
-            loadDataDialog.open()
+            loadDataDialog.show()
         }
         onGapTriggered: {
             gapOptim.open()
@@ -53,4 +53,5 @@ ApplicationWindow {
     HomePage{
 
     }
+
 }

@@ -16,6 +16,7 @@
         "frontend/components/parameters/Parameters.qml",
         "frontend/components/parameters/RangeParameters.qml",
         "main.py",
-        "main.qml"
+        "main.qml",
+        "frontend/components/LoadDataComponent.qml"
     ]
 }

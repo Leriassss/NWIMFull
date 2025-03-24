@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import datetime
+from dateutil import parser
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
 
@@ -22,6 +23,8 @@ class FileHandler(QObject):
         self._etpInfos = {}
         self._datesInfos = {}
 
+        self._errors = []
+
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)
@@ -34,6 +37,64 @@ class FileHandler(QObject):
     tempInfosChanged = Signal()
     datesInfosChanged = Signal()
 
+    errorsChanged = Signal()
+
+    @Property(list, notify=errorsChanged)
+    def errors(self):
+        return self._errors
+
+
+    def check_numeric_and_length(self, key):
+        if key in self._data_dict and key != "Dates":
+            data = self._data_dict[key]
+            try:
+                series =  np.array(data, dtype=np.float64)
+            except Exception as e:
+                self._errors.append(f"Les données de la série {key} contiennent des valeurs non numériques")
+                return False
+            if len(data) != len(self._data_dict.get("Dates", [])):
+                self._errors.append(f"Les longueurs des dates et de la série {key} ne correspondent pas")
+                return False
+        return True
+
+    def check_and_convert_date(self, date):
+        try:
+            return parser.parse(str(date))
+        except ValueError:
+            self._errors.append("Format de dates non reconnues")
+            self.errorsChanged.emit()
+            return []
+
+    def updateDatas(self, key):
+        if self._data_dict[key] and self._datesInfos and self.check_numeric_and_length(key):
+            dataset = np.array(self._data_dict[key])
+            sum_ann , mean_ann, std_ann = self.annual_statistics(dataset, self._datesInfos["data"])
+            return {
+                "data": dataset.tolist(),
+                "min": dataset.min().tolist(),
+                "max": dataset.max().tolist(),
+                "sum": sum_ann.tolist(),
+                "mean" : mean_ann.tolist(),
+                "std": std_ann.tolist(),
+                "count" : len(dataset)
+            }
+        else:
+            self.errorsChanged.emit()
+            return {
+                "data": [],
+                "min": None,
+                "max": None,
+                "sum": None,
+                "mean" : None,
+                "std": None,
+                "count" : None
+            }
+
+    def annual_statistics(self, data, dates):
+        df = pd.DataFrame({"date": pd.to_datetime(dates), "value": data})
+        df["year"] = df["date"].dt.year
+        grouped = df.groupby("year")["value"]
+        return grouped.sum().mean(), grouped.mean().mean(), grouped.std().mean()
 
     # Propriété pour les en-têtes
     @Property(list, notify=headersChanged)
@@ -51,26 +112,10 @@ class FileHandler(QObject):
 
     @Slot()
     def updateQInfos(self):
-        if "Q" in self._data_dict and self._data_dict["Q"]:
-            qobs = np.array(self._data_dict["Q"])
-            self._qInfos = {
-                "data": qobs.tolist(),
-                "min": qobs.min().tolist(),
-                "max": qobs.max().tolist(),
-                "mean": qobs.mean().tolist(),
-                "std": qobs.std().tolist(),
-                "count" : len(qobs)
-            }
-        else:
-            self._qInfos = {
-                "data": [],
-                "min": None,
-                "max": None,
-                "mean": None,
-                "std": None,
-                "count" : None
-            }
+        self._qInfos = self.updateDatas("Q")
+        self._data_dict["Q"] = self._qInfos["data"]
         self.qInfosChanged.emit()
+        self.dataDictChanged.emit()
 
     @Property(dict, notify=qInfosChanged)
     def qInfos(self):
@@ -78,81 +123,35 @@ class FileHandler(QObject):
 
     @Slot()
     def updatePInfos(self):
-        if "P" in self._data_dict and self._data_dict["P"]:
-            rainfall = np.array(self._data_dict["P"])
-            self._pInfos = {
-                "data": rainfall.tolist(),
-                "min": rainfall.min().tolist(),
-                "max": rainfall.max().tolist(),
-                "sum": rainfall.sum().tolist(),
-                "std": rainfall.std().tolist()
-            }
-        else:
-            self._pInfos = {
-                "data": [],
-                "min": None,
-                "max": None,
-                "sum": None,
-                "std": None
-            }
+        self._pInfos = self.updateDatas("P")
+        self._data_dict["P"] = self._pInfos["data"]
         self.pInfosChanged.emit()
+        self.dataDictChanged.emit()
 
     @Property(dict, notify=pInfosChanged)
     def pInfos(self):
-        print(" ----------------- Dates 1")
+        print(" ----------------- P 1")
         print(self._pInfos)
         return self._pInfos
 
     @Slot()
     def updateTempInfos(self):
-        if "T" in self._data_dict and self._data_dict["T"]:
-            temp = np.array(self._data_dict["T"])
-            self._tempInfos = {
-                "data": temp.tolist(),
-                "min": temp.min().tolist(),
-                "max": temp.max().tolist(),
-                "mean": temp.mean().tolist(),
-                "std": temp.std().tolist(),
-                "count": len(temp)
-            }
-        else:
-            self._tempInfos = {
-                "data": [],
-                "min": None,
-                "max": None,
-                "mean": None,
-                "std": None,
-                "count": 0
-                }
+        self._tempInfos = self.updateDatas("T")
+        self._data_dict["T"] = self._tempInfos["data"]
         self.tempInfosChanged.emit()
+        self.dataDictChanged.emit()
 
     @Property(dict, notify=tempInfosChanged)
     def tempInfos(self):
         return self._tempInfos
 
-
     @Slot()
     def updateETPInfos(self):
-        if "ETP" in self._data_dict and self._data_dict["ETP"]:
-            etp = np.array(self._data_dict["ETP"])
-            self._etpInfos = {
-            "data": etp.tolist(),
-            "min": etp.min().tolist(),
-            "max": etp.max().tolist(),
-            "mean": etp.mean().tolist(),
-            "std": etp.std().tolist(),
-            "count": len(etp)
-            }
-        else:
-            self._etpInfos = {
-                "data": [],
-                "min": None,
-                "max": None,
-                "mean": None,
-                "std": None,
-                "count": 0
-            }
+        self._etpInfos = self.updateDatas("ETP")
+        self._data_dict["ETP"] = self._etpInfos["data"]
+
         self.etpInfosChanged.emit()
+        self.dataDictChanged.emit()
 
     @Property(dict, notify=etpInfosChanged)
     def etpInfos(self):
@@ -161,35 +160,24 @@ class FileHandler(QObject):
 
     @Slot()
     def updateDatesInfos(self):
-        if "Dates" in self._data_dict and self._data_dict["Dates"]:
+        if self._data_dict["Dates"]:
             date_series = self._data_dict["Dates"]
             date_format = self._date_format[self._user_format]
 
-            def convert_date(date):
-                if isinstance(date, int) or (isinstance(date, str) and date.isdigit()):
-                    return datetime.datetime.strptime(str(date), "%Y%m%d")
-                elif isinstance(date, str):
-                    return datetime.datetime.strptime(date, date_format)
-                raise ValueError(f"Format de date non reconnu : {date}")
-
             # Conversion des dates
-            parsed_dates = [convert_date(date) for date in date_series]
+            parsed_dates = np.vectorize(self.check_and_convert_date)(date_series)
 
             self._datesInfos = {
-                "data": [d.strftime("%Y-%m-%d") for d in parsed_dates],
-                "min": parsed_dates[0].strftime("%Y-%m-%d"),
-                "max": parsed_dates[-1].strftime("%Y-%m-%d"),
+                "data": [d.strftime(date_format) for d in parsed_dates],
+                "min": parsed_dates[0].strftime(date_format),
+                "max": parsed_dates[-1].strftime(date_format),
                 "count": len(parsed_dates)
             }
-        else:
-            self._datesInfos = {
-                "data": [],
-                "min": None,
-                "max": None,
-                "count": 0,
-            }
+
+            self._data_dict["Dates"] = self._datesInfos["data"]
 
         self.datesInfosChanged.emit()
+        self.dataDictChanged.emit()
 
 
     @Property(dict, notify=datesInfosChanged)
@@ -224,7 +212,7 @@ class FileHandler(QObject):
 
             # Extraire les en-têtes et les données
             hd = df.columns.tolist()
-            hd.append("Aucun")
+            hd.append("Non défini")
             self._headers =hd
             self._data = df.to_dict(orient="list")
             # Émettre les signaux pour mettre à jour QML
@@ -237,14 +225,16 @@ class FileHandler(QObject):
 
     @Slot(dict)
     def setDictValues(self, data_dict):
-        self._data_dict = { key: [] if value == "Aucun" else self._data[value] for key, value in data_dict.items() }
-
-        self.dataDictChanged.emit()
+        self._data_dict = { key: [] if value == "Non défini" else self._data[value] for key, value in data_dict.items() }
         self.updateDatesInfos()
         self.updateETPInfos()
         self.updatePInfos()
         self.updateQInfos()
         self.updateTempInfos()
+
+
+
+
 
 
 
