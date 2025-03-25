@@ -1,4 +1,4 @@
-from PySide6.QtCore import QAbstractTableModel, Qt, Slot, Signal, QVariant
+from PySide6.QtCore import QAbstractTableModel, Qt, Slot, Signal
 
 class TableModel(QAbstractTableModel):
     dataChanged = Signal()  # Signal pour informer QML que les données ont changé
@@ -20,7 +20,7 @@ class TableModel(QAbstractTableModel):
     def data(self, index, role=Qt.DisplayRole):
         """Retourne la valeur de la cellule"""
         if not index.isValid() or role != Qt.DisplayRole:
-            return QVariant()
+            return []
 
         column = list(self._data.keys())[index.column()]  # Obtenir le nom de la colonne
         row = index.row()
@@ -28,13 +28,13 @@ class TableModel(QAbstractTableModel):
         # Vérifier si la ligne existe dans la liste
         if row < len(self._data[column]):
             return self._data[column][row]
-        return QVariant()  # Valeur vide si la liste est plus courte
+        return []  # Valeur vide si la liste est plus courte
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         """Gère les noms des colonnes"""
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
             return list(self._data.keys())[section]
-        return QVariant()
+        return []
 
     @Slot("QVariantMap")
     def setData(self, data_dict):

@@ -3,42 +3,51 @@ import QtQuick.Controls
 import QtCharts 2.3
 
 Rectangle {
-    visible: keys(fileHandler.qInfos).length === 0 ? false : true
-    property var chartName
+    id: qobsChart
+    visible: true
+    property string minDate
+    property string maxDate
+    property real minValue
+    property real maxValue
+
+    property string chartName
+
+
 
     ChartView {
         id: chartView
-        title: chartName
         anchors.fill: parent
         antialiasing: true
 
         DateTimeAxis {
-            id: axisX
+            id: daxisX
             format:fileHandler.userFormat
             titleText: "Dates"
-            min:fileHandler.datesInfos["min"]
-            max: fileHandler.datesInfos["max"]
+            min:minDate
+            max: maxDate
         }
 
         ValueAxis {
-            id: axisY
+            id: vaxisY
             titleText: "Valeurs"
-            min:fileHandler.qInfos["min"]
-            max:1.1*fileHandler.qInfos["max"]
+            min:minValue
+            max:1.1*maxValue
         }
 
         LineSeries {
             id: seriesQ
-            name: "Q"
-            axisX: axisX
-            axisY: axisY
+            name: chartName
+            axisX: daxisX
+            axisY: vaxisY
         }
     }
 
-    function updateChart() {
+    function updateChart(dates, q_series) {
         seriesQ.clear();
-        var dates = fileHandler.datesInfos["data"];
-        var q_series = fileHandler.qInfos["data"]
+        qobsChart.minDate = dates[0]
+        qobsChart.maxDate = dates[dates.length-1]
+        qobsChart.minValue = Math.min(...q_series)
+        qobsChart.maxValue = Math.max(...q_series)
 
         for (var i = 0; i < dates.length; i++) {
             var x = new Date(dates[i]);

@@ -88,26 +88,30 @@ Column{
 
     function populateTable(columnMapping) {
         tableModel.clear();
+        const keys = ["Dates", "P", "T", "Q", "ETP"];
 
-        // Trouver la longueur maximale parmi toutes les colonnes
-        var maxLength = Math.max(
-            columnMapping.Dates ? columnMapping.Dates.length : 0,
-            columnMapping.P ? columnMapping.P.length : 0,
-            columnMapping.T ? columnMapping.T.length : 0,
-            columnMapping.Q ? columnMapping.Q.length : 0,
-            columnMapping.ETP ? columnMapping.ETP.length : 0
-        );
+        // Trouver la longueur maximale en une seule passe
+        const maxLength = keys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
 
-        // Remplir le modèle avec les données
-        for (var i = 0; i < maxLength; i++) {
-            tableModel.appendRow({
-                Dates: columnMapping.Dates && i < columnMapping.Dates.length ? columnMapping.Dates[i] : "",
-                P: columnMapping.P && i < columnMapping.P.length ? columnMapping.P[i] : "",
-                T: columnMapping.T && i < columnMapping.T.length ? columnMapping.T[i] : "",
-                Q: columnMapping.Q && i < columnMapping.Q.length ? columnMapping.Q[i] : "",
-                ETP: columnMapping.ETP && i < columnMapping.ETP.length ? columnMapping.ETP[i] : ""
-            });
+        // Remplir le modèle de données
+        for (let i = 0; i < maxLength; i++) {
+            let rowData = {};
+            keys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
+            tableModel.appendRow(rowData);
         }
+    }
+
+    function transformData(data) {
+        tableModel.clear();
+        const keys = ["Dates", "P", "T", "Q", "ETP"];
+
+        // Trouver la longueur des tableaux
+        const length = data[keys[0]].length;
+
+        // Construction du tableau transformé
+        tableModel.rows =  Array.from({ length }, (_, i) =>
+            Object.fromEntries(keys.map(key => [key, data[key][i]]))
+        );
     }
 
     Dialog {
@@ -136,9 +140,12 @@ Column{
                 }
                 else{
                     populateTable(fileHandler.dataDict)
+                    /*dataTableModel.setData(fileHandler.dataDict)*/
+                    //tableView.appendRow(fileHandler.displayData)
+                    //transformData(fileHandler.dataDict)
                     tempChart.updateChart()
-                    qchart.updateChart()
-                    rainChart.updateChart()
+                    qchart.updateChart(fileHandler.datesInfos["data"],fileHandler.qInfos["data"])
+                    rainChart.updateChart(fileHandler.datesInfos["data"],fileHandler.pInfos["data"])
                     etpChart.updateChart()
                     columnMappingDialog.close()
                 }
@@ -305,7 +312,9 @@ Column{
                                 { Dates: "", P: "", T: "", Q: "", ETP: "" },
                                 { Dates: "", P: "", T: "", Q: "", ETP: "" },
                             ]
+                        //rows : fileHandler.displayData
                     }
+                    //model: dataTableModel
 
                     delegate: Item {
                         implicitWidth: 70
@@ -320,6 +329,8 @@ Column{
                                 anchors.centerIn: parent
                                 text: model.display
                                 font.pixelSize: 10
+                                wrapMode: Text.WordWrap
+                                horizontalAlignment: Text.AlignHCenter
                             }
                         }
                     }

@@ -17,6 +17,9 @@
         "frontend/components/parameters/RangeParameters.qml",
         "main.py",
         "main.qml",
-        "frontend/components/LoadDataComponent.qml"
+        "frontend/components/LoadDataComponent.qml",
+        "api/load_data/OptimizedTableModel.py",
+        "frontend/components/datasetComponents/QobsComponent.qml",
+        "frontend/components/datasetComponents/StatisticsComponent.qml"
     ]
 }

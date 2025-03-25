@@ -4,6 +4,7 @@ import datetime
 from dateutil import parser
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
+from itertools import zip_longest
 
 class FileHandler(QObject):
     def __init__(self):
@@ -24,6 +25,8 @@ class FileHandler(QObject):
         self._datesInfos = {}
 
         self._errors = []
+        self._display_data = []
+        self._calage_index = 20
 
 
     headersChanged = Signal(list)
@@ -36,6 +39,7 @@ class FileHandler(QObject):
     etpInfosChanged = Signal()
     tempInfosChanged = Signal()
     datesInfosChanged = Signal()
+    displayDataChanged = Signal()
 
     errorsChanged = Signal()
 
@@ -68,13 +72,27 @@ class FileHandler(QObject):
     def updateDatas(self, key):
         if self._data_dict[key] and self._datesInfos and self.check_numeric_and_length(key):
             dataset = np.array(self._data_dict[key])
+            sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[:self._calage_index], self._datesInfos["data"][:self._calage_index])
+            sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[self._calage_index:], self._datesInfos["data"][self._calage_index:])
             sum_ann , mean_ann, std_ann = self.annual_statistics(dataset, self._datesInfos["data"])
             return {
                 "data": dataset.tolist(),
+                "data_cal" : dataset[:self._calage_index].tolist(),
+                "data_val" : dataset[self._calage_index:].tolist(),
                 "min": dataset.min().tolist(),
                 "max": dataset.max().tolist(),
+                "min_cal" : dataset[:self._calage_index].min().tolist(),
+                "max_cal" : dataset[:self._calage_index].max().tolist(),
+                "min_val" : dataset[self._calage_index:].min().tolist(),
+                "max_val" : dataset[self._calage_index:].max().tolist(),
+                "sum_val" : sum_ann_val.tolist(),
+                "sum_cal" : sum_ann_cal.tolist(),
                 "sum": sum_ann.tolist(),
+                "mean_cal" : mean_ann_cal.tolist(),
+                "mean_val" : mean_ann_val.tolist(),
                 "mean" : mean_ann.tolist(),
+                "std_cal" : std_ann_cal.tolist(),
+                "std_val" : std_ann_val.tolist(),
                 "std": std_ann.tolist(),
                 "count" : len(dataset)
             }
@@ -82,10 +100,22 @@ class FileHandler(QObject):
             self.errorsChanged.emit()
             return {
                 "data": [],
+                "data_cal" : None,
+                "data_val" : None,
                 "min": None,
                 "max": None,
+                "min_val" : None,
+                "max_val" : None,
+                "min_cal" : None,
+                "max_cal" : None,
+                "sum_val" : None,
+                "sum_cal" : None,
                 "sum": None,
+                "mean_ann_cal" : None,
+                "mean_ann_val" : None,
                 "mean" : None,
+                "std_ann_cal" :None,
+                "std_ann_val" : None,
                 "std": None,
                 "count" : None
             }
@@ -130,8 +160,6 @@ class FileHandler(QObject):
 
     @Property(dict, notify=pInfosChanged)
     def pInfos(self):
-        print(" ----------------- P 1")
-        print(self._pInfos)
         return self._pInfos
 
     @Slot()
@@ -157,6 +185,24 @@ class FileHandler(QObject):
     def etpInfos(self):
         return self._etpInfos
 
+    @Slot()
+    def transform_data(self):
+        keys = ["Dates", "P", "T", "Q", "ETP"]
+
+            # Utilisation de zip pour combiner les listes
+        transformed = [
+            dict(zip(keys, row))
+            for row in zip(*[self._data_dict[key] for key in keys])
+        ]
+        self._display_data = transformed
+        self.displayDataChanged.emit()
+
+
+    @Property("QVariant", notify=displayDataChanged)
+    def displayData(self):
+        print("----------------------------")
+        print(self._display_data[0:200])
+        return self._display_data
 
     @Slot()
     def updateDatesInfos(self):
@@ -166,9 +212,11 @@ class FileHandler(QObject):
 
             # Conversion des dates
             parsed_dates = np.vectorize(self.check_and_convert_date)(date_series)
-
+            dataset = [d.strftime(date_format) for d in parsed_dates]
             self._datesInfos = {
-                "data": [d.strftime(date_format) for d in parsed_dates],
+                "data": dataset,
+                "data_cal": dataset[:self._calage_index],
+                "data_val": dataset[self._calage_index:],
                 "min": parsed_dates[0].strftime(date_format),
                 "max": parsed_dates[-1].strftime(date_format),
                 "count": len(parsed_dates)
@@ -231,11 +279,7 @@ class FileHandler(QObject):
         self.updatePInfos()
         self.updateQInfos()
         self.updateTempInfos()
-
-
-
-
-
+        self.transform_data()
 
 
 

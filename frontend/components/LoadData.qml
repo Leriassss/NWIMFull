@@ -8,7 +8,7 @@ import io.qml
 
 
 
-ApplicationWindow {
+Dialog{
     //visible: true
     id: loadDataDialog
     title: "DATA"
@@ -53,8 +53,18 @@ ApplicationWindow {
 
         }
 
-        Item {
-            id: rainfall
+        Rectangle{
+            anchors.centerIn: parent
+            anchors.fill: parent
+            color: "white"
+            border.width: 1
+            QobsComponent{
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height *0.9
+                padding: 10
+            }
+
         }
         Item {
             id: temp

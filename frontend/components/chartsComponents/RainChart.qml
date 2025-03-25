@@ -2,47 +2,43 @@ import QtQuick
 import QtQuick.Controls
 import QtCharts 2.3
 Rectangle {
-    id : chartView
+    id : chartContainer
     visible: true
+    property string minDate
+    property string maxDate
+    property real minValue
+    property real maxValue
+    property var barValues
+    property var axisXValues
 
+    property string chartName
     ChartView {
+        id : chartView
         anchors.fill: parent
         antialiasing: true
 
-        DateTimeAxis {
-            id: axisX
-            format:fileHandler.userFormat
-            titleText: "Dates"
-            min:fileHandler.datesInfos["min"]
-            max: fileHandler.datesInfos["max"]
-        }
-
-        ValueAxis {
-            id: axisY
-            titleText: "Valeurs"
-            min:fileHandler.pInfos["min"]
-            max:1.1*fileHandler.pInfos["max"]
-        }
-
-        LineSeries {
-            id: seriesQ
-            name: "P"
-            axisX: axisX
-            axisY: axisY
-        }
+        BarSeries {
+                id: mySeries
+                axisX: BarCategoryAxis {
+                    categories: axisXValues
+                }
+                axisY: ValueAxis {
+                    id: axisY
+                    titleText: "Valeurs"
+                    min:minValue
+                    max:1.1*maxValue
+                }
+                BarSet { label: "Pluies"; values: barValues}
+            }
     }
 
-    function updateChart() {
-        seriesQ.clear();
-        var dates = fileHandler.datesInfos["data"];
-        var q_series = fileHandler.pInfos["data"]
-
-        for (var i = 0; i < dates.length; i++) {
-            var x = new Date(dates[i]);
-            if (q_series && i < q_series.length) {
-                seriesQ.append(x.getTime(), q_series[i]);
-            }
-        }
+    function updateChart(dates, p_series) {
+        chartContainer.minDate = dates[0]
+        chartContainer.maxDate = dates[dates.length-1]
+        chartContainer.minValue = Math.min(...p_series)
+        chartContainer.maxValue = Math.max(...p_series)
+        chartContainer.barValues = p_series
+        chartContainer.axisXValues = dates
     }
 
 }
