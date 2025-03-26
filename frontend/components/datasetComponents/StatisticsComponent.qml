@@ -23,6 +23,7 @@ Row {
             Label {
                 text: periodLabel
                 verticalAlignment: Text.AlignVCenter
+                font.bold: true
             }
         }
         Row {
@@ -32,35 +33,43 @@ Row {
 
             Label {
                 text: "Min : "
+                width: parent.width/16
                 verticalAlignment: Text.AlignVCenter
             }
             Label {
                 text: parseFloat(statistics["min"]).toFixed(3)
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/8
             }
             Label {
                 text: "Max : "
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/16
             }
             Label {
                 text: parseFloat(statistics["max"]).toFixed(3)
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/8
             }
             Label {
                 text: "Sum : "
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/16
             }
             Label {
                 text: parseFloat(statistics["sum"]).toFixed(3)
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/8
             }
             Label {
                 text: "SD : "
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/16
             }
             Label {
                 text: parseFloat(statistics["std"]).toFixed(3)
                 verticalAlignment: Text.AlignVCenter
+                width: parent.width/8
             }
         }
 

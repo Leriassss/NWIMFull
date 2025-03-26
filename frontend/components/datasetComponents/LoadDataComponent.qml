@@ -7,6 +7,7 @@ import "../chartsComponents"
 import io.qml
 
 Column{
+    clip: true
 
     property var fileData: null
     property var columnMapping: ({})
@@ -224,10 +225,10 @@ Column{
     Row {
         anchors.fill: parent
         spacing: 5
-        padding: -5
+        padding: 5
 
         Column {
-            width: parent.width * 0.3
+            width: parent.width * 0.3 -parent.spacing
             height: parent.height
             spacing: 5
 
@@ -342,7 +343,7 @@ Column{
         }
 
         Column {
-            width: parent.width * 0.7
+            width: parent.width * 0.7 -parent.spacing
             height: parent.height
             spacing: 5
 
@@ -379,7 +380,7 @@ Column{
                             }
 
                             Rectangle {
-                                width: parent.width * 0.5
+                                width: parent.width * 0.5 - 1
                                 height: parent.height
                                 border.width: 1
                                 Text {

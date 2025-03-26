@@ -9,6 +9,7 @@ import io.qml
 
 
 Column{
+    clip: true
 
     Connections {
         target: fileHandler
@@ -41,17 +42,15 @@ Column{
     Row {
         anchors.fill: parent
         spacing: 5
-        padding: -5
+        padding: 5
 
         Column {
-            width: parent.width * 0.3
+            width: parent.width * 0.3 - parent.spacing
             height: parent.height
             spacing: 5
             ColumnLayout {
                 width: parent.width
                 height : parent.height * 0.2
-                //Layout.preferredWidth:  parent.width
-                //Layout.preferredHeight:parent.height * 0.6
                 spacing: 10
                 GroupBox {
                     title: "Options d'unité"
@@ -71,6 +70,12 @@ Column{
                             id: comboBox
                             Layout.fillWidth: true
                             model: ["Option 1", "Option 2", "Option 3"]
+                        }
+
+                        Button{
+                            text: "Convertir"
+                            anchors.right: parent.right
+
                         }
                     }
                 }
@@ -162,7 +167,7 @@ Column{
         }
 
         Column {
-            width: parent.width * 0.7
+            width: parent.width * 0.7 - parent.spacing
             height: parent.height
             spacing: 5
 
@@ -228,35 +233,35 @@ Column{
                         }
                     }
 
+
                     Rectangle {
                         id: plot
-                        width: parent.width-10
+                        width: parent.width
                         height: parent.height * 0.8
                         //anchors.centerIn: parent
                         border.width: 1
-                        Column{
+                        clip: true
+                        GridLayout {
+                            id: grid
                             anchors.fill: parent
+                            anchors.centerIn: parent
 
-                            Grid {
-                                id: grid
-                                anchors.fill: parent
-                                columns: 2
-                                rowSpacing: 0
-                                columnSpacing: 0
-                                QobsChart{
-                                    id : qCalibrationChart
-                                    width: parent.width / 2
-                                    height: parent.height
-                                    chartName : "Q Calibration"
+                            columns: 2
+                            rowSpacing: 0
+                            columnSpacing: 0
 
-                                }
-                                QobsChart{
-                                    id : qValidationChart
-                                    width: parent.width / 2
-                                    height: parent.height
-                                    chartName : "Q Validation"
-                                }
+                            QobsChart{
+                                id : qCalibrationChart
+                                Layout.preferredWidth: parent.width / 2
+                                Layout.preferredHeight:parent.height
+                                chartName : "Q Calibration"
 
+                            }
+                            QobsChart{
+                                id : qValidationChart
+                                Layout.preferredWidth: parent.width / 2
+                                Layout.preferredHeight:parent.height
+                                chartName : "Q Validation"
                             }
 
                         }
