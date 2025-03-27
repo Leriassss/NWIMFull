@@ -9,6 +9,14 @@ import io.qml
 Column{
     clip: true
 
+    Connections {
+        target: etoManager
+        onComputationChanged:{
+            fileHandler.setEToValues(etoManager.etpComputed)
+            populateTable(fileHandler.dataDict)
+            etpChart.updateChart()
+        }
+    }
     property var fileData: null
     property var columnMapping: ({})
 
@@ -222,6 +230,7 @@ Column{
 
             }
         }
+
     Row {
         anchors.fill: parent
         spacing: 5
@@ -261,6 +270,7 @@ Column{
                     }
                 }
             }
+
             Rectangle{
                 width: parent.width
                 height: parent.height * 0.9 - 5

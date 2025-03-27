@@ -53,6 +53,12 @@ Dialog{
 
         }
 
+        Item {
+            id: p
+        }
+        Item {
+            id: temp
+        }
         Rectangle{
             anchors.centerIn: parent
             anchors.fill: parent
@@ -66,14 +72,18 @@ Dialog{
             }
 
         }
-        Item {
-            id: temp
-        }
-        Item {
-            id: q
-        }
-        Item {
-            id: etp
+        Rectangle{
+            anchors.centerIn: parent
+            anchors.fill: parent
+            color: "white"
+            border.width: 1
+            ETPComponent{
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height *0.9
+                padding: 10
+            }
+
         }
     }
 

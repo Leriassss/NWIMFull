@@ -10,6 +10,7 @@ from api.TestQML import TestQML
 from api.GridParametersQML import GridParametersQML
 from api.load_data.FileHandler import FileHandler
 from api.load_data.TableModel import TableModel
+from api.load_data.EToManager import EToManager
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
@@ -18,10 +19,11 @@ if __name__ == "__main__":
     engine = QQmlApplicationEngine()
 
     file_handler = FileHandler()
+    eto_manager = EToManager()
     model = TableModel()
     engine.rootContext().setContextProperty("dataTableModel", model)
     engine.rootContext().setContextProperty("fileHandler", file_handler)
-
+    engine.rootContext().setContextProperty("etoManager", eto_manager)
     qmlRegisterType(GridParametersQML, "io.qml", 1, 0, "GridParametersQML")
 
 

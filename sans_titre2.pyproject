@@ -20,6 +20,8 @@
         "frontend/components/LoadDataComponent.qml",
         "api/load_data/OptimizedTableModel.py",
         "frontend/components/datasetComponents/QobsComponent.qml",
-        "frontend/components/datasetComponents/StatisticsComponent.qml"
+        "frontend/components/datasetComponents/StatisticsComponent.qml",
+        "frontend/components/datasetComponents/ETPComponent.qml",
+        "api/load_data/EToManager.py"
     ]
 }

@@ -3,7 +3,7 @@ from backend.pte.models.EToModel import EToModel
 from backend.pte.Evapotranspiration import Evapotranspiration
 
 
-class Eto(Evapotranspiration):
+class ETo(Evapotranspiration):
     """
     Classe implémentant la méthode d'évapotranspiration Penman-Monteith.
     """

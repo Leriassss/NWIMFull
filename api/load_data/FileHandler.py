@@ -11,6 +11,7 @@ class FileHandler(QObject):
         super().__init__()
         self._headers = []
         self._data = []
+
         self._data_dict = {}
         self._date_format = {
             "YYYYMMDD" : "%Y%m%d",
@@ -279,9 +280,15 @@ class FileHandler(QObject):
         self.updatePInfos()
         self.updateQInfos()
         self.updateTempInfos()
-        self.transform_data()
+        #self.transform_data()
 
 
+    @Slot(list)
+    def setEToValues(self, etp_list):
+        self._data_dict["ETP"] = etp_list
+        print("etp_list---------------------")
+        print(self._data_dict)
+        self.updateETPInfos()
 
 
 

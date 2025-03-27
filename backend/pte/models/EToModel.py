@@ -1,66 +1,80 @@
 import numpy as np
 import pandas as pd
-from typing import Union
 
 class EToModel:
-    def __init__(self, T, Tmin = None, Tmax = None, RH=None, R=None, u2=None, Lat: Union[int, float] = None, El: Union[int, float] = None):
-        self.T = np.array(T, dtype=np.float64) if T is not None else None
-        self.Tmin = np.array(Tmin, dtype=np.float64) if Tmin is not None else None
-        self.Tmax = np.array(Tmax, dtype=np.float64) if Tmax is not None else None
-        self.RH = np.array(RH, dtype=np.float64) if RH is not None else None
-        self.R = np.array(R, dtype=np.float64) if R is not None else None
-        self.u2 = np.array(u2, dtype=np.float64) if u2 is not None else None
-        self.lat = Lat  if Lat is not None else None
-        self.el = El  if El is not None else None
+    def __init__(self, tmean, tmin = None, tmax = None, rh=None, rn=None, wind=None, lat = None, elevation = None):
+        self.tmean = np.array(tmean, dtype=np.float64) if tmean is not None else None
+        self.tmin = np.array(tmin, dtype=np.float64) if tmin is not None else None
+        self.tmax = np.array(tmax, dtype=np.float64) if tmax is not None else None
+        self.rh = np.array(rh, dtype=np.float64) if rh is not None else None
+        self.rn= np.array(rn, dtype=np.float64) if rn is not None else None
+        self.wind = np.array(wind, dtype=np.float64) if wind is not None else None
+        self.lat = lat  if lat is not None else None
+        self.elevation = elevation  if elevation is not None else None
+        self._errors = []
         self.validate()
+
 
     def validate(self):
         errors = []
 
         # Vérification que T est un tableau non vide
-        if self.T.size == 0:
-            errors.append("T ne peut pas être vide.")
+        if self.tmean.size == 0:
+            errors.append("tmean ne peut pas être vide")
 
         # Vérification des autres variables par rapport à T uniquement si elles sont fournies
-        if self.RH is not None:
-            if self.RH.size != self.T.size:
-                errors.append("RH doit avoir la même longueur que T.")
-            if not np.all((0 <= self.RH) & (self.RH <= 100)):
-                errors.append("RH doit être compris entre 0 et 100.")
+        if self.rh is not None:
+            if self.rh.size != self.tmean.size:
+                errors.append("rh doit avoir la même longueur que tmean")
+            if not np.all((0 <= self.rh) & (self.rh <= 100)):
+                errors.append("rh doit être compris entre 0 et 100")
 
-        if self.R is not None:
-            if self.R.size != self.T.size:
-                errors.append("R doit avoir la même longueur que T.")
-            if not np.all(self.R >= 0):
-                errors.append("R doit être un nombre positif.")
+        if self.tmin is not None:
+            if self.tmin.size != self.tmean.size:
+                errors.append("tmin doit avoir la même longueur que tmean")
 
-        if self.u2 is not None:
-            if self.u2.size != self.T.size:
-                errors.append("u2 doit avoir la même longueur que T.")
-            if not np.all(self.u2 >= 0):
-                errors.append("u2 doit être un nombre positif.")
+        if self.tmax is not None:
+            if self.tmax.size != self.tmean.size:
+                errors.append("tmax doit avoir la même longueur que tmean")
 
-        # Vérification que la latitude est un nombre réel (en radians)
-        if self.lat is not None and not isinstance(self.lat, (int, float)):
-            errors.append("Lat doit être un nombre réel en radians.")
+        if self.rn is not None:
+            if self.rn.size != self.tmean.size:
+                errors.append("rn doit avoir la même longueur que tmean")
+            if not np.all(self.rn>= 0):
+                errors.append("rn doit être un nombre positif")
 
-        # Vérification que l'altitude est un nombre positif
-        if self.el is not None and (not isinstance(self.el, (int, float)) or self.el < 0):
-            errors.append("El doit être un nombre positif.")
+        if self.wind is not None:
+            if self.wind.size != self.tmean.size:
+                errors.append("wind doit avoir la même longueur que tmean")
+            if not np.all(self.wind >= 0):
+                errors.append("wind doit être un nombre positif")
 
-        if errors:
-            raise ValueError("Erreurs de validation : " + "; ".join(errors))
-        return True
+        if self.lat != "" :
+            try:
+                lat_value = float(self.lat)
+            except (ValueError, TypeError):
+                errors.append("lat doit être un nombre réel en radians")
+
+        if self.elevation != "" :
+            try:
+                elevation_value = float(self.elevation)
+            except (ValueError, TypeError):
+                errors.append("Elevation doit être un nombre réel")
+
+        self._errors = errors
 
     def eto_datas(self):
-        return {
-            "tmean" : pd.Series(self.T),
-            "tmin" : pd.Series(self.Tmin),
-            "tmax" : pd.Series(self.Tmax),
-            "rh" : pd.Series(self.RH),
-            "rn" : pd.Series(self.R),
-            "wind" : pd.Series(self.u2),
-            "elevation" : self.el,
-            "lat" : self.lat
-        }
+        if len(self._errors) == 0 :
+            return {
+                "tmean" : pd.Series(self.tmean),
+                "tmin" : pd.Series(self.tmin),
+                "tmax" : pd.Series(self.tmax),
+                "rh" : pd.Series(self.rh),
+                "rn" : pd.Series(self.rn),
+                "wind" : pd.Series(self.wind),
+                "elevation" : float(self.elevation) if self.elevation != "" else None,
+                "lat" : float(self.lat) if self.lat != "" else None
+            }
+        else :
+            return None
 
