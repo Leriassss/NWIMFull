@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-
+from dateutil import parser
 class EToModel:
-    def __init__(self, tmean, tmin = None, tmax = None, rh=None, rn=None, wind=None, lat = None, elevation = None):
+    def __init__(self, dates, tmean, tmin = None, tmax = None, rh=None, rn=None, wind=None, lat = None, elevation = None):
+        self.dates = np.array(dates, dtype=str)
         self.tmean = np.array(tmean, dtype=np.float64) if tmean is not None else None
         self.tmin = np.array(tmin, dtype=np.float64) if tmin is not None else None
         self.tmax = np.array(tmax, dtype=np.float64) if tmax is not None else None
@@ -17,6 +18,12 @@ class EToModel:
 
     def validate(self):
         errors = []
+
+        if len(self.dates) !=  self.tmean.size :
+            errors.append("Dates, la longueur ne correspond pas")
+
+        if len(self.dates) == 0:
+            errors.append("Dates ne peut pas être vide")
 
         # Vérification que T est un tableau non vide
         if self.tmean.size == 0:
@@ -60,12 +67,19 @@ class EToModel:
                 elevation_value = float(self.elevation)
             except (ValueError, TypeError):
                 errors.append("Elevation doit être un nombre réel")
+        try:
+            self.dates = [d.strftime("%Y-%m-%d") for d in np.vectorize(parser.parse)(self.dates)]
+
+        except ValueError:
+            errors.append("Format de dates non reconnues")
 
         self._errors = errors
+
 
     def eto_datas(self):
         if len(self._errors) == 0 :
             return {
+                "Dates" : self.dates,
                 "tmean" : pd.Series(self.tmean),
                 "tmin" : pd.Series(self.tmin),
                 "tmax" : pd.Series(self.tmax),

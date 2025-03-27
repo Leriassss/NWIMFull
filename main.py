@@ -3,7 +3,8 @@ import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQml import qmlRegisterType
-
+from PySide6 import QtCore
+from PySide6.QtCore import QUrl, QtMsgType, QFileInfo, QFile
 
 from api.RangeParametersQML import RangeParametersQML
 from api.TestQML import TestQML
@@ -11,6 +12,23 @@ from api.GridParametersQML import GridParametersQML
 from api.load_data.FileHandler import FileHandler
 from api.load_data.TableModel import TableModel
 from api.load_data.EToManager import EToManager
+
+# Implémentation de votre Message Handler
+def qtMessageHandler(mode, context, message):
+    match mode:
+        case QtMsgType.QtDebugMsg:
+            modeStr = "Debug"
+        case QtMsgType.QtInfoMsg:
+            modeStr = "Information"
+        case QtMsgType.QtWarningMsg:
+            modeStr = "Warning"
+        case QtMsgType.QtCriticalMsg:
+            modeStr = "Critical"
+        case _:
+            modeStr = "Fatal"
+    fileName = QFileInfo(QFile(context.file).fileName()).fileName()
+    print(f"QML - {modeStr}: {message} ({fileName}:{context.line})")
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
@@ -27,7 +45,7 @@ if __name__ == "__main__":
     qmlRegisterType(GridParametersQML, "io.qml", 1, 0, "GridParametersQML")
 
 
-
+    QtCore.qInstallMessageHandler(qtMessageHandler)
     engine.load("main.qml")
 
     if not engine.rootObjects():

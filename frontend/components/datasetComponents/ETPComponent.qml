@@ -13,7 +13,35 @@ Column{
 
     property var fileData: null
     property var columnMapping: ({})
+    Connections {
+        target: fileHandler
+        onDataDictChanged:{
+            populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
+                           "Calibration" : fileHandler.etpInfos["data_cal"],
+                            "VDates" : fileHandler.datesInfos["data_val"],
+                            "Validation" : fileHandler.etpInfos["data_val"]
+                          })
+            /*console.log("--------------ETPCOMPONENT")
+            console.log(JSON.stringify(fileHandler.datesInfos))
+            console.log(JSON.stringify(fileHandler.etpInfos))*/
+            etpCalibrationChart.updateChart(fileHandler.datesInfos["data_cal"],fileHandler.etpInfos["data_cal"])
+            etpValidationChart.updateChart(fileHandler.datesInfos["data_val"],fileHandler.etpInfos["data_val"])
+        }
+    }
 
+    function populateTable(columnMapping) {
+        tableModel.clear();
+        const mykeys = ["CDates","Calibration","VDates","Validation"];
+
+        // Trouver la longueur maximale en une seule passe
+        const maxLength = mykeys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
+        // Remplir le modèle de données
+        for (let i = 0; i < maxLength; i++) {
+            let rowData = {};
+            mykeys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
+            tableModel.appendRow(rowData);
+        }
+    }
     FileChoose {
         id: fileChooseComponent
         property string fileName: ""
@@ -101,6 +129,7 @@ Column{
 
             onAccepted: {
                 columnMapping = {
+                    "dates" : datesComboBox.currentText,
                     "tmean":tMeanComboBox.currentText,
                     "tmin" : tMinComboBox.currentText,
                     "tmax" : tMaxComboBox.currentText,
@@ -119,13 +148,18 @@ Column{
                 else{
                     try {
                         etoManager.computeETo()
+
                     } catch (error) {
                         errorDialog.text = "Les paramètres requis n'ont pas étét fournis "
                         errorDialog.open()
                     }
-                    /*populateTable(etoManager.dataDict)
-                    etpChart.updateChart()
-                    columnMappingDialog.close()*/
+                    populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
+                                   "Calibration" : fileHandler.etpInfos["data_cal"],
+                                    "VDates" : fileHandler.datesInfos["data_val"],
+                                    "Validation" : fileHandler.etpInfos["data_val"]
+                                  })
+                    etpCalibrationChart.updateChart(fileHandler.datesInfos["data_cal"],fileHandler.etpInfos["data_cal"])
+                    etpValidationChart.updateChart(fileHandler.datesInfos["data_val"],fileHandler.etpInfos["data_val"])
                 }
 
             }
@@ -140,7 +174,17 @@ Column{
                     columnSpacing: 10
                     rowSpacing: 10
 
-                    // Ligne pour Dates
+                    Label {
+                        text: "Dates"
+                        Layout.alignment: Qt.AlignLeft
+                    }
+                    ComboBox {
+                        id: datesComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
                     Label {
                         text: "Teméprature Moy. [°C]"
                         Layout.alignment: Qt.AlignLeft
@@ -186,7 +230,7 @@ Column{
                     }
 
                     Label {
-                        text: "Rad. Solaire/ \nRad. Net/\n Nb Heures d'Enso."
+                        text: "Rad. Solaire/ \nRad. Net/\nNb Heures d'Enso."
                         Layout.alignment: Qt.AlignLeft
                         Layout.preferredWidth: 100
                         wrapMode: Text.Wrap
@@ -276,32 +320,7 @@ Column{
 
     }
 
-    /*Connections {
-        target: fileHandler
-        onDataDictChanged:{
-            populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
-                           "Calibration" : fileHandler.etpInfos["data_cal"],
-                            "VDates" : fileHandler.datesInfos["data_val"],
-                            "Validation" : fileHandler.etpInfos["data_val"]
-                          })
-            qCalibrationChart.updateChart(fileHandler.datesInfos["data_cal"],fileHandler.etpInfos["data_cal"])
-            qValidationChart.updateChart(fileHandler.datesInfos["data_val"],fileHandler.etpInfos["data_val"])
-        }
-    }*/
 
-    function populateTable(columnMapping) {
-        tableModel.clear();
-        const mykeys = ["CDates","Calibration","VDates","Validation"];
-
-        // Trouver la longueur maximale en une seule passe
-        const maxLength = mykeys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
-        // Remplir le modèle de données
-        for (let i = 0; i < maxLength; i++) {
-            let rowData = {};
-            mykeys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
-            tableModel.appendRow(rowData);
-        }
-    }
 
 
     Row {
@@ -353,7 +372,7 @@ Column{
                     anchors.left: tableView.left
                     anchors.top: parent.top
                     syncView: tableView
-                    model: [ "Dates","Q Calibration","Dates","Q Validation"]
+                    model: [ "Dates","ETP Calibration","Dates","ETP Validation"]
                     clip: true
 
                     /*delegate: Rectangle {
@@ -512,15 +531,15 @@ Column{
                             rowSpacing: 0
                             columnSpacing: 0
 
-                            QobsChart{
-                                id : qCalibrationChart
+                            ETPChart{
+                                id : etpCalibrationChart
                                 Layout.preferredWidth: parent.width / 2
                                 Layout.preferredHeight:parent.height
                                 chartName : "ETP Calibration"
 
                             }
-                            QobsChart{
-                                id : qValidationChart
+                            ETPChart{
+                                id : etpValidationChart
                                 Layout.preferredWidth: parent.width / 2
                                 Layout.preferredHeight:parent.height
                                 chartName : "ETP Validation"

@@ -3,10 +3,16 @@ import QtQuick.Controls
 import QtCharts 2.3
 
 Rectangle {
+    id : etpChart
     width: 600
     height: 400
     visible: true
-    property var chartName
+    property string minDate
+    property string maxDate
+    property real minValue
+    property real maxValue
+
+    property string chartName
 
     ChartView {
         id: chartView
@@ -18,15 +24,15 @@ Rectangle {
             id: axisX
             format:fileHandler.userFormat
             titleText: "Dates"
-            min:fileHandler.datesInfos["min"]
-            max: fileHandler.datesInfos["max"]
+            min:minDate
+            max: maxDate
         }
 
         ValueAxis {
             id: axisY
             titleText: "Valeurs"
-            min:fileHandler.etpInfos["min"]
-            max:1.1*fileHandler.etpInfos["max"]
+            min:minValue
+            max:1.1*maxValue
         }
 
         LineSeries {
@@ -37,13 +43,12 @@ Rectangle {
         }
 
     }
-
-
-
-    function updateChart() {
+    function updateChart(dates, etp_series) {
         seriesETP.clear();
-        var dates = fileHandler.datesInfos["data"];
-        var etp_series = fileHandler.etpInfos["data"]
+        etpChart.minDate = dates[0]
+        etpChart.maxDate = dates[dates.length-1]
+        etpChart.minValue = Math.min(...etp_series)
+        etpChart.maxValue = Math.max(...etp_series)
 
         for (var i = 0; i < dates.length; i++) {
             var x = new Date(dates[i]);

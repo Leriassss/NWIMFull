@@ -14,7 +14,9 @@ Column{
         onComputationChanged:{
             fileHandler.setEToValues(etoManager.etpComputed)
             populateTable(fileHandler.dataDict)
-            etpChart.updateChart()
+            console.log("Connexion ------------------------")
+            console.log(JSON.stringify(fileHandler.dataDict))
+            etpChart.updateChart(fileHandler.datesInfos["data"],fileHandler.etpInfos["data"])
         }
     }
     property var fileData: null
@@ -134,14 +136,19 @@ Column{
             property var headers: fileHandler.headers // En-têtes du fichier chargé
 
             onAccepted: {
-                columnMapping = {
+                /*columnMapping = {
                     "Dates":datesComboBox.currentText ,
                     "P": pComboBox.currentText,
                     "T": tComboBox.currentText,
                     "Q": qComboBox.currentText,
                     "ETP": etpComboBox.currentText
-                }
-                fileHandler.setDictValues(columnMapping)
+                }*/
+                fileHandler.initDatesValues(datesComboBox.currentText)
+                fileHandler.initPValues(pComboBox.currentText)
+                fileHandler.initTempValues(tComboBox.currentText)
+                fileHandler.initQValues(qComboBox.currentText)
+                fileHandler.initETPValues(etpComboBox.currentText)
+
 
                 if(fileHandler.errors.length !==0){
 
@@ -155,7 +162,7 @@ Column{
                     tempChart.updateChart()
                     qchart.updateChart(fileHandler.datesInfos["data"],fileHandler.qInfos["data"])
                     rainChart.updateChart(fileHandler.datesInfos["data"],fileHandler.pInfos["data"])
-                    etpChart.updateChart()
+                    etpChart.updateChart(fileHandler.datesInfos["data"],fileHandler.etpInfos["data"])
                     columnMappingDialog.close()
                 }
 

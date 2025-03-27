@@ -20,7 +20,7 @@ class EToManager(QObject):
         self._parameters = ""
         self._method = ""
         self._etoModel = None
-        self._etp_computation = []
+        self._etp_computation = {"Dates": [], "ETP" : []}
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)
@@ -83,12 +83,16 @@ class EToManager(QObject):
         }
         user_values["elevation"] = data_dict["elevation"]
         user_values["lat"] = data_dict["lat"]
+        print(user_values)
         self._etoModel = EToModel(**user_values)
+
         if(len(self._etoModel._errors) !=0):
             self._errors = self._etoModel._errors
             self.errorsChanged.emit()
             return
         self._data_dict = self._etoModel.eto_datas()
+        print("SETDICTVALUES ---------------2")
+        print(self._data_dict)
         self.dataDictChanged.emit()
 
     @Property("QVariant", constant = True)
@@ -107,10 +111,11 @@ class EToManager(QObject):
 
     @Slot()
     def computeETo(self):
-        self._etp_computation = ETo(self._etoModel).calculate(self._method).tolist()
+        self._etp_computation["ETP"] = (ETo(self._etoModel).calculate(self._method).round(3)).tolist()
+        self._etp_computation["Dates"] = self._data_dict["Dates"]
         self.computationChanged.emit()
 
-    @Property(list, notify = computationChanged)
+    @Property(dict, notify = computationChanged)
     def etpComputed(self):
         return self._etp_computation
 

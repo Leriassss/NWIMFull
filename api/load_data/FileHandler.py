@@ -71,7 +71,7 @@ class FileHandler(QObject):
             return []
 
     def updateDatas(self, key):
-        if self._data_dict[key] and self._datesInfos and self.check_numeric_and_length(key):
+        if self._data_dict[key]  and self._datesInfos and self.check_numeric_and_length(key):
             dataset = np.array(self._data_dict[key])
             sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[:self._calage_index], self._datesInfos["data"][:self._calage_index])
             sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[self._calage_index:], self._datesInfos["data"][self._calage_index:])
@@ -177,8 +177,8 @@ class FileHandler(QObject):
     @Slot()
     def updateETPInfos(self):
         self._etpInfos = self.updateDatas("ETP")
-        self._data_dict["ETP"] = self._etpInfos["data"]
 
+        self._data_dict["ETP"] = self._etpInfos["data"]
         self.etpInfosChanged.emit()
         self.dataDictChanged.emit()
 
@@ -282,13 +282,41 @@ class FileHandler(QObject):
         self.updateTempInfos()
         #self.transform_data()
 
-
-    @Slot(list)
+    #POUR LE CALCUL DE L'ETP DANS L'OPTION ETP
+    @Slot(dict)
     def setEToValues(self, etp_list):
-        self._data_dict["ETP"] = etp_list
-        print("etp_list---------------------")
+        self._data_dict["ETP"] = etp_list["ETP"]
+        self._data_dict["Dates"] = etp_list["Dates"]
+        self.updateDatesInfos()
+        self.updateETPInfos()
+        print("etp_list 1---------------------")
+        print(etp_list)
         print(self._data_dict)
+
+
+    @Slot(str)
+    def initDatesValues(self, key):
+        self._data_dict["Dates"] =  [] if key == "Non défini" else self._data[key]
+        self.updateDatesInfos()
+
+
+    @Slot(str)
+    def initETPValues(self, key):
+        self._data_dict["ETP"] =  [] if key == "Non défini" else self._data[key]
         self.updateETPInfos()
 
+    @Slot(str)
+    def initPValues(self, key):
+        self._data_dict["P"] =  [] if key == "Non défini" else self._data[key]
+        self.updatePInfos()
 
 
+    @Slot(str)
+    def initTempValues(self, key):
+        self._data_dict["T"] =  [] if key == "Non défini" else self._data[key]
+        self.updateTempInfos()
+
+    @Slot(str)
+    def initQValues(self, key):
+        self._data_dict["Q"] =  [] if key == "Non défini" else self._data[key]
+        self.updateQInfos()
