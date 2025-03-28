@@ -12,8 +12,14 @@ Dialog{
     //visible: true
     id: loadDataDialog
     title: "DATA"
-    width: 1300
-    height: 700
+    implicitWidth:  1300
+    implicitHeight: 700
+    modal: true
+    popupType: Popup.Window
+    topInset : 5
+    standardButtons: Dialog.Ok | Dialog.Cancel
+    closePolicy : Popup.CloseOnEscape
+
     header:TabBar {
         id: bar
         width: parent.width
@@ -40,7 +46,7 @@ Dialog{
         currentIndex: bar.currentIndex
         anchors.centerIn: parent
         Rectangle{
-            anchors.centerIn: parent
+            Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
             color: "white"
             border.width: 1
@@ -52,20 +58,12 @@ Dialog{
             }
 
         }
-
-        Item {
-            id: p
-        }
-        Item {
-            id: temp
-        }
         Rectangle{
-            anchors.centerIn: parent
+            Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
             color: "white"
             border.width: 1
-            QobsComponent{
-                anchors.centerIn: parent
+            RainComponent{
                 width: parent.width
                 height: parent.height *0.9
                 padding: 10
@@ -73,12 +71,36 @@ Dialog{
 
         }
         Rectangle{
-            anchors.centerIn: parent
+            Layout.alignment : Qt.AlignCenter
+            anchors.fill: parent
+            color: "white"
+            border.width: 1
+            TempComponent{
+                width: parent.width
+                height: parent.height *0.9
+                padding: 10
+            }
+
+        }
+
+        Rectangle{
+            Layout.alignment : Qt.AlignCenter
+            anchors.fill: parent
+            color: "white"
+            border.width: 1
+            QobsComponent{
+                width: parent.width
+                height: parent.height *0.9
+                padding: 10
+            }
+
+        }
+        Rectangle{
+            Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
             color: "white"
             border.width: 1
             ETPComponent{
-                anchors.centerIn: parent
                 width: parent.width
                 height: parent.height *0.9
                 padding: 10

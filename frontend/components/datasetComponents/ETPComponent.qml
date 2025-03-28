@@ -15,7 +15,7 @@ Column{
     property var columnMapping: ({})
     Connections {
         target: fileHandler
-        onDataDictChanged:{
+        function onDataDictChanged() {
             populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
                            "Calibration" : fileHandler.etpInfos["data_cal"],
                             "VDates" : fileHandler.datesInfos["data_val"],
@@ -78,38 +78,43 @@ Column{
 
     Dialog {
         id: dataErrorsDialog
-        title: "Erreurs détectées"
+        title: "❌ ERREURS DETECTEES !!!"
         standardButtons: Dialog.Ok
-        modal: true
         width: 400
         height: 300
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
 
         property var errors: etoManager.errors
 
-        ListView {
-            id: errorListView
-            model: dataErrorsDialog.errors
+        Rectangle{
             anchors.fill: parent
-            delegate: Item {
-                width: errorListView.width
-                height: 20
-                Rectangle {
-                    width: parent.width
-                    height: parent.height
-                    //color: "lightgray"
-                    border.color: "gray"
-                    Text {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        padding: 5
-                        text: modelData
-                        wrapMode: Text.WordWrap
+            border.width: 1
+            ListView {
+                id: errorListView
+                model: dataErrorsDialog.errors
+                anchors.fill: parent
+                delegate: Item {
+                    width: errorListView.width
+                    height: 20
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        //color: "lightgray"
+                        border.color: "gray"
+                        Text {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            padding: 5
+                            text: modelData
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }
-        }
-    }
 
+            }
+    }
     function cleanFilePath(filePath) {
         if (filePath.startsWith("file:///")) {
             return filePath.substring(8);
@@ -118,12 +123,17 @@ Column{
     }
 
     Dialog {
-            id: columnMappingDialog
-            title: "Mapping des colonnes"
-            modal: true
-            width: 800
-            height: 450
-            standardButtons: Dialog.Ok | Dialog.Cancel
+        id: columnMappingDialog
+        title: "MAPPING"
+        implicitWidth:  800
+        implicitHeight: 450
+        modal: true
+        popupType: Popup.Window
+        //topInset : 5
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        closePolicy : Popup.CloseOnEscape
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
 
             property var headers: etoManager.headers // En-têtes du fichier chargé
 
@@ -374,17 +384,6 @@ Column{
                     syncView: tableView
                     model: [ "Dates","ETP Calibration","Dates","ETP Validation"]
                     clip: true
-
-                    /*delegate: Rectangle {
-                         width: 70
-                         height: 20
-                         color: "#fafafa"
-                         Label {
-                             text: modelData
-                             anchors.centerIn: parent
-                             font.bold: true
-                         }
-                     }*/
                 }
 
                 VerticalHeaderView {

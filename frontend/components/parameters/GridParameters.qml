@@ -17,19 +17,22 @@ Rectangle {
         spacing: 10
         anchors.fill: parent
 
+
         // Sélecteur de méthode
         Label {
             id: methodSelector
             leftPadding: 10
-            width: 75
+            Layout.preferredWidth: parent.width
             text: methodName
+            Layout.alignment: Qt.AlignHCenter
+            font.bold: true
         }
 
         // Section pour les paramètres associés à la méthode sélectionnée
         GridLayout {
             id: parameterGrid
             width: parent.width
-            columns: 3 // Trois colonnes : label, min et max
+            columns: 3
             columnSpacing: 20
             rowSpacing: 5
 
@@ -45,6 +48,9 @@ Rectangle {
                     // Label pour chaque paramètre
                     Label {
                         text: modelData
+                        Layout.preferredWidth: 150
+                        leftPadding: 10
+
                     }
                 }
             }
@@ -72,7 +78,7 @@ Rectangle {
                             } else if (errors && errors.max && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
                                 return "red"; // min >= max
                             } else {
-                                return "gray"; // Valeur correcte
+                                return "gray";
                             }
                         }
                         border.width: 1

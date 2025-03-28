@@ -11,7 +11,7 @@ Column{
 
     Connections {
         target: etoManager
-        onComputationChanged:{
+        function onComputationChanged(){
             fileHandler.setEToValues(etoManager.etpComputed)
             populateTable(fileHandler.dataDict)
             console.log("Connexion ------------------------")
@@ -58,80 +58,61 @@ Column{
 
     Dialog {
         id: dataErrorsDialog
-        title: "Erreurs détectées"
+        title: "❌ ERREURS DETECTEES !!!"
         standardButtons: Dialog.Ok
-        modal: true
         width: 400
         height: 300
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
 
         property var errors: fileHandler.errors
 
-        ListView {
-            id: errorListView
-            model: dataErrorsDialog.errors
+        Rectangle{
             anchors.fill: parent
-            delegate: Item {
-                width: errorListView.width
-                height: 20
-                Rectangle {
-                    width: parent.width
-                    height: parent.height
-                    //color: "lightgray"
-                    border.color: "gray"
-                    Text {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        padding: 5
-                        text: modelData
-                        wrapMode: Text.WordWrap
+            border.width: 1
+            ListView {
+                id: errorListView
+                model: dataErrorsDialog.errors
+                anchors.fill: parent
+                delegate: Item {
+                    width: errorListView.width
+                    height: 30
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        //color: "lightgray"
+                        border.color: "gray"
+                        Text {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            padding: 5
+                            text: modelData
+                            wrapMode: Text.WordWrap
+                        }
                     }
                 }
             }
+
+            }
+        onAccepted:{
+            columnMappingDialog.open()
         }
     }
 
-    function cleanFilePath(filePath) {
-        if (filePath.startsWith("file:///")) {
-            return filePath.substring(8);
-        }
-        return filePath;
-    }
-
-    function populateTable(columnMapping) {
-        tableModel.clear();
-        const keys = ["Dates", "P", "T", "Q", "ETP"];
-
-        // Trouver la longueur maximale en une seule passe
-        const maxLength = keys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
-
-        // Remplir le modèle de données
-        for (let i = 0; i < maxLength; i++) {
-            let rowData = {};
-            keys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
-            tableModel.appendRow(rowData);
-        }
-    }
-
-    function transformData(data) {
-        tableModel.clear();
-        const keys = ["Dates", "P", "T", "Q", "ETP"];
-
-        // Trouver la longueur des tableaux
-        const length = data[keys[0]].length;
-
-        // Construction du tableau transformé
-        tableModel.rows =  Array.from({ length }, (_, i) =>
-            Object.fromEntries(keys.map(key => [key, data[key][i]]))
-        );
-    }
 
     Dialog {
             id: columnMappingDialog
-            title: "Mapping des colonnes"
+            title: "MAPPING"
+            implicitWidth:  600
+            implicitHeight: 400
             modal: true
-            width: 600
-            height: 400
+            popupType: Popup.Window
+            //topInset : 5
             standardButtons: Dialog.Ok | Dialog.Cancel
+            closePolicy : Popup.CloseOnEscape
+            x: Math.round((parent.width - width) / 2)
+            y: Math.round((parent.height - height) / 2)
+
 
             property var headers: fileHandler.headers // En-têtes du fichier chargé
 
@@ -159,7 +140,7 @@ Column{
                     /*dataTableModel.setData(fileHandler.dataDict)*/
                     //tableView.appendRow(fileHandler.displayData)
                     //transformData(fileHandler.dataDict)
-                    tempChart.updateChart()
+                    tempChart.updateChart(fileHandler.datesInfos["data"],fileHandler.tempInfos["data"])
                     qchart.updateChart(fileHandler.datesInfos["data"],fileHandler.qInfos["data"])
                     rainChart.updateChart(fileHandler.datesInfos["data"],fileHandler.pInfos["data"])
                     etpChart.updateChart(fileHandler.datesInfos["data"],fileHandler.etpInfos["data"])
@@ -168,75 +149,85 @@ Column{
 
             }
 
-            GridLayout {
-                height: parent.height
-                width: parent.width * 0.5
-                columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
-                columnSpacing: 10
-                rowSpacing: 10
+            Rectangle{
+                anchors.fill: parent
+                border.width: 1
 
-                // Ligne pour Dates
-                Label {
-                    text: "Dates"
-                    Layout.alignment: Qt.AlignRight
-                }
-                ComboBox {
-                    id: datesComboBox
-                    model: columnMappingDialog.headers
-                    currentIndex: 0
-                    Layout.fillWidth: true
-                }
+                GridLayout {
+                    height: parent.height
+                    width: parent.width * 0.5
+                    columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
+                    columnSpacing: 10
+                    rowSpacing: 10
 
-                // Ligne pour P
-                Label {
-                    text: "P"
-                    Layout.alignment: Qt.AlignRight
-                }
-                ComboBox {
-                    id: pComboBox
-                    model: columnMappingDialog.headers
-                    currentIndex: 0
-                    Layout.fillWidth: true
-                }
 
-                // Ligne pour T
-                Label {
-                    text: "T"
-                    Layout.alignment: Qt.AlignRight
-                }
-                ComboBox {
-                    id: tComboBox
-                    model: columnMappingDialog.headers
-                    currentIndex: 0
-                    Layout.fillWidth: true
-                }
+                    // Ligne pour Dates
+                    Label {
+                        text: "Dates"
+                        Layout.alignment: Qt.AlignRight
+                        leftPadding: 5
+                    }
+                    ComboBox {
+                        id: datesComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
 
-                // Ligne pour Q
-                Label {
-                    text: "Q"
-                    Layout.alignment: Qt.AlignRight
-                }
-                ComboBox {
-                    id: qComboBox
-                    model: columnMappingDialog.headers
-                    currentIndex: 0
-                    Layout.fillWidth: true
-                }
+                    // Ligne pour P
+                    Label {
+                        text: "P"
+                        Layout.alignment: Qt.AlignRight
+                    }
+                    ComboBox {
+                        id: pComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
 
-                // Ligne pour ETP
-                Label {
-                    text: "ETP"
-                    Layout.alignment: Qt.AlignRight
-                }
-                ComboBox {
-                    id: etpComboBox
-                    model: columnMappingDialog.headers
-                    currentIndex: 0
-                    Layout.fillWidth: true
+                    // Ligne pour T
+                    Label {
+                        text: "T"
+                        Layout.alignment: Qt.AlignRight
+                    }
+                    ComboBox {
+                        id: tComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
+                    // Ligne pour Q
+                    Label {
+                        text: "Q"
+                        Layout.alignment: Qt.AlignRight
+                    }
+                    ComboBox {
+                        id: qComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
+                    // Ligne pour ETP
+                    Label {
+                        text: "ETP"
+                        Layout.alignment: Qt.AlignRight
+                    }
+                    ComboBox {
+                        id: etpComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
                 }
 
             }
-        }
+
+
+    }
 
     Row {
         anchors.fill: parent
@@ -432,7 +423,8 @@ Column{
                         //anchors.centerIn: parent
                         border.width: 1
                         Column{
-                            anchors.fill: parent
+                            width: parent.width
+                            height: parent.height
 
                             Grid {
                                 id: grid
@@ -469,6 +461,41 @@ Column{
                 }
             }
         }
+    }
+
+    function cleanFilePath(filePath) {
+        if (filePath.startsWith("file:///")) {
+            return filePath.substring(8);
+        }
+        return filePath;
+    }
+
+    function populateTable(columnMapping) {
+        tableModel.clear();
+        const keys = ["Dates", "P", "T", "Q", "ETP"];
+
+        // Trouver la longueur maximale en une seule passe
+        const maxLength = keys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
+
+        // Remplir le modèle de données
+        for (let i = 0; i < maxLength; i++) {
+            let rowData = {};
+            keys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
+            tableModel.appendRow(rowData);
+        }
+    }
+
+    function transformData(data) {
+        tableModel.clear();
+        const keys = ["Dates", "P", "T", "Q", "ETP"];
+
+        // Trouver la longueur des tableaux
+        const length = data[keys[0]].length;
+
+        // Construction du tableau transformé
+        tableModel.rows =  Array.from({ length }, (_, i) =>
+            Object.fromEntries(keys.map(key => [key, data[key][i]]))
+        );
     }
 
 }

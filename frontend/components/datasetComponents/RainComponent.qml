@@ -14,25 +14,15 @@ Column{
     Connections {
         target: fileHandler
         function onDataDictChanged() {
-            populateTable({
-                "CDates": fileHandler.datesInfos["data_cal"],
-                "Calibration": fileHandler.qInfos["data_cal"],
-                "VDates": fileHandler.datesInfos["data_val"],
-                "Validation": fileHandler.qInfos["data_val"]
-            });
-
-            qCalibrationChart.updateChart(
-                fileHandler.datesInfos["data_cal"],
-                fileHandler.qInfos["data_cal"]
-            );
-
-            qValidationChart.updateChart(
-                fileHandler.datesInfos["data_val"],
-                fileHandler.qInfos["data_val"]
-            );
+            populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
+                           "Calibration" : fileHandler.pInfos["data_cal"],
+                            "VDates" : fileHandler.datesInfos["data_val"],
+                            "Validation" : fileHandler.pInfos["data_val"]
+                          })
+            pCalibrationChart.updateChart(fileHandler.datesInfos["data_cal"],fileHandler.pInfos["data_cal"])
+            pValidationChart.updateChart(fileHandler.datesInfos["data_val"],fileHandler.pInfos["data_val"])
         }
     }
-
 
     function populateTable(columnMapping) {
         tableModel.clear();
@@ -58,38 +48,6 @@ Column{
             width: parent.width * 0.3 - parent.spacing
             height: parent.height
             spacing: 5
-            ColumnLayout {
-                width: parent.width
-                height : parent.height * 0.2
-                spacing: 10
-                GroupBox {
-                    title: "Options d'unité"
-                    Layout.fillWidth: true
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        spacing: 10
-
-                        TextField {
-                            id: textField
-                            Layout.fillWidth: true
-                            placeholderText: "Superficie du bassin "
-                        }
-
-                        ComboBox {
-                            id: comboBox
-                            Layout.fillWidth: true
-                            model: ["mm/j","l/s", "m3/h", "m3/s"]
-                        }
-
-                        Button{
-                            text: "Convertir"
-                            Layout.alignment: Qt.AlignRight
-
-                        }
-                    }
-                }
-            }
 
             Rectangle{
                 width: parent.width
@@ -101,7 +59,7 @@ Column{
                     anchors.left: tableView.left
                     anchors.top: parent.top
                     syncView: tableView
-                    model: [ "Dates","Q Calibration","Dates","Q Validation"]
+                    model: [ "Dates","P Calibration","Dates","P Validation"]
                     clip: true
 
                     /*delegate: Rectangle {
@@ -204,11 +162,11 @@ Column{
                                 height: parent.height *0.3
                                 padding: 5
                                 statistics: {
-                                    "min" : fileHandler.qInfos["min_cal"],
-                                    "max" : fileHandler.qInfos["max_cal"],
-                                    "mean" : fileHandler.qInfos["mean_cal"],
-                                    "sum" : fileHandler.qInfos["sum_cal"],
-                                    "std" : fileHandler.qInfos["std_cal"]
+                                    "min" : fileHandler.pInfos["min_cal"],
+                                    "max" : fileHandler.pInfos["max_cal"],
+                                    "mean" : fileHandler.pInfos["mean_cal"],
+                                    "sum" : fileHandler.pInfos["sum_cal"],
+                                    "std" : fileHandler.pInfos["std_cal"]
                                 }
                                 periodLabel : "CALIBRATION"
                             }
@@ -218,11 +176,11 @@ Column{
                                 height: parent.height *0.3
                                 padding: 5
                                 statistics: {
-                                    "min" : fileHandler.qInfos["min_val"],
-                                    "max" : fileHandler.qInfos["max_val"],
-                                    "mean" : fileHandler.qInfos["mean_val"],
-                                    "sum" : fileHandler.qInfos["sum_val"],
-                                    "std" : fileHandler.qInfos["std_val"]
+                                    "min" : fileHandler.pInfos["min_val"],
+                                    "max" : fileHandler.pInfos["max_val"],
+                                    "mean" : fileHandler.pInfos["mean_val"],
+                                    "sum" : fileHandler.pInfos["sum_val"],
+                                    "std" : fileHandler.pInfos["std_val"]
                                 }
                                 periodLabel : "VALIDATION"
                             }
@@ -232,11 +190,11 @@ Column{
                                 height: parent.height *0.3
                                 padding: 5
                                 statistics: {
-                                    "min" : fileHandler.qInfos["min"],
-                                    "max" : fileHandler.qInfos["max"],
-                                    "mean" : fileHandler.qInfos["mean"],
-                                    "sum" : fileHandler.qInfos["sum"],
-                                    "std" : fileHandler.qInfos["std"]
+                                    "min" : fileHandler.pInfos["min"],
+                                    "max" : fileHandler.pInfos["max"],
+                                    "mean" : fileHandler.pInfos["mean"],
+                                    "sum" : fileHandler.pInfos["sum"],
+                                    "std" : fileHandler.pInfos["std"]
                                 }
                                 periodLabel : "SERIES"
                             }
@@ -260,18 +218,18 @@ Column{
                             rowSpacing: 0
                             columnSpacing: 0
 
-                            QobsChart{
-                                id : qCalibrationChart
+                            RainChart{
+                                id : pCalibrationChart
                                 Layout.preferredWidth: parent.width / 2
                                 Layout.preferredHeight:parent.height
-                                chartName : "Q Calibration"
+                                chartName : "Rainfall Calibration"
 
                             }
-                            QobsChart{
-                                id : qValidationChart
+                            RainChart{
+                                id : pValidationChart
                                 Layout.preferredWidth: parent.width / 2
                                 Layout.preferredHeight:parent.height
-                                chartName : "Q Validation"
+                                chartName : "Rainfall Validation"
                             }
 
                         }

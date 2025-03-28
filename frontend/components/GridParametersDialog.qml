@@ -7,58 +7,65 @@ import io.qml
 
 Dialog {
     title: "OPTIMIZATION"
+    implicitWidth:  1300
+    implicitHeight: 700
     modal: true
-    width: 1300
-    height: 700
+    popupType: Popup.Window
+    topInset : 5
     standardButtons: Dialog.Ok | Dialog.Cancel
+    closePolicy : Popup.CloseOnEscape
     padding: 5
 
-    /*ScrollView {
-        id: productionColumn
-        contentWidth: -1 // Désactiver la gestion automatique de la largeur
-        height: parent.height * 0.8
-        width: parent.width *0.25
-        */
+    ScrollView {
+        id: scrollView
+        width: parent.width *0.6
+        height: parent.height
+        clip: true
 
-        /*ColumnLayout {
-            id: contentColumn
-            spacing: 10
-            Layout.preferredWidth: parent.width *0.25
-            Layout.preferredHeight:  parent.height
+        ColumnLayout {
+            width: parent.width
+            height: parent.height
+
             Repeater {
-                model: ["Holtan", "SCS"] // Liste des méthodes à afficher
+                id: factoryRepeater
+                model: [
+                    factoryManager.productionMethods,
+                    factoryManager.recessionMethods,
+                    factoryManager.routingMethods,
+                    factoryManager.initialLossMethods
+                ]
+                property var factoryNames: ["Production", "Recession", "Routing", "InitialLoss"]
 
-                delegate: GridParameters {
-                    width: parent.width // Prendre toute la largeur disponible
-                    height: childrenRect.height // Hauteur implicite basée sur le contenu
-                    parameterModel: GridParametersQML{} // Passer le modèle
-                    factoryName: "Production" // Nom de la factory
-                    methodName: modelData // Nom de la méthode
-                    border.width: 1
+                delegate: Row {
+                    id: contentColumn
+                    width: parent.width * 0.25
+                    clip: true
+
+                    property string factoryName: factoryRepeater.factoryNames[model.index]
+                    property var methodsList: modelData  // Liste des méthodes pour cette catégorie
+
+                    /*Label {
+                        text: factoryName + " Methods"
+                        font.bold: true
+                        font.pointSize: 12
+                        padding: 5
+                        color: "black"
+                        horizontalAlignment: Qt.AlignHCenter
+                    }*/
+                    Repeater {
+                        model: methodsList
+
+                        delegate: GridParameters {
+                            width: 400
+                            height: 150
+                            parameterModel: GridParametersQML{}
+                            factoryName: contentColumn.factoryName
+                            methodName: modelData
+                            border.width: 1
+                        }
+                    }
                 }
             }
-        }*/
-    //}
-    ColumnLayout{
-        spacing: 10
-        Layout.preferredWidth: parent.width *0.25
-        Layout.preferredHeight:  parent.height
-        GridParameters {
-            width: parent.width // Prendre toute la largeur disponible
-            height: childrenRect.height // Hauteur implicite basée sur le contenu
-            parameterModel: GridParametersQML{} // Passer le modèle
-            factoryName: "Production" // Nom de la factory
-            methodName: "Horton" // Nom de la méthode
-            border.width: 1
-        }
-        GridParameters {
-            width: parent.width // Prendre toute la largeur disponible
-            height: childrenRect.height // Hauteur implicite basée sur le contenu
-            parameterModel: GridParametersQML{} // Passer le modèle
-            factoryName: "Production" // Nom de la factory
-            methodName: "SCS" // Nom de la méthode
-            border.width: 1
         }
     }
-
 }

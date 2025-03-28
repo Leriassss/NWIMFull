@@ -4,8 +4,10 @@ from backend.factory.RoutingFactory import RoutingFactory
 from backend.factory.InitialLossFactory import InitialLossFactory
 from backend.factory.OptimizationFactory import OptimizationFactory
 
-class FactoryManager:
-    """Gère la sélection et l'instanciation des différentes factories."""
+from PySide6.QtCore import QObject, Signal, Slot, Property
+
+
+class FactoryManager(QObject):
 
     factories = {
         "Production": ProductionFactory,
@@ -14,6 +16,30 @@ class FactoryManager:
         "InitialLoss": InitialLossFactory,
         "Optimization" : OptimizationFactory
     }
+
+
+    def getFactoryMethods(self, factory_name):
+        current_factory = FactoryManager.get_factory(factory_name)
+        return current_factory.getMethodKeys()
+
+
+    @Property(list, constant = True)
+    def productionMethods(self):
+        return self.getFactoryMethods("Production")
+
+    @Property(list, constant = True)
+    def recessionMethods(self):
+        print("----------------------------REC-------------------")
+        print(self.getFactoryMethods("Recession"))
+        return self.getFactoryMethods("Recession")
+
+    @Property(list, constant = True)
+    def initialLossMethods(self):
+        return self.getFactoryMethods("InitialLoss")
+
+    @Property(list, constant = True)
+    def routingMethods(self):
+        return self.getFactoryMethods("Routing")
 
     @classmethod
     def get_factory(cls, factory_name):

@@ -22,6 +22,8 @@
         "frontend/components/datasetComponents/QobsComponent.qml",
         "frontend/components/datasetComponents/StatisticsComponent.qml",
         "frontend/components/datasetComponents/ETPComponent.qml",
-        "api/load_data/EToManager.py"
+        "api/load_data/EToManager.py",
+        "frontend/components/datasetComponents/TempComponent.qml",
+        "frontend/components/datasetComponents/RainComponent.qml"
     ]
 }

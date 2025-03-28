@@ -44,16 +44,20 @@ Rectangle {
 
     }
     function updateChart(dates, etp_series) {
-        seriesETP.clear();
-        etpChart.minDate = dates[0]
-        etpChart.maxDate = dates[dates.length-1]
-        etpChart.minValue = Math.min(...etp_series)
-        etpChart.maxValue = Math.max(...etp_series)
+        if(etp_series){
+            console.log("---- qseries")
+            console.log(etp_series)
+            seriesETP.clear();
+            etpChart.minDate = dates[0]
+            etpChart.maxDate = dates[dates.length-1]
+            etpChart.minValue = Math.min(...etp_series)
+            etpChart.maxValue = Math.max(...etp_series)
 
-        for (var i = 0; i < dates.length; i++) {
-            var x = new Date(dates[i]);
-            if (etp_series && i < etp_series.length) {
-                seriesETP.append(x.getTime(), etp_series[i]);
+            for (var i = 0; i < dates.length; i++) {
+                var x = new Date(dates[i]);
+                if (etp_series && i < etp_series.length) {
+                    seriesETP.append(x.getTime(), etp_series[i]);
+                }
             }
         }
     }

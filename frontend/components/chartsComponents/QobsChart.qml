@@ -36,24 +36,29 @@ Rectangle {
 
         LineSeries {
             id: seriesQ
-            name: chartName
+            name: "Q"
             axisX: daxisX
             axisY: vaxisY
         }
     }
 
     function updateChart(dates, q_series) {
-        seriesQ.clear();
-        qobsChart.minDate = dates[0]
-        qobsChart.maxDate = dates[dates.length-1]
-        qobsChart.minValue = Math.min(...q_series)
-        qobsChart.maxValue = Math.max(...q_series)
+        if(q_series){
+            console.log("---- qseries")
+            console.log(q_series)
+            seriesQ.clear();
+            qobsChart.minDate = dates[0]
+            qobsChart.maxDate = dates[dates.length-1]
+            qobsChart.minValue = Math.min(...q_series)
+            qobsChart.maxValue = Math.max(...q_series)
 
-        for (var i = 0; i < dates.length; i++) {
-            var x = new Date(dates[i]);
-            if (q_series && i < q_series.length) {
-                seriesQ.append(x.getTime(), q_series[i]);
+            for (var i = 0; i < dates.length; i++) {
+                var x = new Date(dates[i]);
+                if (q_series && i < q_series.length) {
+                    seriesQ.append(x.getTime(), q_series[i]);
+                }
             }
         }
+
     }
 }

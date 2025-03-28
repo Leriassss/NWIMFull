@@ -8,6 +8,5 @@ import Qt.labs.platform
         fileMode: FileDialog.OpenFile
         nameFilters: ["Excel (*.xlsx)","Texte (*.txt)"]
 
-
     }
 
