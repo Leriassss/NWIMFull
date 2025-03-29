@@ -6,7 +6,7 @@ import "./parameters"
 import io.qml
 
 Dialog {
-    title: "OPTIMIZATION"
+    title: "GRID OPTIMIZATION"
     implicitWidth:  1300
     implicitHeight: 700
     modal: true
@@ -16,56 +16,132 @@ Dialog {
     closePolicy : Popup.CloseOnEscape
     padding: 5
 
-    ScrollView {
-        id: scrollView
-        width: parent.width *0.6
+    Row{
+        width: parent.width
         height: parent.height
-        clip: true
-
-        ColumnLayout {
-            width: parent.width
+        spacing: 10
+        Column{
+            width: parent.width *0.7
             height: parent.height
+            //border.width: 1
+            Label{
+                width: parent.width
+                height: parent.height * 0.1
+                text: "Methods For Grid"
+                font.bold: true
+                font.pointSize: 12
+                padding: 5
+                color: "black"
+                horizontalAlignment: Qt.AlignHCenter
+                background: Rectangle {
+                    anchors.fill: parent
+                    border.width: 1
+                }
+            }
+            ScrollView {
+                id: scrollView
+                width: parent.width
+                height: parent.height * 0.9
+                clip: true
 
-            Repeater {
-                id: factoryRepeater
-                model: [
-                    factoryManager.productionMethods,
-                    factoryManager.recessionMethods,
-                    factoryManager.routingMethods,
-                    factoryManager.initialLossMethods
-                ]
-                property var factoryNames: ["Production", "Recession", "Routing", "InitialLoss"]
+                ColumnLayout {
+                    width: parent.width
+                    height: parent.height
+                    spacing: 20
 
-                delegate: Row {
-                    id: contentColumn
-                    width: parent.width * 0.25
-                    clip: true
-
-                    property string factoryName: factoryRepeater.factoryNames[model.index]
-                    property var methodsList: modelData  // Liste des méthodes pour cette catégorie
-
-                    /*Label {
-                        text: factoryName + " Methods"
-                        font.bold: true
-                        font.pointSize: 12
-                        padding: 5
-                        color: "black"
-                        horizontalAlignment: Qt.AlignHCenter
-                    }*/
                     Repeater {
-                        model: methodsList
+                        id: factoryRepeater
+                        model: [
+                            factoryManager.productionMethods,
+                            factoryManager.recessionMethods,
+                            factoryManager.routingMethods,
+                            factoryManager.initialLossMethods
+                        ]
+                        property var factoryNames: ["Production", "Recession", "Routing", "InitialLoss"]
 
-                        delegate: GridParameters {
-                            width: 400
-                            height: 150
-                            parameterModel: GridParametersQML{}
-                            factoryName: contentColumn.factoryName
-                            methodName: modelData
-                            border.width: 1
+                        delegate: Column {
+                            id: contentColumn
+                            width: parent.width
+                            clip: true
+                            spacing: 5
+
+                            property string factoryName: factoryRepeater.factoryNames[model.index]
+                            property var methodsList: modelData  // Liste des méthodes pour cette catégorie
+
+                            Label {
+                                text: factoryName + " Methods"
+                                font.bold: true
+                                font.pointSize: 12
+                                padding: 5
+                                color: "black"
+                                horizontalAlignment: Qt.AlignHCenter
+                            }
+                            Grid {
+                                width: 1500
+                                spacing: 10
+                                columns: 3
+                                columnSpacing: 20
+                                rowSpacing: 5
+                                Repeater {
+                                    model: methodsList
+
+                                    delegate: GridParameters {
+                                        width: 350
+                                        height: 150
+                                        parameterModel: GridParametersQML{}
+                                        factoryName: contentColumn.factoryName
+                                        methodName: modelData
+                                        border.width: 1
+                                    }
+                                }
+
+                            }
+
                         }
                     }
                 }
             }
+
+
+        }
+
+        Column{
+            width: parent.width *0.3 - parent.spacing
+            height: parent.height
+            Label{
+                width: parent.width
+                height: parent.height * 0.1
+                text: "OPTIMIZATORS"
+                font.bold: true
+                font.pointSize: 12
+                padding: 5
+                color: "black"
+                horizontalAlignment: Qt.AlignHCenter
+                background: Rectangle {
+                    anchors.fill: parent
+                    border.width: 1
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: parent.height * 0.9
+                border.width: 1
+                Column{
+                    width: parent.width
+                    height: parent.height
+                    Parameters{
+                        height: parent.height
+                        width: parent.width
+                        parameterModel : TestQML{}
+                        factoryName : "Optimization"
+                    }
+
+                }
+
+            }
+
         }
     }
+
+
 }

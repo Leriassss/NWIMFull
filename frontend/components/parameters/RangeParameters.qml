@@ -65,27 +65,26 @@ ScrollView {
             Repeater {
                 model: Object.keys(parameterModel.parameters)
 
-                delegate: TextField {
+                delegate:TextField {
                     Layout.column: 1
                     Layout.row: index
                     Layout.preferredWidth: 100
                     Layout.alignment: Qt.AlignRight
-                    text: parameterModel.parameters[modelData][0]
-                    onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1])
+                    text: parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0] : ""
+
+                    onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : "")
+
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
                     }
+
                     background: Rectangle {
                         color: "white"
                         border.color: {
                             let errors = parameterModel.parameterErrors[modelData];
-                            if (errors && errors.min) {
-                                return "red"; // Erreur sur min
-                            } else if (errors && errors.max && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
-                                return "red"; // min >= max
-                            } else {
-                                return "gray"; // Valeur correcte
-                            }
+                            console.log("--------------- ERRORS --------------------------")
+                            console.log(JSON.stringify(errors))
+                            return (errors && errors.min) ? "red" : "gray";
                         }
                         border.width: 1
                     }
@@ -101,26 +100,24 @@ ScrollView {
                     Layout.row: index
                     Layout.preferredWidth: 100
                     Layout.alignment: Qt.AlignRight
-                    text: parameterModel.parameters[modelData][1]
-                    onTextChanged: parameterModel.updateParameter(modelData, parameterModel.parameters[modelData][0], text)
+                    text: parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : ""
+
+                    onTextChanged: parameterModel.updateParameter(modelData, parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0] : "", text)
+
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
                     }
+
                     background: Rectangle {
                         color: "white"
                         border.color: {
                             let errors = parameterModel.parameterErrors[modelData];
-                            if (errors && errors.max) {
-                                return "red"; // Erreur sur max
-                            } else if (errors && errors.min && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
-                                return "red"; // min >= max
-                            } else {
-                                return "gray"; // Valeur correcte
-                            }
+                            return (errors && errors.max) ? "red" : "gray";
                         }
                         border.width: 1
                     }
                 }
+
             }
 
         }

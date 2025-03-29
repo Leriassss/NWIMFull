@@ -100,11 +100,11 @@
                             },
                             {
                                 "name": "a2",
-                                "type": "float"
+                                "type": "QString"
                             },
                             {
                                 "name": "a3",
-                                "type": "float"
+                                "type": "QString"
                             }
                         ],
                         "returnType": "void"

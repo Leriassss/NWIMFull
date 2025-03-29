@@ -59,8 +59,8 @@ Module {
         Method {
             name: "updateParameter"
             Parameter { name: "a1"; type: "QString" }
-            Parameter { name: "a2"; type: "float" }
-            Parameter { name: "a3"; type: "float" }
+            Parameter { name: "a2"; type: "QString" }
+            Parameter { name: "a3"; type: "QString" }
         }
     }
 }

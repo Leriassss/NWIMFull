@@ -48,7 +48,7 @@ Rectangle {
                     // Label pour chaque paramètre
                     Label {
                         text: modelData
-                        Layout.preferredWidth: 150
+                        Layout.preferredWidth: 70
                         leftPadding: 10
 
                     }
