@@ -18,13 +18,20 @@ class RangeParametersQML(QObject):
         self._factory = None
         self._current_method = None
         self._parameters = {}
-        self._methods = []
         self._parameterErrors = {}
+        self._methods = []
+
 
     @Property('QVariant', notify=methodChanged)
     def availableMethods(self):
         """Retourne la liste des méthodes disponibles pour la factory actuelle."""
         return self._methods
+
+    @Property('QVariant', notify=parameterErrorChanged)
+    def parameterErrors(self):
+        """Retourne les erreurs de validation pour chaque paramètre."""
+        return self._parameterErrors
+
 
     @Property('QVariant', notify=parametersChanged)
     def parameterNames(self):
@@ -35,11 +42,6 @@ class RangeParametersQML(QObject):
     def parameters(self):
         """Retourne les paramètres sous forme de range {'param': [min, max]}."""
         return self._parameters
-
-    @Property('QVariant', notify=parameterErrorChanged)
-    def parameterErrors(self):
-        """Retourne les erreurs de validation pour chaque paramètre."""
-        return self._parameterErrors
 
     @Slot(str)
     def setFactory(self, factory_name):
@@ -69,53 +71,64 @@ class RangeParametersQML(QObject):
         # Récupération des valeurs par défaut
         default_values = self._factory.getModelParameters(method_name)
         self._parameters = {key: [None,None] for key in default_values}
+        self._parameterErrors = {key: {"min":True,"max":True} for key in default_values}
 
         self.methodChanged.emit()
         self.parametersChanged.emit()
 
+    def safe_convert(self,value):
+        """Convertit une chaîne en float si possible, sinon retourne None."""
+        try:
+            return float(value) if value.strip() else None
+        except ValueError:
+            return None
 
     @Slot(str, str, str)
     def updateParameter(self, key, min_value, max_value):
         """Met à jour un paramètre avec min et max en gérant les erreurs dynamiquement."""
-        # Convertir les valeurs en flottant si possible, sinon None
-        try:
-            min_value = float(min_value) if min_value.strip() != "" else None
-        except ValueError:
-            min_value = None
-            error_min = "Champ vide"
-        try:
-            max_value = float(max_value) if max_value.strip() != "" else None
-        except ValueError:
-            max_value = None
-            error_max = "Champ vide"
-
-
-        print("------------UP")
-        print(key, min_value, max_value)
-
-        # Initialisation des erreurs
-        error_min, error_max = "", ""
-
         if key in self._parameters:
-            # Vérification que min < max uniquement si les deux valeurs sont renseignées
-            if min_value is not None and max_value is not None and min_value >= max_value:
-                error_min = "La valeur minimale doit être inférieure à la valeur maximale."
-
+            # Conversion sécurisée des valeurs
+            min_value = self.safe_convert(min_value)
+            max_value = self.safe_convert(max_value)
             model = self._factory.getModel(self._current_method)
 
-            # Validation individuelle des valeurs si elles existent
-            error_min = "Champ obligatoire" if min_value is None else model.validate_parameter(key, min_value)
-            error_max = "Champ obligatoire" if max_value is None else model.validate_parameter(key, max_value)
+            # Validation individuelle des valeurs
+            min_error = False if model.validate_parameter(key, min_value) == True else True
+            max_error = False if model.validate_parameter(key, max_value) == True else True
 
-            # Mise à jour des paramètres
+            if min_error or max_error :
+                self._parameterErrors[key] = {
+                     "min": min_error,
+                     "max": max_error
+                }
+                self.parameterErrorChanged.emit()
+                return
+
+            min_error = True if min_value is None else False
+            max_error = True if max_value is None else False
+
+            if min_error or max_error :
+                self._parameterErrors[key] = {
+                     "min": min_error,
+                     "max": max_error
+                }
+                self.parameterErrorChanged.emit()
+                return
+
+            if min_value >= max_value:
+                self._parameterErrors[key] = {
+                     "min": True,
+                     "max": max_error
+                }
+                self.parameterErrorChanged.emit()
+                return
+
+            # Mise à jour du paramètre
             self._parameters[key] = [min_value, max_value]
-
-            # Stockage des erreurs pour affichage
-            self._parameterErrors[key] = {
-                "min": error_min if error_min is not True else "",
-                "max": error_max if error_max is not True else ""
-            }
-
-            # Émission des signaux
+            # Émission des signaux finaux après mise à jour
             self.parametersChanged.emit()
+            self._parameterErrors[key] = {
+                 "min": False,
+                 "max": False
+            }
             self.parameterErrorChanged.emit()

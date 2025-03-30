@@ -51,5 +51,5 @@ class ChapmanModel:
             if key == "alpha" and not (0 < value <= 1):
                 raise ValueError("Le paramètre 'alpha' doit être un nombre entre 0 et 1.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

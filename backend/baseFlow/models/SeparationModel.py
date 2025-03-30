@@ -49,5 +49,5 @@ class SeparationModel:
             if key == "lambda" and value <= 0:
                 raise ValueError("Le paramètre 'lambda' doit être un nombre positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

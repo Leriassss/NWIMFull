@@ -49,5 +49,5 @@ class HUNModel:
             elif key == "time_base" and not isinstance(value, int) or value <= 0:
                 raise ValueError("Le paramètre 'time_base' doit être un entier strictement positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

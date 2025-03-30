@@ -39,5 +39,5 @@ class LHCModel:
                 if value <= 0:
                     raise ValueError("n_samples doit être un entier positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

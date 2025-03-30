@@ -48,5 +48,5 @@ class PhiModel:
 
             return True  # Si aucune erreur, le paramètre est valide
 
-        except ValueError as e:
+        except Exception as e:
             return str(e)  # Retourne le message d'erreur

@@ -17,6 +17,7 @@ class TestQML(QObject):
         self._parameters = {}
         self._methods =[]
         self._parameterErrors = {}
+        self._keys = []
 
     @Property('QVariant', notify=parametersChanged)
     def availableMethods(self):
@@ -56,27 +57,34 @@ class TestQML(QObject):
         method_name = self._methods[int(index)]
         if method_name in self._factory.methods:
             self._current_method =  method_name
-            self._parameters = {key: None for key in self._factory.getModelParameters(method_name)}
+            self._keys = self._factory.getModelParameters(method_name)
+            self._parameters = {key: None for key in self._keys}
             self.methodChanged.emit()
             self.parametersChanged.emit()
 
     @Slot(str, str)
     def updateParameter(self, key, value):
-        """Met à jour un paramètre et applique la validation."""
-        self._parameters[key] = value
-        model = self._factory.getModel(self._current_method)
+        if key in self._keys:
+            """Met à jour un paramètre et applique la validation."""
+            self._parameters[key] = value
+            model = self._factory.getModel(self._current_method)
 
-        validation_result = model.validate_parameter(key, value)
+            validation_result = model.validate_parameter(key, value)
 
-        if validation_result is True:
-            self._parameterErrors[key] = ""  # Pas d'erreur
-        else:
-            self._parameterErrors[key] = validation_result  # Stocke l'erreur
+            print("---------------------UP")
+            print(self._parameters)
+            print(self._current_method)
+            print(validation_result)
 
-            print(f"Validation pour {key}: {validation_result}")
+            if validation_result is True:
+                self._parameterErrors[key] = ""  # Pas d'erreur
+            else:
+                self._parameterErrors[key] = validation_result  # Stocke l'erreur
 
-        self.parametersChanged.emit()
-        self.parameterErrorChanged.emit()
+                print(f"Validation pour {key}: {validation_result}")
+
+            self.parametersChanged.emit()
+            self.parameterErrorChanged.emit()
 
     @Property('QVariant', notify=parameterErrorChanged)
     def parameterErrors(self):

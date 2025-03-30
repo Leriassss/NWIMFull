@@ -68,5 +68,5 @@ class IaLossModel:
                 if value < 0:
                     raise ValueError("Le paramètre 'loss_days' doit être positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

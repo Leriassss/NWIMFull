@@ -52,6 +52,6 @@ class HortonModel:
             elif key == "i_a" and not (0 < value <= 1):
                 raise ValueError("Le paramètre 'i_a' doit être compris entre 0 et 1.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)
 

@@ -34,5 +34,5 @@ class WMinModel:
             if key == "w" and (value <= 0 or value > 1):
                 raise ValueError("Le coefficient de ruissellement doit être compris entre 0 et 1.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

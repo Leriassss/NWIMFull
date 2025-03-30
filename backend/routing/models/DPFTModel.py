@@ -56,5 +56,5 @@ class DPFTModel:
             else:
                 raise ValueError(f"Paramètre inconnu: {key}")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

@@ -52,5 +52,5 @@ class PhilipModel:
             elif key == "K" and value <= 0:
                 raise ValueError("Le paramètre 'K' doit être strictement positif.")
             return True  # Si aucune erreur, le paramètre est valide
-        except ValueError as e:
+        except Exception as e:
             return str(e)  # Retourne le message d'erreur

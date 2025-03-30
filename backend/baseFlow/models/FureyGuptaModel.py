@@ -57,5 +57,5 @@ class FureyGuptaModel:
             elif key == "cs_over_c" and value <= 0:
                 raise ValueError("Le paramètre 'cs_over_c' doit être un nombre positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

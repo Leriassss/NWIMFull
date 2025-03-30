@@ -50,5 +50,5 @@ class PLossModel:
             if key == "p" and (value < 0 or value >= 1):
                 raise ValueError("Le paramètre 'p' doit être compris entre 0 et 1.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

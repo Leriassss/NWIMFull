@@ -67,8 +67,12 @@ ScrollView {
 
                     // Zone de texte pour la saisie des valeurs
                     TextField {
+                        id : param_value
+                        property string modelName: parameterModel.parameterNames[modelData]
                         text: parameterModel.parameters[modelData]
-                        onTextChanged: parameterModel.updateParameter(modelData, text)
+                        onTextChanged: {
+                            parameterModel.updateParameter(modelName, text)
+                        }
                         Layout.preferredWidth: 100 // Largeur fixe pour les TextField
                         Layout.alignment: Qt.AlignRight
                         validator: DoubleValidator {
@@ -79,7 +83,9 @@ ScrollView {
                         // Gestion de l'erreur de validation (bordure rouge en cas d'erreur)
                         background: Rectangle {
                             color: "white"
-                            border.color: parameterModel.parameterErrors[modelData] !== "" ? "red" : "gray"
+                            border.color: {
+                                parameterModel.parameterErrors[param_value.modelName] !== "" ? "red" : "gray"
+                            }
                             border.width: 1
                         }
                     }

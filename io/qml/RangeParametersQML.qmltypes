@@ -22,11 +22,19 @@ Module {
             isReadonly: true
         }
         Property {
+            name: "parameterErrors"
+            type: "QVariant"
+            read: "parameterErrors"
+            notify: "parameterErrorChanged"
+            index: 1
+            isReadonly: true
+        }
+        Property {
             name: "parameterNames"
             type: "QVariant"
             read: "parameterNames"
             notify: "parametersChanged"
-            index: 1
+            index: 2
             isReadonly: true
         }
         Property {
@@ -34,14 +42,6 @@ Module {
             type: "QVariant"
             read: "parameters"
             notify: "parametersChanged"
-            index: 2
-            isReadonly: true
-        }
-        Property {
-            name: "parameterErrors"
-            type: "QVariant"
-            read: "parameterErrors"
-            notify: "parameterErrorChanged"
             index: 3
             isReadonly: true
         }

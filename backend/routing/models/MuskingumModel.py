@@ -74,5 +74,5 @@ class MuskingumModel:
             elif key == "dt" and value <= 0:
                 raise ValueError("Le paramètre 'dt' doit être strictement positif.")
             return True
-        except ValueError as e:
+        except Exception as e:
             return str(e)

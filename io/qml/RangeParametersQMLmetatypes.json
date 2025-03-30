@@ -26,25 +26,25 @@
                         "notify": "methodChanged"
                     },
                     {
-                        "name": "parameterNames",
+                        "name": "parameterErrors",
                         "type": "QVariant",
                         "index": 1,
+                        "read": "parameterErrors",
+                        "notify": "parameterErrorChanged"
+                    },
+                    {
+                        "name": "parameterNames",
+                        "type": "QVariant",
+                        "index": 2,
                         "read": "parameterNames",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameters",
                         "type": "QVariant",
-                        "index": 2,
+                        "index": 3,
                         "read": "parameters",
                         "notify": "parametersChanged"
-                    },
-                    {
-                        "name": "parameterErrors",
-                        "type": "QVariant",
-                        "index": 3,
-                        "read": "parameterErrors",
-                        "notify": "parameterErrorChanged"
                     }
                 ],
                 "signals": [

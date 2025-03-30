@@ -8,12 +8,16 @@ import io.qml
 
 Dialog {
     title: "OPTIMIZATION"
+    implicitWidth:  1000
+    implicitHeight: 700
     modal: true
-    width: 1000
-    height: 700
+    popupType: Popup.Window
+    topInset : 5
     standardButtons: Dialog.Ok | Dialog.Cancel
+    closePolicy : Popup.CloseOnEscape
     padding: 5
-
+    x: Math.round((parent.width - width) / 2)
+    y: Math.round((parent.height - height) / 2)
 
     Rectangle {
         anchors.fill: parent

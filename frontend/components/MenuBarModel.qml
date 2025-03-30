@@ -27,14 +27,13 @@ MenuBar {
     Menu {
         title: qsTr("&Optimization")
         Action {
-            text: qsTr("Sim")
+            text: qsTr("Algorithms")
             onTriggered: gapTriggered()
         }
         Action {
             text: qsTr("&Grid Optimization")
             onTriggered: gridTriggered()
         }
-        Action { text: qsTr("&LatinHypercube Optimization") }
     }
     Menu {
         title: qsTr("&Regression")

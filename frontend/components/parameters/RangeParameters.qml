@@ -82,8 +82,6 @@ ScrollView {
                         color: "white"
                         border.color: {
                             let errors = parameterModel.parameterErrors[modelData];
-                            console.log("--------------- ERRORS --------------------------")
-                            console.log(JSON.stringify(errors))
                             return (errors && errors.min) ? "red" : "gray";
                         }
                         border.width: 1
