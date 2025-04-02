@@ -1,17 +1,9 @@
-from backend.initialLoss.AmountLoss import AmountLoss, AmountLossModel
 from backend.initialLoss.EToLoss import EToLoss, EToLossModel
-from backend.initialLoss.IaLoss import IaLoss, IaLossModel
-from backend.initialLoss.NoLoss import NoLoss, NoLossModel
-from backend.initialLoss.PLoss import PLoss, PLossModel
 
 
 class InitialLossFactory:
     methods = {
-        "ia_loss": [IaLoss, IaLossModel],
-        "eto_loss": [EToLoss, EToLossModel],
-        "s_loss": [AmountLoss, AmountLossModel],
-        "no_loss": [NoLoss, NoLossModel],
-        "p_loss": [PLoss, PLossModel]
+        "eto_loss": [EToLoss, EToLossModel]
     }
 
     """

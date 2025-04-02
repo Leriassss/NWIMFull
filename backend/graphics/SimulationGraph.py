@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from ptq.PTQ import PTQ
-from simulation.models.SimulationModel import SimulationModel
+from backend.ptq.PTQ import PTQ
+from backend.simulation.models.SimulationModel import SimulationModel
 
 
 class SimulationGraph:

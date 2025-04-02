@@ -16,23 +16,32 @@ Dialog {
     closePolicy : Popup.CloseOnEscape
     padding: 5
 
-    Row{
-        width: parent.width
-        height: parent.height
-        spacing: 10
-        Column{
+    SplitView {
+        id: splitView
+        anchors.fill: parent
+
+        handle: Rectangle {
+            implicitWidth: 4
+            implicitHeight: 4
+            color: SplitHandle.pressed ? "#81e889"
+                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+            border.width: 1
+            border.color: "grey"
+        }
+
+        ColumnLayout{
             width: parent.width *0.7
             height: parent.height
             //border.width: 1
             Label{
-                width: parent.width
-                height: parent.height * 0.1
-                text: "Methods For Grid"
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.height * 0.1
+                text: "Methods"
                 font.bold: true
                 font.pointSize: 12
                 padding: 5
                 color: "black"
-                horizontalAlignment: Qt.AlignHCenter
+                Layout.alignment: Text.AlignHCenter
                 background: Rectangle {
                     anchors.fill: parent
                     border.width: 1
@@ -40,8 +49,8 @@ Dialog {
             }
             ScrollView {
                 id: scrollView
-                width: parent.width
-                height: parent.height * 0.9
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.height * 0.9
                 clip: true
 
                 ColumnLayout {
@@ -105,26 +114,27 @@ Dialog {
 
         }
 
-        Column{
+        ColumnLayout{
             width: parent.width *0.3 - parent.spacing
             height: parent.height
             Label{
-                width: parent.width
-                height: parent.height * 0.1
-                text: "OPTIMIZATORS"
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight:  parent.height * 0.1
+                text: "Algorithms"
                 font.bold: true
                 font.pointSize: 12
                 padding: 5
                 color: "black"
-                horizontalAlignment: Qt.AlignHCenter
+                //horizontalAlignment: Qt.AlignHCenter
+                Layout.alignment: Text.AlignHCenter
                 background: Rectangle {
                     anchors.fill: parent
                     border.width: 1
                 }
             }
             Rectangle {
-                width: parent.width
-                height: parent.height * 0.9
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.height * 0.9
                 border.width: 1
                 Column{
                     width: parent.width
@@ -141,7 +151,7 @@ Dialog {
             }
 
         }
-    }
 
+    }
 
 }

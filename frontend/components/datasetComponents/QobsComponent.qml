@@ -94,7 +94,8 @@ Column{
             Rectangle{
                 width: parent.width
                 height: parent.height * 0.6
-                border.width: 1
+                //border.width: 1
+                color : "transparent"
 
                 HorizontalHeaderView {
                     id: horizontalHeader

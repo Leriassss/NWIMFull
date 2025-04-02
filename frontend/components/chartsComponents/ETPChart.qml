@@ -30,7 +30,7 @@ Rectangle {
 
         ValueAxis {
             id: axisY
-            titleText: "Valeurs"
+            //titleText: "Valeurs"
             min:minValue
             max:1.1*maxValue
         }

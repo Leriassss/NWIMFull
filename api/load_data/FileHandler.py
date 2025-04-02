@@ -13,6 +13,7 @@ class FileHandler(QObject):
         self._data = []
 
         self._data_dict = {}
+        self._calibration_time = {}
         self._date_format = {
             "YYYYMMDD" : "%Y%m%d",
             "yyyy-MM-dd" : "%Y-%m-%d" ,
@@ -34,6 +35,7 @@ class FileHandler(QObject):
     dataChanged = Signal(list)
     dataDictChanged = Signal()
     userFormatChanged = Signal()
+    calibrationTimeChanged= Signal()
 
     qInfosChanged = Signal()
     pInfosChanged = Signal()
@@ -126,6 +128,40 @@ class FileHandler(QObject):
         df["year"] = df["date"].dt.year
         grouped = df.groupby("year")["value"]
         return grouped.sum().mean(), grouped.mean().mean(), grouped.std().mean()
+
+    @Slot()
+    def calibrationTime(self):
+        dates = self._data_dict["Dates"]
+        df = pd.DataFrame({"date": pd.to_datetime(dates)})
+
+        # Extraction de l'année, du mois et du jour
+        df["year"] = df["date"].dt.year.astype(str)
+        df["month"] = df["date"].dt.month.astype(str)
+        df["day"] = df["date"].dt.day
+
+        # Construction du dictionnaire imbriqué
+        result = {}
+        for _, row in df.iterrows():
+            year, month, day = row["year"], row["month"], row["day"]
+
+            if year not in result:
+                result[year] = {}
+
+            if month not in result[year]:
+                result[year][month] = []
+
+            result[year][month].append(day)
+
+        self._calibration_time = result
+        print("APPEL------------- 2")
+        print(self._calibration_time)
+        self.calibrationTimeChanged.emit()
+
+    @Property(dict, notify=calibrationTimeChanged)
+    def calibration_dates(self):
+        print("APPEL-------------")
+        print(self._calibration_time)
+        return self._calibration_time
 
     # Propriété pour les en-têtes
     @Property(list, notify=headersChanged)
@@ -280,6 +316,8 @@ class FileHandler(QObject):
         self.updatePInfos()
         self.updateQInfos()
         self.updateTempInfos()
+
+
         #self.transform_data()
 
     #POUR LE CALCUL DE L'ETP DANS L'OPTION ETP
@@ -289,9 +327,6 @@ class FileHandler(QObject):
         self._data_dict["Dates"] = etp_list["Dates"]
         self.updateDatesInfos()
         self.updateETPInfos()
-        print("etp_list 1---------------------")
-        print(etp_list)
-        print(self._data_dict)
 
 
     @Slot(str)

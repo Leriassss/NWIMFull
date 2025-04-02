@@ -18,10 +18,7 @@ class RoutingFactory:
     """
     @staticmethod
     def createInstance(method_name: str, *args):
-        return RoutingFactory.methods[method_name][0](
-            *args[0:1],  # Arguments spécifiques pour la méthode
-            RoutingFactory.methods[method_name][1](*args[1:])  # Modèle spécifique pour la méthode
-        )
+        return RoutingFactory.methods[method_name][0](*args)
 
     def getMethods(self, method_name: str):
         if method_name not in self.methods:

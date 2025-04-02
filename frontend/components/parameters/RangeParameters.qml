@@ -5,15 +5,11 @@ import QtQuick.Layouts 1.15
 ScrollView {
     id: scrollView
     contentWidth: -1
+    clip: true
 
 
     property var parameterModel
     property string factoryName
-
-    background: Rectangle {
-        color: "white"
-        border.width: 1
-    }
 
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)  // Charger la factory au démarrage

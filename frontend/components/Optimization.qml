@@ -12,16 +12,26 @@ Dialog {
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
-    topInset : 5
+
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
     padding: 5
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
 
-    Rectangle {
+    SplitView {
+        id: splitView
         anchors.fill: parent
-        border.width: 1
+
+        handle: Rectangle {
+            implicitWidth: 4
+            implicitHeight: 4
+            color: SplitHandle.pressed ? "#81e889"
+                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+            border.width: 1
+            border.color: "grey"
+        }
+
         Column{
             width: parent.width*0.4
             height: parent.height
@@ -78,7 +88,6 @@ Dialog {
 
         }
 
-
         Column{
             width: parent.width*0.6
             height: parent.height
@@ -108,6 +117,11 @@ Dialog {
                 factoryName : "Recession"
                 height: parent.height *0.25
                 width: parent.width
+                /*background: Rectangle {
+                    color: "white"
+                    border.width: 1
+                }*/
+
             }
         }
 

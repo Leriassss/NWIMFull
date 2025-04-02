@@ -10,14 +10,14 @@ class HUNModel:
         :param dt: Pas de temps (en jours).
         :param time_base: Temps de base observé pour le transfert (en jours).
         """
-        self.dt = dt
-        self.time_base = time_base
+        self.dt = int(dt)
+        self.time_base = int(time_base)
         self.validate()
 
     def validate(self):
-        if not isinstance(self.dt, (int, float)) or self.dt <= 0:
+        if self.dt <= 0:
             raise ValueError("Le paramètre 'dt' doit être un nombre strictement positif.")
-        if not isinstance(self.time_base, int) or self.time_base <= 0:
+        if  self.time_base <= 0:
             raise ValueError("Le paramètre 'time_base' doit être un entier strictement positif.")
 
     def to_dict(self):

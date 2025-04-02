@@ -17,7 +17,8 @@ ScrollView {
 
     ColumnLayout {
         spacing: 10
-        anchors.fill: parent
+        //anchors.fill: parent
+
         anchors.margins: 10
 
         // Sélecteur de méthode

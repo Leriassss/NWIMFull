@@ -46,9 +46,9 @@ class EToLossModel:
         :return: True si valide, sinon un message d'erreur est retourné.
         """
         try:
-            value = float(value)  # Vérifie que la valeur est numérique
-            if key == "alpha" and (value < 0 or value >= 1):
-                raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
+            value = float(value) 
+            if key != "alpha" :
+                raise ValueError("Parametre inconnu !!!")
             return True
         except Exception as e:
             return str(e)

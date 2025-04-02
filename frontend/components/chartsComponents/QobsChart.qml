@@ -29,7 +29,6 @@ Rectangle {
 
         ValueAxis {
             id: vaxisY
-            titleText: "Valeurs"
             min:minValue
             max:1.1*maxValue
         }
@@ -44,8 +43,6 @@ Rectangle {
 
     function updateChart(dates, q_series) {
         if(q_series){
-            console.log("---- qseries")
-            console.log(q_series)
             seriesQ.clear();
             qobsChart.minDate = dates[0]
             qobsChart.maxDate = dates[dates.length-1]

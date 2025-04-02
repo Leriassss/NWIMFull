@@ -86,18 +86,18 @@ class LatinHypercubeOptimization:
         return SimulationModel(best_sim,qsim_validation,best_pars,runs.iloc[0][self.simulation.crit],criteria_value)
         #return runs.iloc[0] , best_sim #, runs, self.simulation.calibration_results
 
-    def objective(self, objectif : float):
-        crit_value = 0
+    def objective(self, objectif : float, iterations : int):
         i = 0
         best_so_far = -1000000
         sim_model = 0
-        while(crit_value < objectif):
+        while(i < iterations):
             sim_r = self.optim()
             if(best_so_far < sim_r.validation_metric):
+                best_so_far = sim_r.validation_metric
                 sim_model = sim_r
-            print(i)
-            if(i >= 50):
+            if(best_so_far>objectif):
                 return sim_model
+            print(i)
             i += 1
         if isinstance(sim_model, SimulationModel):
             return sim_model

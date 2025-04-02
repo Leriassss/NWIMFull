@@ -116,6 +116,7 @@ Column{
 
             property var headers: fileHandler.headers // En-têtes du fichier chargé
 
+            property var calib_dates : fileHandler.calibration_dates
             onAccepted: {
                 /*columnMapping = {
                     "Dates":datesComboBox.currentText ,
@@ -129,7 +130,7 @@ Column{
                 fileHandler.initTempValues(tComboBox.currentText)
                 fileHandler.initQValues(qComboBox.currentText)
                 fileHandler.initETPValues(etpComboBox.currentText)
-
+                fileHandler.calibrationTime()
 
                 if(fileHandler.errors.length !==0){
 
@@ -233,10 +234,11 @@ Column{
         anchors.fill: parent
         spacing: 5
         padding: 5
+        clip: true
 
         Column {
-            width: parent.width * 0.3 -parent.spacing
-            height: parent.height
+            width: parent.width * 0.3
+            height: parent.height - parent.padding
             spacing: 5
 
             Row {
@@ -272,7 +274,7 @@ Column{
             Rectangle{
                 width: parent.width
                 height: parent.height * 0.9 - 5
-                border.width: 1
+                color: "transparent"
 
                 HorizontalHeaderView {
                     id: horizontalHeader
@@ -350,117 +352,185 @@ Column{
 
         }
 
-        Column {
-            width: parent.width * 0.7 -parent.spacing
-            height: parent.height
-            spacing: 5
+        Rectangle {
+            id: simulationPane
+            width: parent.width * 0.7 -parent.spacing-parent.padding
+            height: parent.height -parent.padding
+            border.width: 2
+            border.color: "red"
 
-            Rectangle {
-                id: simulationPane
+
+            Column {
                 width: parent.width
                 height: parent.height
-                border.width: 1
 
-                Column {
-                    width: parent.width
-                    height: parent.height
+                Rectangle {
+                    id: plotOptions
+                    width: parent.width - parent.spacing
+                    height: parent.height * 0.15
+                    border.width: 1
 
-                    Rectangle {
-                        id: plotOptions
+                    Row {
                         width: parent.width
-                        height: parent.height * 0.1
-                        border.width: 1
+                        height: parent.height
+                        spacing: 0
 
-                        Row {
+                        Rectangle {
                             width: parent.width
                             height: parent.height
-                            spacing: 0
-
-                            Rectangle {
-                                width: parent.width * 0.5
+                            border.width: 1
+                            Column{
+                                width: parent.width
                                 height: parent.height
-                                border.width: 1
-                                Text {
-                                    anchors.margins: 5
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    text: "CALIBRATION TIME"
-                                }
-                            }
-
-                            Rectangle {
-                                width: parent.width * 0.5 - 1
-                                height: parent.height
-                                border.width: 1
-                                Text {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    text: "PERIOD"
-                                }
-
-                                Row {
-                                    leftPadding: 10
-                                    anchors.centerIn: parent
+                                padding: 5
+                                Row{
+                                    padding: 5
+                                    spacing: 10
+                                    id : calibrationRow
                                     width: parent.width
+                                    height: parent.height *0.5
 
-                                    CheckBox {
-                                        checked: true
-                                        text: "CALIBRATION"
-                                        rightPadding: 5
+                                    Label{
+                                        text: "FROM"
+                                        font.bold: true
+                                        width: 70
                                     }
 
-                                    CheckBox {
-                                        text: "VALIDATION"
+                                    ComboBox {
+                                        id: calibrationYear
+                                        model : Object.keys(columnMappingDialog.calib_dates)
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
+                                        onCurrentTextChanged: {
+                                            calibrationMonth.model = Object.keys(columnMappingDialog.calib_dates[calibrationYear.currentText])
+                                            console.log("---------COMBO ------------ 1")
+                                            console.log(model)
+                                        }
+                                    }
+                                    Label{
+                                        text: "-"
+                                        font.bold: true
+                                    }
+
+                                    ComboBox {
+                                        id: calibrationMonth
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
+                                        onCurrentTextChanged: {
+                                            calibrationDay.model =columnMappingDialog.calib_dates[calibrationYear.currentText][calibrationMonth.currentText]
+
+                                        }
+                                    }
+                                    Label{
+                                        text: "-"
+                                        font.bold: true
+                                    }
+                                    ComboBox {
+                                        id: calibrationDay
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
                                     }
                                 }
+
+                                Row{
+                                    padding: 5
+                                    spacing: 10
+                                    id : validationRow
+                                    width: parent.width
+                                    height: parent.height *0.5
+
+                                    Label{
+                                        text: "FROM"
+                                        font.bold: true
+                                        width: 70
+                                    }
+
+                                    ComboBox {
+                                        id: validationYear
+                                        model : Object.keys(columnMappingDialog.calib_dates)
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
+                                        onCurrentTextChanged: {
+                                            validationMonth.model = Object.keys(columnMappingDialog.calib_dates[validationYear.currentText])
+                                            console.log("---------COMBO ------------ 1")
+                                            console.log(model)
+                                        }
+                                    }
+                                    Label{
+                                        text: "-"
+                                        font.bold: true
+                                    }
+
+                                    ComboBox {
+                                        id: validationMonth
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
+                                        onCurrentTextChanged: {
+                                            validationDay.model =columnMappingDialog.calib_dates[validationYear.currentText][validationMonth.currentText]
+
+                                        }
+                                    }
+                                    Label{
+                                        text: "-"
+                                        font.bold: true
+                                    }
+                                    ComboBox {
+                                        id: validationDay
+                                        currentIndex: 0
+                                        Layout.fillWidth: true
+                                    }
+                                }
+
                             }
-
                         }
-                    }
-
-                    Rectangle {
-                        id: plot
-                        width: parent.width-10
-                        height: parent.height * 0.85
-                        //anchors.centerIn: parent
-                        border.width: 1
-                        Column{
-                            width: parent.width
-                            height: parent.height
-
-                            Grid {
-                                id: grid
-                                anchors.fill: parent
-                                columns: 2
-                                rowSpacing: 1
-                                columnSpacing: 1
-                                QobsChart{
-                                    id : qchart
-                                    width: parent.width / 2
-                                    height: parent.height / 2
-                                }
-                                TempChart{
-                                    id : tempChart
-                                    width: parent.width / 2
-                                    height: parent.height / 2
-                                }
-                                ETPChart{
-                                    id : etpChart
-                                    width: parent.width / 2
-                                    height: parent.height / 2
-                                }
-                                RainChart{
-                                    id : rainChart
-                                    width: parent.width / 2
-                                    height: parent.height / 2
-                                }
-                            }
-
-                        }
-
 
                     }
                 }
+
+                Rectangle {
+                    id: plot
+                    width: parent.width-10
+                    height: parent.height * 0.85
+                    //anchors.centerIn: parent
+                    border.width: 2
+
+
+                    Grid {
+                        id: grid
+                        width: parent.width -padding
+                        height: parent.height - padding
+                        columns: 2
+                        rowSpacing: 0
+                        columnSpacing: 0
+                        padding: 10
+                        clip : true
+                        QobsChart{
+                            id : qchart
+                            width: parent.width / 2
+                            height: parent.height / 2
+                        }
+                        TempChart{
+                            id : tempChart
+                            width: parent.width / 2
+                            height: parent.height / 2
+                        }
+                        ETPChart{
+                            id : etpChart
+                            width: parent.width / 2
+                            height: parent.height / 2
+                        }
+                        RainChart{
+                            id : rainChart
+                            width: parent.width / 2
+                            height: parent.height / 2
+                        }
+                    }
+
+
+                }
             }
         }
+
     }
 
     function cleanFilePath(filePath) {

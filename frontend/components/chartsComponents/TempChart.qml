@@ -28,7 +28,6 @@ Rectangle {
 
         ValueAxis {
             id: axisY
-            titleText: "Valeurs"
             min:minValue
             max:1.1*maxValue
         }
@@ -44,8 +43,6 @@ Rectangle {
 
     function updateChart(dates, t_series) {
         if(t_series){
-            console.log("---- temp series")
-            console.log(t_series)
             seriesT.clear();
             tempChart.minDate = dates[0]
             tempChart.maxDate = dates[dates.length-1]
