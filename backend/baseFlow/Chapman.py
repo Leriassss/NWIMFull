@@ -2,7 +2,10 @@ from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.models.ChapmanModel import ChapmanModel
 from backend.ptq.PTQ import PTQ
 
+from scipy.optimize import curve_fit
 
+import numpy as np
+import pandas as pd
 class Chapman(BaseFlow):
     """
     Classe pour implémenter la méthode de récession Chapman.
@@ -10,6 +13,7 @@ class Chapman(BaseFlow):
     def __init__(self,ptq : PTQ, chapmanModel : ChapmanModel):
         self.flow_series = ptq.q
         self.alpha = chapmanModel.alpha
+        self.ptq = ptq
 
     def compute(self):
         """
@@ -31,7 +35,7 @@ class Chapman(BaseFlow):
                 factor1 * Q_base[k - 1]
                 + factor2 * (self.flow_series[k] + self.flow_series[k - 1])
             )
-        
+
         return Q_base
 
     @staticmethod
@@ -49,3 +53,19 @@ class Chapman(BaseFlow):
         - cs_over_c : Ratio des coefficients (par défaut 1.1).
         """
         print(description)
+    
+
+
+    def reverse_compute(self,previous_qbase, Q_direct):
+        Q_base_rev = np.zeros(len(Q_direct))
+        Q_base_rev[0]  = previous_qbase
+
+        factor1 = (3 * self.alpha - 1) / (3 - self.alpha)
+        factor2 = (1 - self.alpha) / (3 - self.alpha)
+
+        for k in range(1, len(self.flow_series)):
+            Q_base_rev[k] = (1/(1-factor2)) * ( Q_base_rev[k-1]*(factor1+factor2) + 
+                                            factor2*(Q_direct[k] + Q_direct[k-1]))
+        
+        return Q_base_rev
+

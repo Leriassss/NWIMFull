@@ -16,8 +16,8 @@ class EToLossModel:
         """
         Vérifie que les paramètres sont valides.
         """
-        if self.alpha < 0 or self.alpha >= 1:
-            raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
+        self.alpha = float(self.alpha)
+         
 
     def to_dict(self):
         """

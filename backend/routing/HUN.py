@@ -6,12 +6,17 @@ from backend.contracts.Bundle import DataSimulation, RoutingContract
 from backend.routing.Routing import Routing
 from backend.routing.models.HUNModel import HUNModel
 
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
+from permetrics.regression import RegressionMetric
+
 class HUN(Routing):
     def __init__(self,kwargs: RoutingContract):
         self.kwargs = kwargs
         self.hunModel = HUNModel(*self.kwargs)
         self.hun = []
         self.datas_calage = []
+        self.qbase_ratio = []
         
     def calage(self,datas : DataSimulation): 
         self.datas_calage  = datas
@@ -34,7 +39,12 @@ class HUN(Routing):
             hun_time_base.append(pd.Series(np.convolve(production_seq,hun_k))[:len(production_seq)]*dt)
         self.hun = pd.concat(interm_hun).reset_index(drop=True)
         q_sim_direct =  pd.concat(hun_time_base).reset_index(drop=True)[:len(production)]
-        return np.maximum(0,q_sim_direct + datas["qbase"])
+        return q_sim_direct
+        
+        #self.qbase_ratio = self.qbase_routine(datas["dates"], q_sim_direct, datas["qbase"])
+        
+        #return np.maximum(0,q_sim_direct + self.qbase_ratio["Q_base_corr"] )
+        #self.regBaseFlow(datas["qbase"], datas["qobs"])
             
     def validation(self,datas : DataSimulation):
         self.calage(self.datas_calage)
@@ -51,6 +61,7 @@ class HUN(Routing):
         q_sim_direct =  pd.concat(hun_time_base).reset_index(drop=True)[:len(production)]
         return np.maximum(0, q_sim_direct + datas["qbase"])
     
+
     @staticmethod
     def help():
         """

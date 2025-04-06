@@ -18,6 +18,10 @@ class DataSimulation(TypedDict):
     pn : pd.Series
     qbase : pd.Series
     qobs : pd.Series 
+    dates : pd.Series
+
+class DataBaseFlow(TypedDict):
+    pl : pd.Series
 
 class RoutingContract(TypedDict):
     sim: Dict[str, List[float]]
