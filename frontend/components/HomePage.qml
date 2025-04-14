@@ -10,75 +10,174 @@ import "./parameters"
 //import "../../io/qml"
 import io.qml
 Row {
-    id: layout
-    anchors.top: nwimMenuBar.bottom
-    width: parent.width
-    height: parent.height * 0.88
-    spacing: 6
-
-    Rectangle {
-        id: parameterPane
-        width: parent.width * 0.25
-        height: parent.height
+    id: splitView
+    /*handle: Rectangle {
+        implicitWidth: 4
+        implicitHeight: 4
+        color: SplitHandle.pressed ? "#81e889"
+            : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
         border.width: 1
-        color: "#c8c8c8"
-        Text {
-            id: parameters
-            anchors.margins: 5
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "PARAMETERS"
-        }
-
-        Rectangle {
-            id: simParameters
-            anchors.top: parameters.bottom
+        border.color: "grey"
+    }*/
+    Rectangle{
+        width: parent.width * 0.25
+        height: parent.height - spacing
+        anchors.left: parent.left
+        clip: true
+        Column {
+            id: parameterPane
             width: parent.width
-            height: parent.height * 0.85
-            //color: "purple"
-
-            Column {
-                id: parametersColumn
-                height: parent.height
+            height: parent.height
+            spacing: 2
+            clip: true
+            Label {
+                id: parameters
+                anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Qt.AlignHCenter
+                text: "PARAMETERS"
+                font.bold: true
+                font.pointSize: 12
+                padding: 5
+                color: "black"
                 width: parent.width
-                spacing: 5
+                background: Rectangle{
+                    color: "#d2d2d2"
+                    width: parent.width
+                    height: parent.height
+                }
+            }
 
-                // Liste des modèles à afficher
-                property var models: ["Production","InitialLoss","Routing", "Recession"]
+            Rectangle {
+                id: simParameters
+                width: parent.width
+                height: parent.height * 0.8
 
-                // Répétiteur pour afficher chaque modèle
-                Repeater {
-                    model: parametersColumn.models
-
-                    delegate: Parameters {
-                        height: parent.height * 0.25
-                        width: parent.width
-                        parameterModel : TestQML{}
-                        factoryName:  modelData
-                        background: Rectangle {
-                            color: "white"
-                            border.width: 1
-                        }
+                SplitView {
+                    anchors.fill: parent
+                    orientation: Qt.Vertical
+                    handle: Rectangle {
+                        implicitWidth: 4
+                        implicitHeight: 4
+                        color: SplitHandle.pressed ? "#81e889"
+                            : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+                        border.width: 1
+                        border.color: "grey"
                     }
+
+                    Rectangle{
+                        SplitView.minimumHeight: 45
+                        SplitView.preferredHeight: 250
+                        color: "white"
+                        Column {
+                            anchors.fill: parent
+                            spacing: 5
+                            padding: 10
+
+                            Label {
+                                width: parent.width
+                                text: "Production Methods"
+                                font.bold: true
+                                font.pointSize: 12
+                                padding: 5
+                                color: "black"
+                                horizontalAlignment: Qt.AlignHCenter
+                            }
+
+                            Parameters {
+                                height: childrenRect.height
+                                spacing: 10
+                                width: parent.width - 2*parent.padding
+                                parameterModel: TestQML{}
+                                factoryName: "Production"
+                            }
+
+                            Parameters {
+                                height: 75
+                                spacing: 10
+                                width: parent.width - 2*parent.padding
+                                parameterModel: TestQML{}
+                                factoryName: "InitialLoss"
+                            }
+                        }
+
+                    }
+
+
+                    Rectangle{
+                        SplitView.minimumHeight: 45
+                        SplitView.preferredHeight: 150
+                        color: "white"
+                        Column {
+                            spacing: 5
+                            padding: 10
+                            anchors.fill: parent
+
+                            Label {
+                                width: parent.width
+                                text: "Routing Methods"
+                                font.bold: true
+                                font.pointSize: 12
+                                padding: 5
+                                color: "black"
+                                horizontalAlignment: Qt.AlignHCenter
+                            }
+
+                            Parameters {
+                                height: childrenRect.height
+                                spacing: 10
+                                width: parent.width - 2*parent.padding
+                                parameterModel: TestQML{}
+                                factoryName: "Routing"
+                            }
+                        }
+
+                    }
+
+                    Rectangle{
+                        color: "white"
+                        SplitView.minimumHeight: 100
+                        Column {
+                            anchors.fill: parent
+                            width: parent.width
+                            spacing: 5
+                            padding: 10
+
+                            Label {
+                                width: parent.width
+                                text: "Recession Methods"
+                                font.bold: true
+                                font.pointSize: 12
+                                padding: 5
+                                color: "black"
+                                horizontalAlignment: Qt.AlignHCenter
+                            }
+
+                            Parameters {
+                                height: childrenRect.height
+                                spacing: 10
+                                width: parent.width - 2*parent.padding
+                                parameterModel: TestQML{}
+                                factoryName: "Recession"
+                            }
+                        }
+
+                    }
+
+
                 }
             }
 
         }
 
-        HomePageButtons {
-            anchors.top: simParameters.bottom
-            leftPadding: 10
-            width: parent.width
-            height: parent.height * 0.15
-            id: buttonsRow
-        }
     }
+
 
     Rectangle {
         id: simulationPane
         width: parent.width * 0.75 - 6
         height: parent.height
         border.width: 1
+        anchors.right: parent.right
         Column {
             width: parent.width
             height: parent.height

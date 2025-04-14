@@ -1,6 +1,7 @@
 from typing import Dict, TypedDict, List
 
 import pandas as pd
+from backend.ptq.PTQ import PTQ
 
 class RoutingData(TypedDict):
     pn: Dict[str, List[float]]
@@ -21,7 +22,14 @@ class DataSimulation(TypedDict):
     dates : pd.Series
 
 class DataBaseFlow(TypedDict):
-    pl : pd.Series
+    qsim : pd.Series
+    qbase : pd.Series
+    ptq : PTQ
+    qmean : pd.Series
+
+class DataInitialLoss(TypedDict):
+    net_rainfall : pd.Series
+    etp : pd.Series
 
 class RoutingContract(TypedDict):
     sim: Dict[str, List[float]]

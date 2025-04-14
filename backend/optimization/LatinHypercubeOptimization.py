@@ -60,7 +60,6 @@ class LatinHypercubeOptimization:
 
     def optim(self):
         crit =self.simulation.crit
-        criteria_method =  self.simulation.criteria.methods()[self.simulation.crit]
         parameters = self.population(self.param_ranges,self.n_samples)
         results =  []
         for i in range(self.n_samples):
@@ -72,7 +71,7 @@ class LatinHypercubeOptimization:
             
             qsim = self.simulation.manual_calibration(extracted_params)
 
-            criteria_value = criteria_method(self.simulation.ptq_calage.q, qsim)
+            criteria_value = self.simulation.calibration_metric[crit]
 
             results.append({"parameters" : parameters_line, crit: criteria_value})
 
@@ -82,8 +81,7 @@ class LatinHypercubeOptimization:
         
         best_sim = self.simulation.manual_calibration(best_pars)
         criteria_value, qsim_validation  = self.simulation.validation()
-
-        return SimulationModel(best_sim,qsim_validation,best_pars,runs.iloc[0][self.simulation.crit],criteria_value)
+        return SimulationModel(best_sim,qsim_validation,best_pars,runs.iloc[0][crit],criteria_value[crit])
         #return runs.iloc[0] , best_sim #, runs, self.simulation.calibration_results
 
     def objective(self, objectif : float, iterations : int):

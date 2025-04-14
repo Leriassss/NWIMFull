@@ -3,42 +3,43 @@ import pandas as pd
 
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.models.SeparationModel import SeparationModel
+from backend.contracts.Bundle import DataBaseFlow
 from backend.ptq.PTQ import PTQ
 
 class ExponentialRecessionCurve(BaseFlow):
     """
     Classe pour implémenter la méthode de récession exponentielle.
     """
-    def __init__(self,ptq : PTQ, separationModel : SeparationModel):
-        self.dates = ptq.dates
-        self.Q_sim = ptq.q
+    def __init__(self,separationModel : SeparationModel):
+
         self.lambda_ = separationModel.lambda_
+        self.lag_time = separationModel.lag_time
+        self.k = separationModel.k
+    
+    def compute(self, ptq : PTQ):
+        precip = np.asarray(ptq.p)
+        q_obs = np.asarray(ptq.daily_qobs_mean())
+        q_rec = np.zeros_like(precip)
+        dates = ptq.dates
 
-    def compute(self):
-        """
-        Applique la fonction de récession exponentielle q = q0 * exp(-lambda * t) par année.
+        is_dry = (np.round(precip,3) == 0).astype(int)
+        diff = np.diff(np.concatenate(([0], is_dry, [0])))
+        starts = np.where(diff == 1)[0]
+        ends = np.where(diff == -1)[0]
+        alpha = 1-self.lambda_
+        for start, end in zip(starts, ends):
+            length = end - start
+            if length >= self.lag_time:
+                t = np.arange(length) + 1
+                q_rec[start:end] = (-alpha*self.k*t)**(1/alpha)
+        return q_rec
+    
+    def calibration_routine(self,data : DataBaseFlow):
+        return self.compute(data['ptq'])
+    
+    def validation_routine(self,data : DataBaseFlow):
+        return self.compute(data['ptq'])
         
-        Returns:
-            pd.DataFrame: DataFrame avec la courbe de récession appliquée par année.
-        """
-        df = pd.DataFrame({"dates": self.dates, "Q_sim": self.Q_sim})
-        df["dates"] = pd.to_datetime(df["dates"])    
-        resultats = []
-        
-        # Traiter chaque année séparément
-        for annee, groupe in df.groupby(df["dates"].dt.year):
-            serie_debits = pd.Series(groupe['Q_sim'].values)
-            indice_max = serie_debits.idxmax()
-            q0 = serie_debits[indice_max]
-            
-            result = np.zeros(len(groupe))
-            for t in range(indice_max , len(groupe)):
-                result[t] = q0 * np.exp(-self.lambda_ * (t - indice_max))
-                
-            resultats.append(pd.Series(result))
-        
-        return pd.concat(resultats).reset_index(drop=True)
-
     @staticmethod
     def help():
         """

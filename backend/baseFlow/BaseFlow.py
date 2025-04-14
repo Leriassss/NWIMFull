@@ -12,6 +12,12 @@ class BaseFlow(ABC):
         Calcule le ruissellement net ou d'autres paramètres.
         """
         pass
+    @abstractmethod
+    def reverse_compute(self, *args, **kwargs):
+        """
+        Calcule le ruissellement net ou d'autres paramètres.
+        """
+        pass
 
     @abstractmethod
     def help():

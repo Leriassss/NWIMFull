@@ -440,7 +440,7 @@ Column{
                                     height: parent.height *0.5
 
                                     Label{
-                                        text: "FROM"
+                                        text: "TO"
                                         font.bold: true
                                         width: 70
                                     }

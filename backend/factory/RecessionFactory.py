@@ -1,5 +1,6 @@
 
 from backend.baseFlow.Chapman import Chapman, ChapmanModel
+from backend.baseFlow.Eckhardt import Eckhardt, EckhardtModel
 from backend.baseFlow.ExponentialRecession import ExponentialRecessionCurve
 from backend.baseFlow.FureyGupta import FureyGupta, FureyGuptaModel
 from backend.baseFlow.QuadraticRecession import QuadraticRecessionCurve, SeparationModel
@@ -9,7 +10,8 @@ class RecessionFactory:
         "Chapman": [Chapman, ChapmanModel],
         "FureyGupta": [FureyGupta, FureyGuptaModel],
         "Quadratic": [QuadraticRecessionCurve, SeparationModel],
-        "Exponential": [ExponentialRecessionCurve, SeparationModel]
+        "Exponential": [ExponentialRecessionCurve, SeparationModel],
+        "Eckhardt" : [Eckhardt, EckhardtModel]
     }
 
     """
@@ -23,8 +25,7 @@ class RecessionFactory:
 
         # Créer l'instance de la méthode et du modèle
         return RecessionFactory.methods[method_name][0](
-            args[0],
-            RecessionFactory.methods[method_name][1](*args[1:])
+            RecessionFactory.methods[method_name][1](*args)
         )
 
     def getMethods(self, method_name: str):

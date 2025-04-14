@@ -11,12 +11,12 @@ class PLA(Routing):
 
 
     def calage(self,datas : DataSimulation):
-        return self.sim(datas["pn"],datas["qbase"])
+        return self.sim(datas["pn"])
     
     def validation(self,datas : DataSimulation):
-        return self.sim(datas["pn"], datas["qbase"])
+        return self.sim(datas["pn"])
         
-    def sim(self,q, qbase):
+    def sim(self,q):
         mu= self.plaModel.mu
         landa = self.plaModel.landa
         t_x = self.plaModel.t_x 
@@ -40,7 +40,7 @@ class PLA(Routing):
                 q_sim[i] = max(0, q_sim[i - 1] - mu_over_landa * power_pla + s_f * x[i] * q[i - 1] /landa)
             else:
                 q_sim[i] =max(0,q_sim[i - 1] - mu_over_landa * power_pla) 
-        return np.maximum(0,q_sim + qbase)
+        return np.where((q_sim < 0) | ~np.isfinite(q_sim), 0, q_sim)
     
     @staticmethod
     def help():

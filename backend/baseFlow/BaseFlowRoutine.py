@@ -1,17 +1,18 @@
-from backend.ptq.PTQ import PTQ
-
+import pandas as pd
 from scipy.optimize import curve_fit
 
 import numpy as np
+
+from backend.baseFlow.BaseFlow import BaseFlow
+from backend.contracts.Bundle import DataBaseFlow
 class BaseFlowRoutine:
     """
     Classe pour implémenter la méthode de récession Chapman.
     """
-    def __init__(self, ptq : PTQ ):
-        self.correc_factor = 0
-        self.a, self.b = 0, 0
-        self.ptq = ptq
-
+    def __init__(self, baseflowModel : BaseFlow):
+        self.baseflowModel = baseflowModel
+        self.a,self.b,self.correc_factor = 0, 0, 0
+        self.hun = []
 
     @staticmethod
     def help():
@@ -28,19 +29,59 @@ class BaseFlowRoutine:
         - cs_over_c : Ratio des coefficients (par défaut 1.1).
         """
         print(description)
-    
+        
+    def calibration_routine(self,data : DataBaseFlow):
+        dates = data['ptq'].dates
+        qobs = data['ptq'].q
 
+        prev_day = self.get_qobs_mean(dates[0])
+
+        #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
+        self.a,self.b  = self.regBaseFlow(data['qbase'] , qobs)
+        #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
+        q_obs_mean = data["qmean"][prev_day-1]
+        #DETERMINATION DU DEBIT DE BASE PRECEDENT
+        q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)
+
+        #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
+        qbase_rev = self.baseflowModel.reverse_compute(q_base_previous, data['qsim'])
+        
+        # CALCUL DU FACTEUR DE CORRECTION
+        self.correc_factor = self.correction_factor(qbase_rev, data['qbase'])
+        qbase_rev_corr =  self.correc_factor * qbase_rev
+        return qbase_rev_corr
+    
+    def validation_routine(self, data : DataBaseFlow):
+        dates = data['ptq'].dates
+
+        prev_day = self.get_qobs_mean(dates[0])
+        
+        #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
+        q_obs_mean = data["qmean"][prev_day-1]
+        
+        #DETERMINATION DU DEBIT DE BASE PRECEDENT
+        q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)
+        #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
+        
+        qbase_rev = self.baseflowModel.reverse_compute(q_base_previous, data['qsim'])
+
+        
+        qbase_rev_corr =  self.correc_factor * qbase_rev
+
+        return qbase_rev_corr
+    
+    
     def corr_qbase(self,Q_base_rev, Q_base):            
         correc_factor = self.correction_factor(Q_base_rev, Q_base)
         return correc_factor * Q_base_rev
 
 
     def correction_factor_model(self, q_base,a):
-        return a * q_base
+        return  a*q_base
 
     def correction_factor(self, Q_base_rev, Q_base):
         correc_factor, _ = curve_fit(self.correction_factor_model, Q_base_rev, Q_base, p0=[0.01])
-        return correc_factor
+        return correc_factor[0]
 
     def modele_baseflow(self, Q_obs, a, b):
             return a * Q_obs ** b
@@ -49,3 +90,23 @@ class BaseFlowRoutine:
         params_opt, _ = curve_fit(self.modele_baseflow, Q_obs, Q_base, p0=[1, 1], maxfev=10000)
         return params_opt
 
+    def daily_qobs_mean(self, dates, Q_obs):
+        df = pd.DataFrame({
+                    "Date": pd.to_datetime(dates),
+                    "Q_obs": Q_obs
+        })
+        df["month"] = df["Date"].dt.month
+        df["day"] = df["Date"].dt.day
+
+        
+        daily_avg = df.groupby(["month", "day"])[["Q_obs"]].mean().reset_index()
+        
+        return daily_avg["Q_obs"]
+    
+    def get_qobs_mean(self, date_str):
+        date = pd.to_datetime(date_str)
+
+        prev_day = date - pd.Timedelta(days=1)
+
+        jour_annee = prev_day.dayofyear
+        return jour_annee

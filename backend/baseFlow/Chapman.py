@@ -1,21 +1,22 @@
 from backend.baseFlow.BaseFlow import BaseFlow
+from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 from backend.baseFlow.models.ChapmanModel import ChapmanModel
-from backend.ptq.PTQ import PTQ
-
-from scipy.optimize import curve_fit
+from backend.contracts.Bundle import DataBaseFlow
 
 import numpy as np
 import pandas as pd
+
+from backend.ptq.PTQ import PTQ
 class Chapman(BaseFlow):
     """
     Classe pour implémenter la méthode de récession Chapman.
     """
-    def __init__(self,ptq : PTQ, chapmanModel : ChapmanModel):
-        self.flow_series = ptq.q
+    def __init__(self, chapmanModel : ChapmanModel):
         self.alpha = chapmanModel.alpha
-        self.ptq = ptq
+        self.a,self.b = 0, 0
+        self.correc_factor = None
 
-    def compute(self):
+    def compute(self, ptq : PTQ):
         """
         Implémente la méthode de séparation des écoulements selon la méthode de Chapman.
         
@@ -26,14 +27,15 @@ class Chapman(BaseFlow):
         Returns:
             np.array : Série des débits de base (Qk).
         """
-        Q_base = self.flow_series.copy()
+        flow_series = ptq.q
+        Q_base = flow_series.copy()
         factor1 = (3 * self.alpha - 1) / (3 - self.alpha)
         factor2 = (1 - self.alpha) / (3 - self.alpha)
         
-        for k in range(1, len(self.flow_series)):
+        for k in range(1, len(flow_series)):
             Q_base[k] = (
                 factor1 * Q_base[k - 1]
-                + factor2 * (self.flow_series[k] + self.flow_series[k - 1])
+                + factor2 * (flow_series[k] + flow_series[k - 1])
             )
 
         return Q_base
@@ -55,15 +57,14 @@ class Chapman(BaseFlow):
         print(description)
     
 
-
     def reverse_compute(self,previous_qbase, Q_direct):
         Q_base_rev = np.zeros(len(Q_direct))
         Q_base_rev[0]  = previous_qbase
 
-        factor1 = (3 * self.alpha - 1) / (3 - self.alpha)
+        factor1 = ((3 * self.alpha) - 1) / (3 - self.alpha)
         factor2 = (1 - self.alpha) / (3 - self.alpha)
 
-        for k in range(1, len(self.flow_series)):
+        for k in range(1, len(Q_direct)):
             Q_base_rev[k] = (1/(1-factor2)) * ( Q_base_rev[k-1]*(factor1+factor2) + 
                                             factor2*(Q_direct[k] + Q_direct[k-1]))
         

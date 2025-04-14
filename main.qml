@@ -19,6 +19,7 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.accent: Material.Blue
 
+
     FileChoose{
         id: fileChooseComponent
     }
@@ -33,7 +34,6 @@ ApplicationWindow {
     }
 
     MenuBarModel{
-        height: parent.height * 0.1
         width: parent.width
         id: nwimMenuBar
         onOpenFileTriggered: {
@@ -52,7 +52,9 @@ ApplicationWindow {
     }
 
     HomePage{
-
+        anchors.top: nwimMenuBar.bottom
+        width: parent.width
+        height: parent.height *0.9
     }
 
 }

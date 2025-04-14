@@ -1,20 +1,20 @@
 import numpy as np
 import pandas as pd
 
+from backend.contracts.Bundle import DataInitialLoss
 from backend.initialLoss.Loss import Loss
 from backend.initialLoss.models.EToLossModel import EToLossModel
-from backend.ptq.PTQ import PTQ
 
 
 class EToLoss(Loss) :
-    def __init__(self, ptq : PTQ, data_model: EToLossModel):
+    def __init__(self, ia_bundle : DataInitialLoss, data_model: EToLossModel):
         self.data_model = data_model
-        self.ptq = ptq
+        self.ia_bundle = ia_bundle
         
     def compute(self):
-        prec = self.ptq.p.copy()
+        prec = self.ia_bundle['net_rainfall']
         alpha = self.data_model.alpha
-        rainfall_without_loss = self.etp_loss(prec,self.ptq.etp, alpha)
+        rainfall_without_loss = self.etp_loss(prec,self.ia_bundle['etp'], alpha)
         return rainfall_without_loss
     
     

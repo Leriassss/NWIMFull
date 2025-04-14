@@ -1,6 +1,7 @@
 class GAModel:
     def __init__(self, max_num_iteration=3000, population_size=100, mutation_probability=0.1,
-                 elit_ratio=0.01, crossover_probability=0.5, parents_portion=0.3):
+                 elit_ratio=0.01, crossover_probability=0.5, parents_portion=0.3
+                 ):
 
         self.max_num_iteration = max_num_iteration
         self.population_size = population_size
@@ -8,6 +9,8 @@ class GAModel:
         self.elit_ratio = elit_ratio
         self.crossover_probability = crossover_probability
         self.parents_portion = parents_portion
+        self.crossover_type = 'uniform'
+        self.max_iteration_without_improv = None
 
         self.validate()
 
@@ -26,7 +29,9 @@ class GAModel:
             'mutation_probability': self.mutation_probability,
             'elit_ratio': self.elit_ratio,
             'crossover_probability': self.crossover_probability,
-            'parents_portion': self.parents_portion
+            'parents_portion': self.parents_portion,
+            'crossover_type':self.crossover_type,
+            'max_iteration_without_improv' : self.max_iteration_without_improv
         }
 
     @staticmethod
@@ -73,6 +78,10 @@ class GAModel:
                 value = float(value)
                 if not (0 <= value <= 1):
                     raise ValueError("parents_portion doit être un float entre 0 et 1.")
+            elif key == "crossover_type" :
+                pass
+            elif key == "max_iteration_without_improv":
+                pass
             else:
                  raise ValueError(f"Paramètre inconnu : {key}")
             return True

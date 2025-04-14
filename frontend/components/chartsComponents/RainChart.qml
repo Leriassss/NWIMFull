@@ -32,12 +32,13 @@ Rectangle {
     }
 
     function updateChart(dates, p_series) {
-        chartContainer.minDate = dates[0]
-        chartContainer.maxDate = dates[dates.length-1]
-        chartContainer.minValue = Math.min(...p_series)
-        chartContainer.maxValue = Math.max(...p_series)
-        chartContainer.barValues = p_series
-        chartContainer.axisXValues = dates
+        if(p_series){
+            chartContainer.minDate = dates[0]
+            chartContainer.maxDate = dates[dates.length-1]
+            chartContainer.minValue = Math.min(...p_series)
+            chartContainer.maxValue = Math.max(...p_series)
+            chartContainer.barValues = p_series
+            chartContainer.axisXValues = dates
+        }
     }
-
 }

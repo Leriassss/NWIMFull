@@ -72,13 +72,15 @@ Rectangle {
                     background: Rectangle {
                         color: "white"
                         border.color: {
-                            let errors = parameterModel.parameterErrors[modelData];
-                            if (errors && errors.min) {
-                                return "red"; // Erreur sur min
-                            } else if (errors && errors.max && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
-                                return "red"; // min >= max
-                            } else {
-                                return "gray";
+                            if(parameterModel.parameterErrors){
+                                let errors = parameterModel.parameterErrors[modelData];
+                                if (errors && errors.min) {
+                                    return "red"; // Erreur sur min
+                                } else if (errors && errors.max && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
+                                    return "red"; // min >= max
+                                } else {
+                                    return "gray";
+                                }
                             }
                         }
                         border.width: 1
