@@ -19,21 +19,7 @@ ApplicationWindow {
     Material.theme: Material.Light
     Material.accent: Material.Blue
 
-
-    FileChoose{
-        id: fileChooseComponent
-    }
-    LoadData {
-        id: loadDataDialog
-    }
-    Optimization{
-        id: gapOptim
-    }
-    GridParametersDialog{
-        id:  gridOptim
-    }
-
-    MenuBarModel{
+    menuBar:MenuBarModel{
         width: parent.width
         id: nwimMenuBar
         onOpenFileTriggered: {
@@ -50,11 +36,115 @@ ApplicationWindow {
             gridOptim.open()
         }
     }
+    header: ToolBar {
+            id: toolBar
+            height: 30
+            //implicitHeight: 35
+            clip: true
+            Rectangle{
+                color:"#ebebeb"
+                border.color: "#6b6b6b"
+                border.width: 1
 
+                anchors.fill: parent
+                Row{
+                    anchors.fill: parent
+                    spacing: 1
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("📥")
+                        hoverEnabled: true
+                        ToolTip.delay: 500
+                        ToolTip.timeout: 5000
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Load Parameters")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("💾")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Save Parameters")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Run Model")
+                        text: qsTr("▶️")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+                    ToolSeparator {}
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("🧮")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("ETP Computing")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("🌊")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("BaseFlow Computing")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+                }
+            }
+
+
+       }
     HomePage{
-        anchors.top: nwimMenuBar.bottom
+        anchors.top: toolBar.bottom
         width: parent.width
-        height: parent.height *0.9
+        height: parent.height
     }
+    footer : Rectangle{
+        height: 35
+        width: parent.width
+        color: "#c0c0ff"
+        gradient: Gradient.AwesomePine
+    }
+
+    FileChoose{
+        id: fileChooseComponent
+    }
+    LoadData {
+        id: loadDataDialog
+    }
+    Optimization{
+        id: gapOptim
+    }
+    GridParametersDialog{
+        id:  gridOptim
+    }
+
+
+
 
 }
