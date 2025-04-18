@@ -2,22 +2,26 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
-
+import QtQuick.Effects
 
 import "."
 import "./parameters"
+import "./chartsComponents"
 
 //import "../../io/qml"
 import io.qml
 Rectangle{
-    gradient: Gradient {
-        GradientStop { position: 0.0; color: "#cecece" } // bord haut-gauche
-        GradientStop { position: 1.0; color: "#f0f0f0" } // bord bas-droit
+    color : "#ebebeb"
+    property var parameter_bundle: {
+        "pn":production_params.parameters,
+        "qb":recession_params.parameters,
+        "sim": routing_params.parameters,
+        "loss" : loss_params.parameters
     }
     Row {
         anchors.fill: parent
         id: splitView
-        spacing: 5
+        //spacing: 5
         clip: true
             Rectangle{
                 width: parent.width * 0.25
@@ -41,15 +45,29 @@ Rectangle{
                         horizontalAlignment: Qt.AlignHCenter
                         text: "PARAMETERS"
                         font.bold: true
-                        font.pointSize: 12
+                        font.pointSize: 11
                         padding: 5
                         color: "black"
                         width: parent.width
-                        background: Rectangle{
+                        background: Rectangle {
+                            radius : 2
+                            gradient: Gradient {
+                                                GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
+                                                GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
+                                            }
+                            layer.enabled: parameters.enabled
+                            layer.effect: MultiEffect {
+                                shadowEnabled: true
+                                shadowHorizontalOffset: 2
+                                shadowVerticalOffset: 2
+                                shadowColor: parameters.visualFocus ? "#330066ff" : "#aaaaaa"
+                            }
+                        }
+                        /*background: Rectangle{
                             color: "#d2d2d2"
                             width: parent.width
                             height: parent.height
-                        }
+                        }*/
                     }
 
 
@@ -74,7 +92,7 @@ Rectangle{
                             Rectangle{
                                 SplitView.minimumHeight: 45
                                 SplitView.preferredHeight: 250
-                                color : "transparent"
+                                color : "#ebebeb"
                                 Column {
                                     anchors.fill: parent
                                     spacing: 5
@@ -84,13 +102,14 @@ Rectangle{
                                         width: parent.width
                                         text: "Production Methods"
                                         font.bold: true
-                                        font.pointSize: 12
+                                        font.pointSize: 11
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
                                     Parameters {
+                                        id : production_params
                                         height: childrenRect.height
                                         spacing: 10
                                         width: parent.width - 2*parent.padding
@@ -99,6 +118,7 @@ Rectangle{
                                     }
 
                                     Parameters {
+                                        id : loss_params
                                         height: 75
                                         spacing: 10
                                         width: parent.width - 2*parent.padding
@@ -113,7 +133,7 @@ Rectangle{
                             Rectangle{
                                 SplitView.minimumHeight: 45
                                 SplitView.preferredHeight: 150
-                                color : "transparent"
+                                color : "#ebebeb"
                                 Column {
                                     spacing: 5
                                     padding: 10
@@ -123,13 +143,14 @@ Rectangle{
                                         width: parent.width
                                         text: "Routing Methods"
                                         font.bold: true
-                                        font.pointSize: 12
+                                        font.pointSize: 11
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
                                     Parameters {
+                                        id : routing_params
                                         height: childrenRect.height
                                         spacing: 10
                                         width: parent.width - 2*parent.padding
@@ -141,7 +162,7 @@ Rectangle{
                             }
 
                             Rectangle{
-                                color : "transparent"
+                                color : "#ebebeb"
                                 SplitView.minimumHeight: 100
                                 Column {
                                     anchors.fill: parent
@@ -153,13 +174,14 @@ Rectangle{
                                         width: parent.width
                                         text: "Recession Methods"
                                         font.bold: true
-                                        font.pointSize: 12
+                                        font.pointSize: 11
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
                                     Parameters {
+                                        id : recession_params
                                         height: childrenRect.height
                                         spacing: 10
                                         width: parent.width - 2*parent.padding
@@ -186,14 +208,13 @@ Rectangle{
                 //border.width: 1
                 anchors.right: parent.right
                 //color: "#d2d2d2"
-                gradient: Gradient {
+                /*gradient: Gradient {
                     GradientStop { position: 0.0; color: "#cecece" } // bord haut-gauche
                     GradientStop { position: 1.0; color: "#f0f0f0" } // bord bas-droit
-                }
+                }*/
                 Column {
                     width: parent.width
                     height: parent.height
-                    spacing: 25
 
                     Rectangle {
                         id: plotOptions
@@ -207,115 +228,246 @@ Rectangle{
                             width: parent.width
                             height: parent.height
                             Rectangle {
-                                border.width: 1
-                                anchors.margins: 20
                                 width: parent.width
-                                height: parent.height *0.2
+                                height: parent.height *0.25
                                 color : "transparent"
-                                Text {
+                                Label {
+                                    id : outputLabel
                                     anchors.margins: 5
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: "OUTPUT"
                                     horizontalAlignment: Qt.AlignHCenter
                                     font.bold: true
-                                    font.pointSize: 12
+                                    font.pointSize: 11
                                     padding: 5
                                     color: "black"
                                     width: parent.width
+                                    background: Rectangle {
+                                        radius : 2
+                                        //gradient: Gradient.AboveTheSky
+                                        gradient: Gradient {
+                                                            GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
+                                                            GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
+                                                        }
+                                        layer.enabled: outputLabel.enabled
+                                        layer.effect: MultiEffect {
+                                            shadowEnabled: true
+                                            shadowHorizontalOffset: 2
+                                            shadowVerticalOffset: 2
+                                            shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                                        }
+                                    }
                                 }
                             }
                             Row {
                                 id: parameterGrid
                                 width: parent.width
-                                height: parent.height *0.8
+                                height: parent.height *0.75
                                 spacing : 0
-                                Column{
+                                Rectangle{
                                     width: parent.width * 0.5
                                     height:  parent.height
-                                    Rectangle{
-                                        width: parent.width
-                                        height:  35
-                                        border.width: 1
-                                        border.color: "#3d3d3d"
-                                        color : "transparent"
+                                    border.width: 1
+                                    border.color: "grey"
+                                    color: "transparent"
+                                    Column{
+                                        anchors.fill: parent
+                                        Rectangle{
+                                            color: "transparent"
+                                            width: parent.width
+                                            height:  35
+                                            border.width: 1
+                                            border.color: "grey"
+                                            CustomCheckDelegate{
+                                                text: "CALIBRATION"
+                                                checked: true
+                                                anchors.centerIn: parent
+                                                font.bold: true
+                                                font.pointSize: 10
 
-                                        CheckBox{
-                                            text: "CALIBRATION"
-                                            checked: true
-                                            anchors.centerIn: parent
+                                            }
+                                        }
+                                        Grid{
+                                            width: parent.width
+                                            height:  parent.height * 0.7
+                                            columns: 2
+                                            leftPadding: 10
+                                            Column{
+                                                width: parent.width*0.3
+                                                height:  parent.height
+                                                Label{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    text: "Bilan : "
+                                                    font.bold: true
+                                                    font.pointSize: 10
+                                                    color: "black"
+                                                }
+                                                Label{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    text: "Criteria : "
+                                                    font.bold: true
+                                                    font.pointSize: 10
+                                                    color: "black"
+                                                }
+                                            }
+                                            Column{
+                                                width: parent.width*0.7
+                                                height:  parent.height
+                                                Row{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    spacing: 10
+
+                                                    Label{
+                                                        text: "P"
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        id : calibration_rainfall_sum
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        text: "I"
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        id : calibration_infiltration_sum
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        text : "DS"
+                                                    }
+                                                    Label{
+                                                        id : calibration_stock_sum
+                                                        width: 20
+                                                    }
+                                                }
+                                                Row{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    spacing: 10
+                                                    Label{
+                                                        text: "NSE"
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        id : calibration_nse
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        text: "KGE"
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        id : calibration_kge
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        text : "BIAIS"
+                                                        width: 20
+                                                    }
+                                                    Label{
+                                                        id : calibration_bias
+                                                        width: 20
+                                                    }
+                                                }
+                                            }
 
                                         }
                                     }
-                                    Grid{
-                                        width: parent.width
-                                        height:  parent.height
-                                        columns: 2
-                                        leftPadding: 10
-                                        Column{
-                                            width: parent.width*0.3
-                                            height:  parent.height
-                                            Label{
-                                                width: parent.width
-                                                height:  parent.height *0.5
-                                                text: "Bilan : "
+
+                                }
+
+                                Rectangle{
+                                    width: parent.width * 0.5
+                                    height:  parent.height
+                                    border.width: 1
+                                    border.color: "grey"
+                                    color: "transparent"
+                                    Column{
+                                        anchors.fill: parent
+                                        Rectangle{
+                                            width: parent.width
+                                            height:  35
+                                            border.width: 1
+                                            border.color: "grey"
+                                            color: "transparent"
+
+                                            CustomCheckDelegate{
+                                                text: "VALIDATION"
+                                                checked: true
+                                                anchors.centerIn: parent
                                                 font.bold: true
                                                 font.pointSize: 10
-                                                color: "black"
-                                            }
-                                            Label{
-                                                width: parent.width
-                                                height:  parent.height *0.5
-                                                text: "Criteria : "
-                                                font.bold: true
-                                                font.pointSize: 10
-                                                color: "black"
+
                                             }
                                         }
-                                        Column{
-                                            width: parent.width*0.7
-                                            height:  parent.height
-                                            Row{
-                                                width: parent.width
-                                                height:  parent.height *0.5
-                                                spacing: 10
+                                        Grid{
+                                            width: parent.width
+                                            height:  parent.height * 0.7
+                                            columns: 2
+                                            leftPadding: 10
+                                            Column{
+                                                width: parent.width*0.3
+                                                height:  parent.height
+                                                Label{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    text: "Bilan : "
+                                                    font.bold: true
+                                                    font.pointSize: 10
+                                                    color: "black"
+                                                }
+                                                Label{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    text: "Criteria : "
+                                                    font.bold: true
+                                                    font.pointSize: 10
+                                                    color: "black"
+                                                }
+                                            }
+                                            Column{
+                                                width: parent.width*0.7
+                                                height:  parent.height
+                                                Row{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    spacing: 10
 
-                                                Label{
-                                                    text: "P"
+                                                    Label{
+                                                        text: "P"
+                                                    }
+                                                    Label{
+                                                        text: "I"
+                                                    }
+                                                    Label{
+                                                        text : "DS"
+                                                    }
                                                 }
-                                                Label{
-                                                    text: "I"
-                                                }
-                                                Label{
-                                                    text : "DS"
+                                                Row{
+                                                    width: parent.width
+                                                    height:  parent.height *0.5
+                                                    spacing: 10
+                                                    Label{
+                                                        text: "NSE"
+                                                    }
+                                                    Label{
+                                                        text: "KGE"
+                                                    }
+                                                    Label{
+                                                        text : "BIAIS"
+                                                    }
                                                 }
                                             }
-                                            Row{
-                                                width: parent.width
-                                                height:  parent.height *0.5
-                                                spacing: 10
-                                                Label{
-                                                    text: "NSE"
-                                                }
-                                                Label{
-                                                    text: "KGE"
-                                                }
-                                                Label{
-                                                    text : "BIAIS"
-                                                }
-                                            }
+
                                         }
                                     }
 
-
-
-
-
                                 }
 
-                                ColumnLayout {
-                                    Layout.preferredWidth: parent.width * 0.5
-
-                                }
 
                             }
 
@@ -328,6 +480,38 @@ Rectangle{
                         height: parent.height * 0.8 - parent.spacing
                         border.width: 1
                         border.color: "grey"
+                        clip : true
+                        Row{
+                            width: parent.width
+                            height: parent.height * 0.1
+                            Button {
+                                z : 2
+                                height: parent.height
+                                text: qsTr("💾")
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Save Plot")
+                                background: Rectangle{
+                                    anchors.fill: parent
+                                }
+                            }
+                            Button {
+                                z : 2
+                                height: parent.height
+                                text: qsTr("🔎")
+                                hoverEnabled: true
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Zoom")
+                                background: Rectangle{
+                                    anchors.fill: parent
+                                }
+                            }
+                        }
+
+                        SimChart{
+                            width: parent.width
+                            height: parent.height
+                        }
                     }
                 }
             }

@@ -24,6 +24,8 @@
         "frontend/components/datasetComponents/ETPComponent.qml",
         "api/load_data/EToManager.py",
         "frontend/components/datasetComponents/TempComponent.qml",
-        "frontend/components/datasetComponents/RainComponent.qml"
+        "frontend/components/datasetComponents/RainComponent.qml",
+        "frontend/components/chartsComponents/SimChart.qml",
+        "frontend/components/CustomCheckDelegate.qml"
     ]
 }

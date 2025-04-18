@@ -59,10 +59,10 @@ class TestQML(QObject):
             self._current_method =  method_name
             self._keys = self._factory.getModelParameters(method_name)
             #UTILISER LES CLES PLUTOT QUE LES VALEURS
-            #self._parameters = {key: None for key in self._keys}
+            self._parameters = {key: None for key in self._keys}
             print("-----------------lmlmllmlml")
             print(self._keys)
-            self._parameters = {key: None for key in self._keys.values()}
+            #self._parameters = {key: None for key in self._keys.values()}
             self.methodChanged.emit()
             self.parametersChanged.emit()
 

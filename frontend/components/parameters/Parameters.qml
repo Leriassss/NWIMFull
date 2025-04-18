@@ -12,12 +12,46 @@ Column {
     property var parameterModel
     property string factoryName
 
+    // Get the parameters and the values typed by user
+    property var parameters: parameterModel?.parameters
+
     // Sélecteur de méthode
     ComboBox {
         leftPadding: 10
         width: parent.width
         height: 40
         id: methodSelector
+        background: Rectangle{
+            anchors.fill: parent
+            color: "#ebebeb"
+            border.width: 1
+            border.color: "grey"
+        }
+
+        indicator: Canvas {
+               id: canvas
+               x: methodSelector.width - width - methodSelector.rightPadding
+               y: methodSelector.topPadding + (methodSelector.availableHeight - height) / 2
+               width: 12
+               height: 8
+               contextType: "2d"
+
+               Connections {
+                   target: methodSelector
+                   function onPressedChanged() { canvas.requestPaint(); }
+               }
+
+               onPaint: {
+                   context.reset();
+                   context.moveTo(0, 0);
+                   context.lineTo(width, 0);
+                   context.lineTo(width / 2, height);
+                   context.closePath();
+                   context.fillStyle = methodSelector.pressed ? "#17a81a" : "#21be2b";
+                   context.fill();
+               }
+           }
+
         model: parameterModel?.availableMethods
         onCurrentIndexChanged: {
             parameterModel.setMethod(methodSelector.currentIndex)
@@ -64,6 +98,8 @@ Column {
                     text: parameterModel?.parameters[modelData]
                     onTextChanged: {
                         parameterModel.updateParameter(modelName, text)
+                        console.log("----------------- RESULTATS -----------------------")
+                        console.log(JSON.stringify(parameterModel.parameters))
                     }
                     Layout.preferredWidth: 100 // Largeur fixe pour les TextField
                     Layout.alignment: Qt.AlignRight
@@ -74,7 +110,7 @@ Column {
 
                     // Gestion de l'erreur de validation (bordure rouge en cas d'erreur)
                     background: Rectangle {
-                        color: "white"
+                        color: "#ebebeb"
                         border.color: {
                             parameterModel.parameterErrors[param_value.modelName] !== "" ? "red" : "gray"
                         }

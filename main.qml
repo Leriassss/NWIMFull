@@ -87,9 +87,28 @@ ApplicationWindow {
                         background: Rectangle{
                             anchors.fill: parent
                             color: "transparent"
+                            opacity: ToolButton.hovered ? 1 : 0.3
+                        }
+                        onClicked: {
+                            console.log("------------ HOME PAGE ---------------")
+                            console.log(JSON.stringify(homepage.parameter_bundle))
                         }
                     }
                     ToolSeparator {}
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("📆")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Calibration Length")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+                    ToolSeparator {}
+
                     ToolButton {
                         width: 50
                         height: parent.height
@@ -120,6 +139,7 @@ ApplicationWindow {
 
        }
     HomePage{
+        id : homepage
         anchors.top: toolBar.bottom
         width: parent.width
         height: parent.height

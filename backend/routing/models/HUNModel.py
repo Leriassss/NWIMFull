@@ -37,7 +37,7 @@ class HUNModel:
         """
         try:
             value = float(value)  # S'assure que la valeur est un nombre
-            if key == "time_base" and not isinstance(value, int) or value <= 0:
+            if key == "time_base" and value <= 0:
                 raise ValueError("Le paramètre 'time_base' doit être un entier strictement positif.")
             return True
         except Exception as e:
