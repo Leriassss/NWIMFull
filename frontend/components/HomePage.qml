@@ -76,7 +76,6 @@ Rectangle{
                         width: parent.width
                         height: parent.height * 0.8
                         color : "transparent"
-
                         SplitView {
                             anchors.fill: parent
                             orientation: Qt.Vertical

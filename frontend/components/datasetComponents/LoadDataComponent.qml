@@ -116,7 +116,7 @@ Column{
 
             property var headers: fileHandler.headers // En-têtes du fichier chargé
 
-            property var calib_dates : fileHandler.calibration_dates
+            property var calib_dates : fileHandler.calendar_dates
             onAccepted: {
                 /*columnMapping = {
                     "Dates":datesComboBox.currentText ,
@@ -358,138 +358,95 @@ Column{
             height: parent.height -parent.padding
             border.width: 2
             border.color: "red"
-
+            clip : true
 
             Column {
                 width: parent.width
                 height: parent.height
 
                 Rectangle {
-                    id: plotOptions
-                    width: parent.width - parent.spacing
+                    width: parent.width
                     height: parent.height * 0.15
                     border.width: 1
-
-                    Row {
+                    border.color: "grey"
+                    ColumnLayout{
                         width: parent.width
                         height: parent.height
-                        spacing: 0
+                        Row{
+                            padding: 5
+                            spacing: 5
+                            id : calibrationRow
+                            Layout.preferredWidth:  parent.width * 0.5
+                            Layout.preferredHeight:  parent.height *0.1
 
-                        Rectangle {
-                            width: parent.width
-                            height: parent.height
+                            Label{
+                                text: "FROM : "
+                                font.bold: true
+                                width: 100
+                            }
+
+                            Label {
+                                id: calibrationDate
+                                text : fileHandler.calibrationDate
+                                width: 150
+                            }
+
+                            Label{
+                                text: "TO : "
+                                font.bold: true
+                                width: 100
+                            }
+
+                            Label {
+                                id: validationDate
+                                text : fileHandler.validationDate
+                                width: 150
+                            }
+
+                        }
+
+                        Rectangle{
                             border.width: 1
-                            Column{
-                                width: parent.width
-                                height: parent.height
-                                padding: 5
-                                Row{
-                                    padding: 5
-                                    spacing: 10
-                                    id : calibrationRow
-                                    width: parent.width
-                                    height: parent.height *0.5
-
-                                    Label{
-                                        text: "FROM"
-                                        font.bold: true
-                                        width: 70
-                                    }
-
-                                    ComboBox {
-                                        id: calibrationYear
-                                        model : Object.keys(columnMappingDialog.calib_dates)
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                        onCurrentTextChanged: {
-                                            calibrationMonth.model = Object.keys(columnMappingDialog.calib_dates[calibrationYear.currentText])
-                                            console.log("---------COMBO ------------ 1")
-                                            console.log(model)
-                                        }
-                                    }
-                                    Label{
-                                        text: "-"
-                                        font.bold: true
-                                    }
-
-                                    ComboBox {
-                                        id: calibrationMonth
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                        onCurrentTextChanged: {
-                                            calibrationDay.model =columnMappingDialog.calib_dates[calibrationYear.currentText][calibrationMonth.currentText]
-
-                                        }
-                                    }
-                                    Label{
-                                        text: "-"
-                                        font.bold: true
-                                    }
-                                    ComboBox {
-                                        id: calibrationDay
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                    }
-                                }
-
-                                Row{
-                                    padding: 5
-                                    spacing: 10
-                                    id : validationRow
-                                    width: parent.width
-                                    height: parent.height *0.5
-
-                                    Label{
-                                        text: "TO"
-                                        font.bold: true
-                                        width: 70
-                                    }
-
-                                    ComboBox {
-                                        id: validationYear
-                                        model : Object.keys(columnMappingDialog.calib_dates)
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                        onCurrentTextChanged: {
-                                            validationMonth.model = Object.keys(columnMappingDialog.calib_dates[validationYear.currentText])
-                                            console.log("---------COMBO ------------ 1")
-                                            console.log(model)
-                                        }
-                                    }
-                                    Label{
-                                        text: "-"
-                                        font.bold: true
-                                    }
-
-                                    ComboBox {
-                                        id: validationMonth
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                        onCurrentTextChanged: {
-                                            validationDay.model =columnMappingDialog.calib_dates[validationYear.currentText][validationMonth.currentText]
-
-                                        }
-                                    }
-                                    Label{
-                                        text: "-"
-                                        font.bold: true
-                                    }
-                                    ComboBox {
-                                        id: validationDay
-                                        currentIndex: 0
-                                        Layout.fillWidth: true
-                                    }
+                            border.color: "grey"
+                            Layout.preferredWidth:  parent.width * 0.5
+                            Layout.preferredHeight:  50
+                            Button{
+                                leftPadding: 5
+                                text: qsTr("Define")
+                                font.bold: true
+                                width: 100
+                                anchors.centerIn: parent
+                                onClicked: {
+                                    chooseDatePopup.open()
                                 }
 
                             }
+
+                            Dialog{
+                                id : chooseDatePopup
+                                width: 500
+                                height: 200
+                                standardButtons: Dialog.Ok | Dialog.Cancel
+                                title: qsTr("CHOOSE PERIODS BEGININS")
+
+                                CalibrationLength{
+                                    id : calibrationLength
+                                    anchors.fill: parent
+                                    calibration_dates:columnMappingDialog.calib_dates
+                                }
+                                onAccepted: {
+                                    fileHandler.updateCalibrationAndValibationDates(calibrationLength.user_calibration)
+                                }
+                            }
                         }
+
 
                     }
                 }
 
                 Rectangle {
                     id: plot
-                    width: parent.width-10
+                    width: parent.width
                     height: parent.height * 0.85
                     //anchors.centerIn: parent
                     border.width: 2

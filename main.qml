@@ -133,6 +133,32 @@ ApplicationWindow {
                             color: "transparent"
                         }
                     }
+                    ToolSeparator {}
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("📈")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Prediction")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
+
+                    ToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("🛠️")
+                        hoverEnabled: true
+                        ToolTip.visible: hovered
+                        ToolTip.text: qsTr("Machine Learning Algorithms")
+                        background: Rectangle{
+                            anchors.fill: parent
+                            color: "transparent"
+                        }
+                    }
                 }
             }
 

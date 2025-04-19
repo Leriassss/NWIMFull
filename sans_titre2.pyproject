@@ -26,6 +26,7 @@
         "frontend/components/datasetComponents/TempComponent.qml",
         "frontend/components/datasetComponents/RainComponent.qml",
         "frontend/components/chartsComponents/SimChart.qml",
-        "frontend/components/CustomCheckDelegate.qml"
+        "frontend/components/CustomCheckDelegate.qml",
+        "frontend/components/CalibrationLength.qml"
     ]
 }

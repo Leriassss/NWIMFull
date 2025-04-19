@@ -30,6 +30,12 @@ class FileHandler(QObject):
         self._display_data = []
         self._calage_index = 20
 
+        self._calibration_date = ""
+        self._validation_date = ""
+
+        self._calibration_length = []
+        self._validation_length = []
+
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)
@@ -43,6 +49,9 @@ class FileHandler(QObject):
     tempInfosChanged = Signal()
     datesInfosChanged = Signal()
     displayDataChanged = Signal()
+
+    calibrationDateChanged = Signal()
+    validationDateChanged = Signal()
 
     errorsChanged = Signal()
 
@@ -75,19 +84,20 @@ class FileHandler(QObject):
     def updateDatas(self, key):
         if self._data_dict[key]  and self._datesInfos and self.check_numeric_and_length(key):
             dataset = np.array(self._data_dict[key])
-            sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[:self._calage_index], self._datesInfos["data"][:self._calage_index])
-            sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[self._calage_index:], self._datesInfos["data"][self._calage_index:])
+            dates_infos = np.array(self._datesInfos["data"])
+            sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[self._calibration_length], dates_infos[self._calibration_length])
+            sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[self._validation_length], dates_infos[self._validation_length])
             sum_ann , mean_ann, std_ann = self.annual_statistics(dataset, self._datesInfos["data"])
             return {
                 "data": dataset.tolist(),
-                "data_cal" : dataset[:self._calage_index].tolist(),
-                "data_val" : dataset[self._calage_index:].tolist(),
+                "data_cal" : dataset[self._calibration_length].tolist(),
+                "data_val" : dataset[self._validation_length].tolist(),
                 "min": dataset.min().tolist(),
                 "max": dataset.max().tolist(),
-                "min_cal" : dataset[:self._calage_index].min().tolist(),
-                "max_cal" : dataset[:self._calage_index].max().tolist(),
-                "min_val" : dataset[self._calage_index:].min().tolist(),
-                "max_val" : dataset[self._calage_index:].max().tolist(),
+                "min_cal" : dataset[self._calibration_length].min().tolist(),
+                "max_cal" : dataset[self._calibration_length].max().tolist(),
+                "min_val" : dataset[self._validation_length].min().tolist(),
+                "max_val" : dataset[self._validation_length].max().tolist(),
                 "sum_val" : sum_ann_val.tolist(),
                 "sum_cal" : sum_ann_cal.tolist(),
                 "sum": sum_ann.tolist(),
@@ -158,10 +168,47 @@ class FileHandler(QObject):
         self.calibrationTimeChanged.emit()
 
     @Property(dict, notify=calibrationTimeChanged)
-    def calibration_dates(self):
-        print("APPEL-------------")
+    def calendar_dates(self):
+        print("CALENDAR-------------")
         print(self._calibration_time)
         return self._calibration_time
+
+    @Property(str, notify=calibrationDateChanged)
+    def calibrationDate(self):
+        return self._calibration_date
+
+    @Property(str, notify=validationDateChanged)
+    def validationDate(self):
+        return self._validation_date
+
+    @Slot(dict)
+    def updateCalibrationAndValibationDates(self, dates):
+        print("---------updateCalibrationAndValibationDates (FileHandler)------------")
+        print(dates)
+        calibration_date = dates['calibration']
+        validation_date = dates['validation']
+        try:
+            df = pd.DataFrame(self._data_dict)
+            calibration_date = parser.parse(str(calibration_date))
+            validation_date = parser.parse(str(validation_date))
+            if(calibration_date<=validation_date) :
+                self._calibration_length = df[(df['date'] >= calibration_date) & (df['date'] < validation_date)].index.tolist()
+                self._validation_length = df[(df['date'] < validation_date)].index.tolist()
+            else:
+                self._validation_length = df[(df['date'] >= validation_date) & (df['date'] < calibration_date)].index.tolist()
+                self._calibration_length= df[(df['date'] < calibration_date)].index.tolist()
+
+        except Exception as e:
+            print("Veuillez fournir des valeurs de dates correctes !!!")
+
+        self.calibrationDateChanged.emit()
+        self.validationDateChanged.emit()
+        self.updateDatesInfos()
+        self.updateETPInfos()
+        self.updatePInfos()
+        self.updateQInfos()
+        self.updateTempInfos()
+
 
     # Propriété pour les en-têtes
     @Property(list, notify=headersChanged)
@@ -249,11 +296,11 @@ class FileHandler(QObject):
 
             # Conversion des dates
             parsed_dates = np.vectorize(self.check_and_convert_date)(date_series)
-            dataset = [d.strftime(date_format) for d in parsed_dates]
+            dataset = np.array([d.strftime(date_format) for d in parsed_dates])
             self._datesInfos = {
-                "data": dataset,
-                "data_cal": dataset[:self._calage_index],
-                "data_val": dataset[self._calage_index:],
+                "data": dataset.tolist(),
+                "data_cal": dataset[self._calibration_length].tolist(),
+                "data_val": dataset[self._validation_length].tolist(),
                 "min": parsed_dates[0].strftime(date_format),
                 "max": parsed_dates[-1].strftime(date_format),
                 "count": len(parsed_dates)
@@ -297,7 +344,6 @@ class FileHandler(QObject):
 
             # Extraire les en-têtes et les données
             hd = df.columns.tolist()
-            hd.append("Non défini")
             self._headers =hd
             self._data = df.to_dict(orient="list")
             # Émettre les signaux pour mettre à jour QML
@@ -310,7 +356,7 @@ class FileHandler(QObject):
 
     @Slot(dict)
     def setDictValues(self, data_dict):
-        self._data_dict = { key: [] if value == "Non défini" else self._data[value] for key, value in data_dict.items() }
+        self._data_dict = { key: self._data[value] for key, value in data_dict.items() }
         self.updateDatesInfos()
         self.updateETPInfos()
         self.updatePInfos()
@@ -331,27 +377,27 @@ class FileHandler(QObject):
 
     @Slot(str)
     def initDatesValues(self, key):
-        self._data_dict["Dates"] =  [] if key == "Non défini" else self._data[key]
+        self._data_dict["Dates"] = self._data[key]
         self.updateDatesInfos()
 
 
     @Slot(str)
     def initETPValues(self, key):
-        self._data_dict["ETP"] =  [] if key == "Non défini" else self._data[key]
+        self._data_dict["ETP"] = self._data[key]
         self.updateETPInfos()
 
     @Slot(str)
     def initPValues(self, key):
-        self._data_dict["P"] =  [] if key == "Non défini" else self._data[key]
+        self._data_dict["P"] = self._data[key]
         self.updatePInfos()
 
 
     @Slot(str)
     def initTempValues(self, key):
-        self._data_dict["T"] =  [] if key == "Non défini" else self._data[key]
+        self._data_dict["T"] = self._data[key]
         self.updateTempInfos()
 
     @Slot(str)
     def initQValues(self, key):
-        self._data_dict["Q"] =  [] if key == "Non défini" else self._data[key]
+        self._data_dict["Q"] = self._data[key]
         self.updateQInfos()
