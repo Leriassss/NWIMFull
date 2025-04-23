@@ -118,19 +118,23 @@ Column{
 
             property var calib_dates : fileHandler.calendar_dates
             onAccepted: {
-                /*columnMapping = {
+                columnMapping = {
                     "Dates":datesComboBox.currentText ,
                     "P": pComboBox.currentText,
                     "T": tComboBox.currentText,
                     "Q": qComboBox.currentText,
                     "ETP": etpComboBox.currentText
-                }*/
-                fileHandler.initDatesValues(datesComboBox.currentText)
+                }
+                console.log("---------------- COLUMN MAPPING ------------------")
+                console.log(JSON.stringify(columnMapping))
+                /*fileHandler.initDatesValues(datesComboBox.currentText)
                 fileHandler.initPValues(pComboBox.currentText)
                 fileHandler.initTempValues(tComboBox.currentText)
                 fileHandler.initQValues(qComboBox.currentText)
-                fileHandler.initETPValues(etpComboBox.currentText)
-                fileHandler.calibrationTime()
+                fileHandler.initETPValues(etpComboBox.currentText)*/
+
+                fileHandler.setDictValues(columnMapping)
+
 
                 if(fileHandler.errors.length !==0){
 
@@ -138,13 +142,16 @@ Column{
                 }
                 else{
                     populateTable(fileHandler.dataDict)
+                    fileHandler.calibrationTime()
+
                     /*dataTableModel.setData(fileHandler.dataDict)*/
                     //tableView.appendRow(fileHandler.displayData)
                     //transformData(fileHandler.dataDict)
-                    tempChart.updateChart(fileHandler.datesInfos["data"],fileHandler.tempInfos["data"])
-                    qchart.updateChart(fileHandler.datesInfos["data"],fileHandler.qInfos["data"])
-                    rainChart.updateChart(fileHandler.datesInfos["data"],fileHandler.pInfos["data"])
-                    etpChart.updateChart(fileHandler.datesInfos["data"],fileHandler.etpInfos["data"])
+                    let data_dates = fileHandler.dataDict["Dates"]
+                    tempChart.updateChart(data_dates,fileHandler.dataDict["T"])
+                    qchart.updateChart(data_dates,fileHandler.dataDict["Q"])
+                    rainChart.updateChart(data_dates,fileHandler.dataDict["P"])
+                    etpChart.updateChart(data_dates,fileHandler.dataDict["ETP"])
                     columnMappingDialog.close()
                 }
 
@@ -435,6 +442,8 @@ Column{
                                     calibration_dates:columnMappingDialog.calib_dates
                                 }
                                 onAccepted: {
+                                    console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
+                                    console.log(calibrationLength.user_calibration)
                                     fileHandler.updateCalibrationAndValibationDates(calibrationLength.user_calibration)
                                 }
                             }

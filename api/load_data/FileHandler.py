@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import datetime
+
+from api.load_data.DataManager import DataManager
 from dateutil import parser
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
@@ -9,6 +11,8 @@ from itertools import zip_longest
 class FileHandler(QObject):
     def __init__(self):
         super().__init__()
+
+        self._data_manager = None
         self._headers = []
         self._data = []
 
@@ -60,109 +64,12 @@ class FileHandler(QObject):
         return self._errors
 
 
-    def check_numeric_and_length(self, key):
-        if key in self._data_dict and key != "Dates":
-            data = self._data_dict[key]
-            try:
-                series =  np.array(data, dtype=np.float64)
-            except Exception as e:
-                self._errors.append(f"Les données de la série {key} contiennent des valeurs non numériques")
-                return False
-            if len(data) != len(self._data_dict.get("Dates", [])):
-                self._errors.append(f"Les longueurs des dates et de la série {key} ne correspondent pas")
-                return False
-        return True
-
-    def check_and_convert_date(self, date):
-        try:
-            return parser.parse(str(date))
-        except ValueError:
-            self._errors.append("Format de dates non reconnues")
-            self.errorsChanged.emit()
-            return []
-
-    def updateDatas(self, key):
-        if self._data_dict[key]  and self._datesInfos and self.check_numeric_and_length(key):
-            dataset = np.array(self._data_dict[key])
-            dates_infos = np.array(self._datesInfos["data"])
-            sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[self._calibration_length], dates_infos[self._calibration_length])
-            sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[self._validation_length], dates_infos[self._validation_length])
-            sum_ann , mean_ann, std_ann = self.annual_statistics(dataset, self._datesInfos["data"])
-            return {
-                "data": dataset.tolist(),
-                "data_cal" : dataset[self._calibration_length].tolist(),
-                "data_val" : dataset[self._validation_length].tolist(),
-                "min": dataset.min().tolist(),
-                "max": dataset.max().tolist(),
-                "min_cal" : dataset[self._calibration_length].min().tolist(),
-                "max_cal" : dataset[self._calibration_length].max().tolist(),
-                "min_val" : dataset[self._validation_length].min().tolist(),
-                "max_val" : dataset[self._validation_length].max().tolist(),
-                "sum_val" : sum_ann_val.tolist(),
-                "sum_cal" : sum_ann_cal.tolist(),
-                "sum": sum_ann.tolist(),
-                "mean_cal" : mean_ann_cal.tolist(),
-                "mean_val" : mean_ann_val.tolist(),
-                "mean" : mean_ann.tolist(),
-                "std_cal" : std_ann_cal.tolist(),
-                "std_val" : std_ann_val.tolist(),
-                "std": std_ann.tolist(),
-                "count" : len(dataset)
-            }
-        else:
-            self.errorsChanged.emit()
-            return {
-                "data": [],
-                "data_cal" : None,
-                "data_val" : None,
-                "min": None,
-                "max": None,
-                "min_val" : None,
-                "max_val" : None,
-                "min_cal" : None,
-                "max_cal" : None,
-                "sum_val" : None,
-                "sum_cal" : None,
-                "sum": None,
-                "mean_ann_cal" : None,
-                "mean_ann_val" : None,
-                "mean" : None,
-                "std_ann_cal" :None,
-                "std_ann_val" : None,
-                "std": None,
-                "count" : None
-            }
-
-    def annual_statistics(self, data, dates):
-        df = pd.DataFrame({"date": pd.to_datetime(dates), "value": data})
-        df["year"] = df["date"].dt.year
-        grouped = df.groupby("year")["value"]
-        return grouped.sum().mean(), grouped.mean().mean(), grouped.std().mean()
-
     @Slot()
     def calibrationTime(self):
+        print("------------------- CT")
+        print(self._data_dict)
         dates = self._data_dict["Dates"]
-        df = pd.DataFrame({"date": pd.to_datetime(dates)})
-
-        # Extraction de l'année, du mois et du jour
-        df["year"] = df["date"].dt.year.astype(str)
-        df["month"] = df["date"].dt.month.astype(str)
-        df["day"] = df["date"].dt.day
-
-        # Construction du dictionnaire imbriqué
-        result = {}
-        for _, row in df.iterrows():
-            year, month, day = row["year"], row["month"], row["day"]
-
-            if year not in result:
-                result[year] = {}
-
-            if month not in result[year]:
-                result[year][month] = []
-
-            result[year][month].append(day)
-
-        self._calibration_time = result
+        self._calibration_time = self._data_manager.getDatasDatesCalendar(dates)
         print("APPEL------------- 2")
         print(self._calibration_time)
         self.calibrationTimeChanged.emit()
@@ -183,31 +90,33 @@ class FileHandler(QObject):
 
     @Slot(dict)
     def updateCalibrationAndValibationDates(self, dates):
-        print("---------updateCalibrationAndValibationDates (FileHandler)------------")
+        print("---------- uCAVD (fh)-----------")
         print(dates)
-        calibration_date = dates['calibration']
-        validation_date = dates['validation']
-        try:
-            df = pd.DataFrame(self._data_dict)
-            calibration_date = parser.parse(str(calibration_date))
-            validation_date = parser.parse(str(validation_date))
-            if(calibration_date<=validation_date) :
-                self._calibration_length = df[(df['date'] >= calibration_date) & (df['date'] < validation_date)].index.tolist()
-                self._validation_length = df[(df['date'] < validation_date)].index.tolist()
-            else:
-                self._validation_length = df[(df['date'] >= validation_date) & (df['date'] < calibration_date)].index.tolist()
-                self._calibration_length= df[(df['date'] < calibration_date)].index.tolist()
-
-        except Exception as e:
-            print("Veuillez fournir des valeurs de dates correctes !!!")
+        try :
+            self._calibration_length, self._validation_length = self._data_manager.updateCalibrationAndValibationDates(dates)
+        except :
+            self._errors.append("Les dates fournies sont incorrectes")
+            self.errorsChanged.emit()
 
         self.calibrationDateChanged.emit()
         self.validationDateChanged.emit()
-        self.updateDatesInfos()
-        self.updateETPInfos()
-        self.updatePInfos()
-        self.updateQInfos()
-        self.updateTempInfos()
+
+        self.updateFields()
+
+        self.qInfosChanged.emit()
+        self.pInfosChanged.emit()
+        self.tempInfosChanged.emit()
+        self.etpInfosChanged.emit()
+        self.datesInfosChanged.emit()
+
+
+    @Slot()
+    def updateFields(self):
+        self._qInfos = self._data_manager.updateDatas("Q", self._calibration_length, self._validation_length)
+        self._pInfos = self._data_manager.updateDatas("P", self._calibration_length, self._validation_length)
+        self._tempInfos = self._data_manager.updateDatas("T", self._calibration_length, self._validation_length)
+        self._etpInfos = self._data_manager.updateDatas("ETP", self._calibration_length, self._validation_length)
+        self._datesInfos = self._data_manager.updateDatesInfos(self._data_dict["Dates"], self._calibration_length, self._validation_length)
 
 
     # Propriété pour les en-têtes
@@ -224,92 +133,22 @@ class FileHandler(QObject):
     def dataDict(self):
         return self._data_dict
 
-    @Slot()
-    def updateQInfos(self):
-        self._qInfos = self.updateDatas("Q")
-        self._data_dict["Q"] = self._qInfos["data"]
-        self.qInfosChanged.emit()
-        self.dataDictChanged.emit()
-
     @Property(dict, notify=qInfosChanged)
     def qInfos(self):
         return self._qInfos
-
-    @Slot()
-    def updatePInfos(self):
-        self._pInfos = self.updateDatas("P")
-        self._data_dict["P"] = self._pInfos["data"]
-        self.pInfosChanged.emit()
-        self.dataDictChanged.emit()
 
     @Property(dict, notify=pInfosChanged)
     def pInfos(self):
         return self._pInfos
 
-    @Slot()
-    def updateTempInfos(self):
-        self._tempInfos = self.updateDatas("T")
-        self._data_dict["T"] = self._tempInfos["data"]
-        self.tempInfosChanged.emit()
-        self.dataDictChanged.emit()
-
     @Property(dict, notify=tempInfosChanged)
     def tempInfos(self):
         return self._tempInfos
 
-    @Slot()
-    def updateETPInfos(self):
-        self._etpInfos = self.updateDatas("ETP")
-
-        self._data_dict["ETP"] = self._etpInfos["data"]
-        self.etpInfosChanged.emit()
-        self.dataDictChanged.emit()
 
     @Property(dict, notify=etpInfosChanged)
     def etpInfos(self):
         return self._etpInfos
-
-    @Slot()
-    def transform_data(self):
-        keys = ["Dates", "P", "T", "Q", "ETP"]
-
-            # Utilisation de zip pour combiner les listes
-        transformed = [
-            dict(zip(keys, row))
-            for row in zip(*[self._data_dict[key] for key in keys])
-        ]
-        self._display_data = transformed
-        self.displayDataChanged.emit()
-
-
-    @Property("QVariant", notify=displayDataChanged)
-    def displayData(self):
-        print("----------------------------")
-        print(self._display_data[0:200])
-        return self._display_data
-
-    @Slot()
-    def updateDatesInfos(self):
-        if self._data_dict["Dates"]:
-            date_series = self._data_dict["Dates"]
-            date_format = self._date_format[self._user_format]
-
-            # Conversion des dates
-            parsed_dates = np.vectorize(self.check_and_convert_date)(date_series)
-            dataset = np.array([d.strftime(date_format) for d in parsed_dates])
-            self._datesInfos = {
-                "data": dataset.tolist(),
-                "data_cal": dataset[self._calibration_length].tolist(),
-                "data_val": dataset[self._validation_length].tolist(),
-                "min": parsed_dates[0].strftime(date_format),
-                "max": parsed_dates[-1].strftime(date_format),
-                "count": len(parsed_dates)
-            }
-
-            self._data_dict["Dates"] = self._datesInfos["data"]
-
-        self.datesInfosChanged.emit()
-        self.dataDictChanged.emit()
 
 
     @Property(dict, notify=datesInfosChanged)
@@ -328,7 +167,6 @@ class FileHandler(QObject):
     def getDateFormat(self, index):
         self._user_format =  index
         self.userFormatChanged.emit()
-
 
 
     @Slot(str)
@@ -356,48 +194,19 @@ class FileHandler(QObject):
 
     @Slot(dict)
     def setDictValues(self, data_dict):
-        self._data_dict = { key: self._data[value] for key, value in data_dict.items() }
-        self.updateDatesInfos()
-        self.updateETPInfos()
-        self.updatePInfos()
-        self.updateQInfos()
-        self.updateTempInfos()
+        self._errors = []
+        try :
+            self._data_manager = DataManager(self._data, data_dict)
+            self._data_dict = self._data_manager._data_dict
+            print("----------- setDictValues (FILEHANDLER) -----------")
+            print(self._data_dict)
+            self.dataDictChanged.emit()
+        except Exception as e :
+            print(" EXCEPTION--------------")
+            print(e.args[0])
+            self._errors = e.args[0].split(";")
+            self.errorsChanged.emit()
 
 
-        #self.transform_data()
-
-    #POUR LE CALCUL DE L'ETP DANS L'OPTION ETP
-    @Slot(dict)
-    def setEToValues(self, etp_list):
-        self._data_dict["ETP"] = etp_list["ETP"]
-        self._data_dict["Dates"] = etp_list["Dates"]
-        self.updateDatesInfos()
-        self.updateETPInfos()
 
 
-    @Slot(str)
-    def initDatesValues(self, key):
-        self._data_dict["Dates"] = self._data[key]
-        self.updateDatesInfos()
-
-
-    @Slot(str)
-    def initETPValues(self, key):
-        self._data_dict["ETP"] = self._data[key]
-        self.updateETPInfos()
-
-    @Slot(str)
-    def initPValues(self, key):
-        self._data_dict["P"] = self._data[key]
-        self.updatePInfos()
-
-
-    @Slot(str)
-    def initTempValues(self, key):
-        self._data_dict["T"] = self._data[key]
-        self.updateTempInfos()
-
-    @Slot(str)
-    def initQValues(self, key):
-        self._data_dict["Q"] = self._data[key]
-        self.updateQInfos()
