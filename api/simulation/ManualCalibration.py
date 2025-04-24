@@ -1,0 +1,118 @@
+import pandas as pd
+import numpy as np
+import datetime
+
+from backend.simulation.Simulation import Simulation
+from backend.ptq.PTQ import PTQ
+from api.load_data.DataManager import DataManager
+from dateutil import parser
+from PySide6.QtCore import QObject, Signal, Slot, Property
+from PySide6.QtQml import QmlElement
+from itertools import zip_longest
+
+class ManualCalibration(QObject):
+    def __init__(self):
+        super().__init__()
+        self._parameter_bundle =  {}
+        self._parameters_methods = {}
+        self._ptq = {}
+
+        self._errors = []
+        self._sim = {
+                    "SIM" : {"CALIBRATION":[], "VALIDATION":[]},
+                     "OBS" : {"CALIBRATION":[], "VALIDATION":[]},
+                    "DATES" : {"CALIBRATION":[], "VALIDATION":[]}
+                    }
+
+
+    parameters_type = ["pn","qb","sim","loss"]
+    paramsBundleChanged = Signal()
+    errorsChanged = Signal()
+    simChanged = Signal()
+
+    @Property(list, notify=errorsChanged)
+    def errors(self):
+        return self._errors
+
+    @Property(dict, notify=simChanged)
+    def simulationValues(self):
+        return self._sim
+
+    @Property(dict, notify=paramsBundleChanged)
+    def paramsBundle(self):
+            return self._parameter_bundle
+
+    @Slot(dict, dict)
+    def setParameters(self, params_dict, ptq):
+        self._errors = []
+
+        self._parameter_bundle =  {
+        "pn":None,"qb":None,"sim": None,"loss" : None
+        }
+        self._parameters_methods = {
+        "pn":None,"qb":None,"sim": None,"loss" : None
+        }
+
+        self._ptq = ptq
+
+        if self.check_keys_match(params_dict, self.parameters_type):
+            for key in self.parameters_type :
+                obj = params_dict[key]
+                #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
+                methodKeys = list(obj.property('methodKeys').keys())
+                parameters_dict = obj.property('parameters')
+                if self.check_keys_match(parameters_dict, methodKeys) :
+                    self._parameter_bundle[key] = list(parameters_dict.values())
+                    self._parameters_methods[key] = obj.property('currentMethod')
+
+                    self.paramsBundleChanged.emit()
+                else:
+                    self._errors.append("Required parameters not provided")
+        else:
+            self._errors.append("Required methods not provided")
+
+
+        print("---- setParameters MC --------")
+        print(self._parameter_bundle)
+
+        if any(item is None for values in self._parameter_bundle.values() for item in values):
+            self._errors.append("Provided parameters are non-correct")
+            return
+
+
+        print(self._errors)
+        print("*/*/*/*/*//*/*/")
+        calibration_df = pd.DataFrame(self._ptq["CALIBRATION"])
+        validation_df = pd.DataFrame(self._ptq["VALIDATION"])
+
+        ptq_calibration = PTQ(calibration_df["P"], calibration_df["ETP"],
+            calibration_df["Q"], calibration_df["Dates"])
+
+        ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
+            validation_df["Q"], validation_df["Dates"])
+
+        sim = Simulation(self._parameters_methods["pn"],self._parameters_methods["qb"],
+        self._parameters_methods["sim"],self._parameters_methods["loss"], ptq_calibration, ptq_validation)
+
+        hun_sim_cal = sim.manual_calibration(self._parameter_bundle)
+
+        hun_sim_val = sim.validation()
+
+        self._sim["SIM"]["CALIBRATION"] = hun_sim_cal.tolist()
+        self._sim["SIM"]["VALIDATION"] = hun_sim_val[1].tolist()
+        self._sim["OBS"]["CALIBRATION"] = calibration_df["Q"].tolist()
+        self._sim["OBS"]["VALIDATION"] = validation_df["Q"].tolist()
+
+        self._sim["DATES"]["CALIBRATION"] = calibration_df["Dates"].tolist()
+        self._sim["DATES"]["VALIDATION"] = validation_df["Dates"].tolist()
+        print("------------------------- SIM ---------------")
+        print(self._sim)
+
+        self.simChanged.emit()
+
+
+
+    def check_keys_match(self, d, keys_list):
+        dict_keys = set(d.keys())
+        list_keys = set(keys_list)
+        return dict_keys == list_keys

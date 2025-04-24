@@ -12,10 +12,22 @@ class DataManager:
         def __init__(self, data, columnMapping):
             self._errors = []
             self._data_dict = self.setDictValues(data, columnMapping)
+            self._ptq = {
+              "CALIBRATION" : {"Dates" : None, "P" : None, "T" : None, "Q" : None},
+              "VALIDATION" : {"Dates" : None, "P" : None, "T" : None, "Q" : None}
+            }
 
+        def check_keys_match(self, d, keys_list):
+            dict_keys = set(d.keys())
+            list_keys = set(keys_list)
+
+            return dict_keys == list_keys
 
         def setDictValues(self, data, columnMapping):
             data_dict_values = { key: data[value] for key, value in columnMapping.items() }
+            if not self.check_keys_match(data_dict_values, ["Dates","T", "ETP", "Q", "P"]):
+                raise Exception("Des Colonnes de données sont manquantes!")
+
             self._errors = []
             for key in columnMapping.keys():
                 self.check_numeric_and_length(data_dict_values, key,self._errors)
@@ -54,10 +66,8 @@ class DataManager:
             sum_ann_cal , mean_ann_cal, std_ann_cal = self.annual_statistics(dataset[c_length], dates_infos[c_length])
             sum_ann_val , mean_ann_val, std_ann_val = self.annual_statistics(dataset[v_length], dates_infos[v_length])
             sum_ann , mean_ann, std_ann = self.annual_statistics(dataset, self._data_dict["Dates"])
-            print("------------updateDatas (DM)------------------")
-            print(dataset)
-            print(c_length)
-            print(v_length)
+            self._ptq["CALIBRATION"][key] = dataset[c_length].tolist()
+            self._ptq["VALIDATION"][key] = dataset[v_length].tolist()
             return {
                     "data": dataset.tolist(),
                     "data_cal" : dataset[c_length].tolist(),
@@ -111,29 +121,20 @@ class DataManager:
             return result
 
         def updateCalibrationAndValibationDates(self, dates):
-            calibration_date = dates['calibration']
-            validation_date = dates['validation']
+            calibration_date = parser.parse(str(dates['calibration']))
+            validation_date = parser.parse(str(dates['validation']))
+            if abs((calibration_date-validation_date).days) < 10 :
+                raise Exception("L'écart Calage-Validation est insuffisant")
             df = pd.DataFrame(self._data_dict)
             df['Dates'] = pd.to_datetime(df['Dates'])
-            print("---------updateCalibrationAndValibationDates (DM)------------1")
-            calibration_date = parser.parse(str(calibration_date))
-            validation_date = parser.parse(str(validation_date))
-            print("---------updateCalibrationAndValibationDates (DM)------------2")
-            print(df)
-            print(calibration_date, validation_date)
+
             if(calibration_date<=validation_date):
-                print("---------updateCalibrationAndValibationDates (DM)------------4")
-                calibration_length = df[(df['Dates'] >= calibration_date) & (df['Dates'] < validation_date)].index.tolist()
-                validation_length = df[(df['Dates'] < validation_date)].index.tolist()
-                print("---------updateCalibrationAndValibationDates (DM)------------4-2")
+                calibration_length = df[(df['Dates'] >= calibration_date) & (df['Dates'] < validation_date)].index
+                validation_length = df[(df['Dates'] >= validation_date)].index
             else:
-                print("---------updateCalibrationAndValibationDates (DM)------------5")
-                validation_length = df[(df['date'] >= validation_date) & (df['date'] < calibration_date)].index.tolist()
-                calibration_length= df[(df['date'] < calibration_date)].index.tolist()
-            print("---------updateCalibrationAndValibationDates (DM)------------3")
-            print(calibration_length)
-            print(validation_length)
-            return calibration_length, validation_length
+                validation_length = df[(df['Dates'] >= validation_date) & (df['Dates'] < calibration_date)].index.tolist()
+                calibration_length= df[(df['Dates'] >= calibration_date)].index
+            return [calibration_length, validation_length , calibration_date.strftime("%Y-%m-%d"), validation_date.strftime("%Y-%m-%d")]
 
 
         def updateDatesInfos(self, date_series, c_length, v_length):
@@ -143,10 +144,13 @@ class DataManager:
                 parsed_dates = np.vectorize(self.check_and_convert_date)(date_series)
             except Exception :
                 self._errors.append("Format de dates non reconnues")
-            parsed_dates = []
+                parsed_dates = []
 
             dataset = np.array([d.strftime(date_format) for d in parsed_dates])
             print("-------- updateDatesInfos (DATAMANAGER)---------------")
+            print(dataset)
+            print(c_length)
+            print(v_length)
             print({
                 "data": dataset.tolist(),
                 "data_cal": dataset[c_length].tolist(),
@@ -155,6 +159,8 @@ class DataManager:
                 "max": parsed_dates[-1].strftime(date_format),
                 "count": len(parsed_dates)
             })
+            self._ptq["CALIBRATION"]["Dates"] = dataset[c_length].tolist()
+            self._ptq["VALIDATION"]["Dates"] = dataset[v_length].tolist()
             return  {
                     "data": dataset.tolist(),
                     "data_cal": dataset[c_length].tolist(),

@@ -39,6 +39,9 @@ class BaseFlowRoutine:
         #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
         self.a,self.b  = self.regBaseFlow(data['qbase'] , qobs)
         #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
+        print("--------- BFR -----------")
+        print(prev_day-1)
+        print(data)
         q_obs_mean = data["qmean"][prev_day-1]
         #DETERMINATION DU DEBIT DE BASE PRECEDENT
         q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)
@@ -100,9 +103,28 @@ class BaseFlowRoutine:
 
         
         daily_avg = df.groupby(["month", "day"])[["Q_obs"]].mean().reset_index()
+
+        full_days = pd.date_range(start="2020-01-01", end="2020-12-31")
+        full_days_df = pd.DataFrame({
+            "month": full_days.month,
+            "day": full_days.day
+        })
+
+        # Merge pour garantir 366 jours dans le résultat
+        merged = full_days_df.merge(daily_avg, on=["month", "day"], how="left")
+        idx_29_feb = merged[(merged["month"] == 2) & (merged["day"] == 29)].index
+
+        if not idx_29_feb.empty:
+            idx = idx_29_feb[0]
+            # On récupère les valeurs du 28 février et du 1er mars
+            val_before = merged.loc[idx - 1, "Q_obs"]
+            val_after = merged.loc[idx + 1, "Q_obs"]
+            # On remplace le NaN du 29 février par leur moyenne
+            merged.loc[idx, "Q_obs"] = np.nanmean([val_before, val_after])
         
-        return daily_avg["Q_obs"]
+        return merged["Q_obs"]
     
+
     def get_qobs_mean(self, date_str):
         date = pd.to_datetime(date_str)
 

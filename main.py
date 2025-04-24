@@ -13,6 +13,7 @@ from api.load_data.FileHandler import FileHandler
 from api.load_data.TableModel import TableModel
 from api.load_data.EToManager import EToManager
 from api.FactoryManager import FactoryManager
+from api.simulation.ManualCalibration import ManualCalibration
 
 # Implémentation de votre Message Handler
 def qtMessageHandler(mode, context, message):
@@ -41,10 +42,14 @@ if __name__ == "__main__":
     eto_manager = EToManager()
     model = TableModel()
     factory_manager = FactoryManager()
+    manual_calibration = ManualCalibration()
+
+    engine.rootContext().setContextProperty("manualCalibration", manual_calibration)
     engine.rootContext().setContextProperty("dataTableModel", model)
     engine.rootContext().setContextProperty("fileHandler", file_handler)
     engine.rootContext().setContextProperty("etoManager", eto_manager)
     engine.rootContext().setContextProperty("factoryManager", factory_manager)
+
     qmlRegisterType(GridParametersQML, "io.qml", 1, 0, "GridParametersQML")
 
 

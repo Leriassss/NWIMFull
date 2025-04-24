@@ -40,6 +40,7 @@ class FileHandler(QObject):
         self._calibration_length = []
         self._validation_length = []
 
+        self._ptq ={}
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)
@@ -57,12 +58,18 @@ class FileHandler(QObject):
     calibrationDateChanged = Signal()
     validationDateChanged = Signal()
 
+    ptqChanged = Signal()
+
     errorsChanged = Signal()
+
 
     @Property(list, notify=errorsChanged)
     def errors(self):
         return self._errors
 
+    @Property(dict, notify=ptqChanged)
+    def ptq(self):
+        return self._ptq
 
     @Slot()
     def calibrationTime(self):
@@ -90,24 +97,37 @@ class FileHandler(QObject):
 
     @Slot(dict)
     def updateCalibrationAndValibationDates(self, dates):
-        print("---------- uCAVD (fh)-----------")
-        print(dates)
-        try :
-            self._calibration_length, self._validation_length = self._data_manager.updateCalibrationAndValibationDates(dates)
-        except :
-            self._errors.append("Les dates fournies sont incorrectes")
+        self._errors = []
+        try : 
+            dates_list = self._data_manager.updateCalibrationAndValibationDates(dates)
+            self._calibration_length = dates_list[0]
+            self._validation_length = dates_list[1]
+            self._calibration_date =dates_list[2]
+            self._validation_date = dates_list[3]
+            self.calibrationDateChanged.emit()
+            self.validationDateChanged.emit()
+            print("---------- uCAVD (fh)-----------")
+            print(dates)
+            print(self._calibration_date, self._validation_date)
+            print(" --------- EMISSION --------------")
+            self.updateFields()
+            self._ptq = self._data_manager._ptq
+
+            print(self._ptq)
+
+            self.qInfosChanged.emit()
+            self.pInfosChanged.emit()
+            self.tempInfosChanged.emit()
+            self.etpInfosChanged.emit()
+            self.datesInfosChanged.emit()
+            self.ptqChanged.emit()
+
+        except Exception as e:
+            print('EXECEPTION LEVEE ------------------------------')
+            print(e)
+            self._errors = e.args[0].split(";")
             self.errorsChanged.emit()
 
-        self.calibrationDateChanged.emit()
-        self.validationDateChanged.emit()
-
-        self.updateFields()
-
-        self.qInfosChanged.emit()
-        self.pInfosChanged.emit()
-        self.tempInfosChanged.emit()
-        self.etpInfosChanged.emit()
-        self.datesInfosChanged.emit()
 
 
     @Slot()
@@ -198,12 +218,12 @@ class FileHandler(QObject):
         try :
             self._data_manager = DataManager(self._data, data_dict)
             self._data_dict = self._data_manager._data_dict
-            print("----------- setDictValues (FILEHANDLER) -----------")
-            print(self._data_dict)
             self.dataDictChanged.emit()
+            self._calibration_date =self._data_dict["Dates"][0]
+            self._validation_date = self._data_dict["Dates"][0]
+            self.calibrationDateChanged.emit()
+            self.validationDateChanged.emit()
         except Exception as e :
-            print(" EXCEPTION--------------")
-            print(e.args[0])
             self._errors = e.args[0].split(";")
             self.errorsChanged.emit()
 

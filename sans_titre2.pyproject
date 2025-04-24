@@ -27,9 +27,11 @@
         "frontend/components/datasetComponents/RainComponent.qml",
         "frontend/components/chartsComponents/SimChart.qml",
         "frontend/components/CustomCheckDelegate.qml",
-        "frontend/components/CalibrationLength.qml",
+        "frontend/components/CalendarDialog.qml",
         "api/load_data/FileManager.py",
         "api/load_data/DataManager.py",
-        "api/load_data/PandasModel.py"
+        "api/load_data/PandasModel.py",
+        "frontend/components/DataErrorsDialog.qml",
+        "api/simulation/ManualCalibration.py"
     ]
 }

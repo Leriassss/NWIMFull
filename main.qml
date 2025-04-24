@@ -78,20 +78,44 @@ ApplicationWindow {
                         }
                     }
                     ToolButton {
+                        id : run
                         width: 50
                         height: parent.height
                         hoverEnabled: true
                         ToolTip.visible: hovered
                         ToolTip.text: qsTr("Run Model")
                         text: qsTr("▶️")
+                        //enabled: false
                         background: Rectangle{
                             anchors.fill: parent
-                            color: "transparent"
-                            opacity: ToolButton.hovered ? 1 : 0.3
+                            color: "#ebebeb"
+                            opacity: run.hovered ?  1 : 0.3
+                            radius: run.hovered ?  5 : 0
+                            border.width: run.hovered ? 1 : 0
+                            border.color: run.hovered ?  "#1fa869" : "transparent"
+                        }
+
+                        DataErrorsDialog {
+                            id: runningErrors
+                            title: "❌ ERREURS DETECTEES !!!"
+                            standardButtons: Dialog.Ok
+                            width: 400
+                            height: 300
+                            errors : manualCalibration.errors
                         }
                         onClicked: {
+
                             console.log("------------ HOME PAGE ---------------")
                             console.log(JSON.stringify(homepage.parameter_bundle))
+                            //console.log(JSON.stringify(homepage.parameter_bundle2))
+                            manualCalibration.setParameters(homepage.parameter_bundle2, fileHandler.ptq)
+                            if(manualCalibration.errors.length !==0){
+                                console.log(JSON.stringify(manualCalibration.errors))
+                                runningErrors.open()
+                            }
+                            else{
+                                homepage.runningClicked()
+                            }
                         }
                     }
                     ToolSeparator {}
@@ -106,6 +130,38 @@ ApplicationWindow {
                             anchors.fill: parent
                             color: "transparent"
                         }
+                        onClicked: {
+                            chooseDatePopup.open()
+                        }
+
+                        CalendarDialog{
+                            id : chooseDatePopup
+                            width: 500
+                            height: 200
+                            standardButtons: Dialog.Ok | Dialog.Cancel
+                            title: qsTr("CHOOSE PERIODS BEGININS")
+                            calibration_dates : fileHandler.calendar_dates
+                            onAccepted: {
+                                fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
+                                if(fileHandler.errors.length !==0){
+
+                                    dataErrorsDialog.open()
+
+                                }
+                            }
+                        }
+
+                        DataErrorsDialog {
+                            id: dataErrorsDialog
+                            title: "❌ ERREURS DETECTEES !!!"
+                            standardButtons: Dialog.Ok
+                            width: 400
+                            height: 300
+                            errors: fileHandler.errors
+
+
+                        }
+
                     }
                     ToolSeparator {}
 
@@ -169,6 +225,9 @@ ApplicationWindow {
         anchors.top: toolBar.bottom
         width: parent.width
         height: parent.height
+        onRunningClicked: {
+
+        }
     }
     footer : Rectangle{
         height: 35

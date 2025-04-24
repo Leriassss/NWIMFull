@@ -56,47 +56,14 @@ Column{
         }
     }
 
-    Dialog {
+    DataErrorsDialog {
         id: dataErrorsDialog
         title: "❌ ERREURS DETECTEES !!!"
         standardButtons: Dialog.Ok
         width: 400
         height: 300
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
+        errors: fileHandler.errors
 
-        property var errors: fileHandler.errors
-
-        Rectangle{
-            anchors.fill: parent
-            border.width: 1
-            ListView {
-                id: errorListView
-                model: dataErrorsDialog.errors
-                anchors.fill: parent
-                delegate: Item {
-                    width: errorListView.width
-                    height: 30
-                    Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        //color: "lightgray"
-                        border.color: "gray"
-                        Text {
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            padding: 5
-                            text: modelData
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                }
-            }
-
-            }
-        onAccepted:{
-            columnMappingDialog.open()
-        }
     }
 
 
@@ -139,6 +106,7 @@ Column{
                 if(fileHandler.errors.length !==0){
 
                     dataErrorsDialog.open()
+                    console.log(JSON.stringify(fileHandler.errors))
                 }
                 else{
                     populateTable(fileHandler.dataDict)
@@ -387,7 +355,7 @@ Column{
                             Layout.preferredHeight:  parent.height *0.1
 
                             Label{
-                                text: "FROM : "
+                                text: " CALIBRATION : "
                                 font.bold: true
                                 width: 100
                             }
@@ -399,7 +367,7 @@ Column{
                             }
 
                             Label{
-                                text: "TO : "
+                                text: "VALIDATION : "
                                 font.bold: true
                                 width: 100
                             }
@@ -429,22 +397,24 @@ Column{
 
                             }
 
-                            Dialog{
+
+                            CalendarDialog{
                                 id : chooseDatePopup
                                 width: 500
                                 height: 200
                                 standardButtons: Dialog.Ok | Dialog.Cancel
                                 title: qsTr("CHOOSE PERIODS BEGININS")
-
-                                CalibrationLength{
-                                    id : calibrationLength
-                                    anchors.fill: parent
-                                    calibration_dates:columnMappingDialog.calib_dates
-                                }
+                                calibration_dates : fileHandler.calendar_dates
                                 onAccepted: {
                                     console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
-                                    console.log(calibrationLength.user_calibration)
-                                    fileHandler.updateCalibrationAndValibationDates(calibrationLength.user_calibration)
+                                    console.log(chooseDatePopup.user_calibration)
+                                    fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
+                                    console.log(fileHandler.calibrationDate)
+                                    console.log(fileHandler.validationDate)
+                                    if(fileHandler.errors.length !==0){
+
+                                        dataErrorsDialog.open()
+                                    }
                                 }
                             }
                         }

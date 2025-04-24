@@ -24,6 +24,14 @@ class TestQML(QObject):
         """Retourne la liste des méthodes disponibles pour le ComboBox en QML."""
         return self._methods
 
+    @Property(str, notify=methodChanged)
+    def currentMethod(self):
+        return self._current_method
+
+    @Property('QVariant')
+    def methodKeys(self):
+        return self._keys
+
     @Property('QVariant', notify=parametersChanged)
     def parameterNames(self):
         """Retourne les noms des paramètres disponibles."""

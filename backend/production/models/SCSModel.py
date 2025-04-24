@@ -10,15 +10,20 @@ class SCSModel:
         :param prec: Série pandas contenant les précipitations (en mm).
         :param curve_number: Curve Number, doit être compris entre 0 et 100.
         """
-        self.curve_number = curve_number
-        self.i_a = i_a
+        self.curve_number = float(curve_number)
+        self.i_a = float(i_a)
         self.validate()
 
     def validate(self):  
-        if self.curve_number < 0 or self.curve_number > 100:
-            raise ValueError("Le Curve Number doit être compris entre 0 et 100.")
-        if self.i_a < 0 or self.i_a > 1:
-            raise ValueError("Les pertes initiales doivent être compris entre 0 et 1.")
+        try:
+            value = float(value)  # S'assure que la valeur est un nombre
+            if key == "curve_number" and (value < 0 or value > 100):
+                raise ValueError("Le Curve Number doit être compris entre 0 et 100.")
+            elif key == "i_a" and (value < 0 or value > 1):
+                raise ValueError("Les pertes initiales doivent être compris entre 0 et 1.")
+            return True
+        except Exception as e:
+            return str(e)
 
     def to_dict(self):
         return {

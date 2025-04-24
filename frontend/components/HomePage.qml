@@ -11,6 +11,7 @@ import "./chartsComponents"
 //import "../../io/qml"
 import io.qml
 Rectangle{
+    id: homePage
     color : "#ebebeb"
     property var parameter_bundle: {
         "pn":production_params.parameters,
@@ -18,6 +19,13 @@ Rectangle{
         "sim": routing_params.parameters,
         "loss" : loss_params.parameters
     }
+    property var parameter_bundle2: {
+        "pn":production_params.parameterModel,
+        "qb":recession_params.parameterModel,
+        "sim": routing_params.parameterModel,
+        "loss" : loss_params.parameterModel
+    }
+    signal runningClicked
     Row {
         anchors.fill: parent
         id: splitView
@@ -508,8 +516,23 @@ Rectangle{
                         }
 
                         SimChart{
+                            id: simChart
                             width: parent.width
                             height: parent.height
+                            Connections {
+                                target: homePage
+                                function onRunningClicked(){
+                                    console.log("------------- SIMCHART RUNNIG---------------")
+                                    console.log(JSON.stringify(manualCalibration.simulationValues))
+                                    let dates = manualCalibration.simulationValues["DATES"]
+                                    let q_obs = manualCalibration.simulationValues["OBS"]
+                                    let q_sim = manualCalibration.simulationValues["SIM"]
+
+                                    simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
+                                                [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
+                                                [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
+                                }
+                            }
                         }
                     }
                 }

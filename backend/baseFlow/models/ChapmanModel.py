@@ -10,7 +10,7 @@ class ChapmanModel:
 
         :param alpha: Coefficient alpha pour la récession Chapman (entre 0 et 1).
         """
-        self.alpha = alpha
+        self.alpha = float(alpha)
         self.validate()
 
     def validate(self):
