@@ -38,6 +38,12 @@ class ChapmanModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+                'alpha': 0.925
+        }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique pour Chapman.

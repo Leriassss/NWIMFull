@@ -42,6 +42,13 @@ class FureyGuptaModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            "gamma": 0.9,
+            "cs_over_c": 1.1
+        }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique pour Furey-Gupta.

@@ -43,6 +43,13 @@ class PhilipModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+                'S': 10,
+                "K" : 10
+            }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
             Vérifie dynamiquement la validité d'un paramètre spécifique.

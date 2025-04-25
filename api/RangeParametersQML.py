@@ -68,8 +68,10 @@ class RangeParametersQML(QObject):
         method_name = self._methods[int(index)]
         self._current_method = method_name
 
-        # Récupération des valeurs par défaut
-        default_values = self._factory.getModelParameters(method_name)
+        # Récupération du model
+        model = self._factory.getModel(method_name)
+
+        default_values = model.get_parameter_names()
         self._parameters = {key: [None,None] for key in default_values}
         self._parameterErrors = {key: {"min":True,"max":True} for key in default_values}
 

@@ -3,9 +3,11 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt5Compat.GraphicalEffects
 Column {
-
+    id : control
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)
+        console.log(" --------- CC -----------")
+        console.log(JSON.stringify(parameters))
     }
 
 
@@ -107,7 +109,7 @@ Column {
 
         // Répétiteur pour afficher les TextField dynamiquement
         Repeater {
-            model: Object.keys(parameterModel.parameterNames)
+            model: Object.keys(parameterModel.parameters)
 
             delegate: RowLayout {
                 Layout.column: 1 // Deuxième colonne pour les TextField
@@ -118,7 +120,12 @@ Column {
                 // Zone de texte pour la saisie des valeurs
                 TextField {
                     id : param_value
-                    property string modelName: parameterModel?.parameterNames[modelData]
+                    property string modelName: modelData
+                    property var errors: parameterModel.parameterErrors[param_value.modelName]
+                    ToolTip.delay: 500
+                    ToolTip.timeout: 5000
+                    ToolTip.visible: hovered &&  errors !== "" ? true : false
+                    ToolTip.text: qsTr(parameterModel.parameterErrors[param_value.modelName])
                     text: parameterModel?.parameters[modelData]
                     onTextChanged: {
                         parameterModel.updateParameter(modelName, text)
@@ -136,7 +143,9 @@ Column {
                     background: Rectangle {
                         color: "#ebebeb"
                         border.color: {
-                            parameterModel.parameterErrors[param_value.modelName] !== "" ? "red" : "gray"
+                            console.log("----------------- RESULTATS1 -----------------------")
+                            console.log(JSON.stringify(parameterModel.parameterErrors))
+                            param_value.errors !== "" ? "red" : "gray"
                         }
                         border.width: 1
                     }

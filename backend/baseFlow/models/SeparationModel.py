@@ -46,7 +46,13 @@ class SeparationModel:
             "k" : "k",
             "lag_time" : "lag time"
         }
-
+    @staticmethod
+    def get_default_values():
+            return {
+                "lambda": 0.8,
+                "k" : 0.5,
+                "lag_time" : 2
+            }
     @staticmethod
     def validate_parameter(key, value):
         """

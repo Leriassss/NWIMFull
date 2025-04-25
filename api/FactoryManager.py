@@ -29,8 +29,6 @@ class FactoryManager(QObject):
 
     @Property(list, constant = True)
     def recessionMethods(self):
-        print("----------------------------REC-------------------")
-        print(self.getFactoryMethods("Recession"))
         return self.getFactoryMethods("Recession")
 
     @Property(list, constant = True)

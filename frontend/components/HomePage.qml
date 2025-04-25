@@ -336,31 +336,31 @@ Rectangle{
                                                     width: parent.width
                                                     height:  parent.height *0.5
                                                     spacing: 10
+                                                    property real labWidth: 40
 
                                                     Label{
-                                                        text: "P"
-                                                        width: 20
+                                                        text: "P : "
                                                     }
                                                     Label{
                                                         id : calibration_rainfall_sum
-                                                        width: 20
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text: "I"
-                                                        width: 20
+                                                        text: "I : "
                                                     }
                                                     Label{
                                                         id : calibration_infiltration_sum
-                                                        width: 20
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : "DS"
+                                                        text : "DS : "
                                                     }
                                                     Label{
                                                         id : calibration_stock_sum
-                                                        width: 20
+                                                        width: parent.labWidth
                                                     }
                                                 }
+
                                                 Row{
                                                     width: parent.width
                                                     height:  parent.height *0.5
@@ -368,23 +368,20 @@ Rectangle{
                                                     spacing: 5
                                                     Label{
                                                         text: "NSE : "
-                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
+                                                        text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
                                                         width: parent.labWidth
                                                     }
                                                     Label{
                                                         text: "KGE : "
-                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
+                                                        text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
                                                         width: parent.labWidth
                                                     }
                                                     Label{
                                                         text : "MAE : "
-                                                        width: parent.labWidth
                                                     }
                                                     Label{
                                                         text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
@@ -392,11 +389,10 @@ Rectangle{
                                                     }
                                                     Label{
                                                         text : "R2 : "
-                                                        width: parent.labWidth
                                                     }
                                                     Label{
                                                         text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["R2"]
-                                                        width: 20
+                                                        width: parent.labWidth
                                                     }
                                                 }
 
@@ -440,7 +436,7 @@ Rectangle{
                                             columns: 2
                                             leftPadding: 10
                                             Column{
-                                                width: parent.width*0.3
+                                                width: parent.width*0.15
                                                 height:  parent.height
                                                 Label{
                                                     width: parent.width
@@ -460,37 +456,73 @@ Rectangle{
                                                 }
                                             }
                                             Column{
-                                                width: parent.width*0.7
+                                                width: parent.width*0.85
                                                 height:  parent.height
                                                 Row{
                                                     width: parent.width
                                                     height:  parent.height *0.5
                                                     spacing: 10
+                                                    property real labWidth: 40
 
                                                     Label{
-                                                        text: "P"
+                                                        text: "P : "
                                                     }
                                                     Label{
-                                                        text: "I"
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : "DS"
+                                                        text: "I : "
+                                                    }
+                                                    Label{
+                                                        width: parent.labWidth
+                                                    }
+                                                    Label{
+                                                        text : "DS : "
+                                                    }
+                                                    Label{
+                                                        width: parent.labWidth
                                                     }
                                                 }
+
                                                 Row{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    spacing: 10
+                                                    property real labWidth: 40
+                                                    spacing: 5
                                                     Label{
-                                                        text: "NSE"
+                                                        text: "NSE : "
+
                                                     }
                                                     Label{
-                                                        text: "KGE"
+                                                        text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["NSE"]
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : "BIAIS"
+                                                        text: "KGE : "
+
+                                                    }
+                                                    Label{
+                                                        text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["KGE"]
+                                                        width: parent.labWidth
+                                                    }
+                                                    Label{
+                                                        text : "MAE : "
+
+                                                    }
+                                                    Label{
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
+                                                        width: parent.labWidth
+                                                    }
+                                                    Label{
+                                                        text : "R2 : "
+
+                                                    }
+                                                    Label{
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["R2"]
+                                                        width: parent.labWidth
                                                     }
                                                 }
+
                                             }
 
                                         }

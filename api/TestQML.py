@@ -71,11 +71,15 @@ class TestQML(QObject):
         method_name = self._methods[int(index)]
         if method_name in self._factory.methods:
             self._current_method =  method_name
-            self._keys = self._factory.getModelParameters(method_name)
+            model = self._factory.getModel(method_name)
+            print("----------------- setMethod (TestQML) ----------")
+            print(model)
+            default_values = model.get_default_values()
+            self._keys = model.get_parameter_names()
             #UTILISER LES CLES PLUTOT QUE LES VALEURS
-            self._parameters = {key: None for key in self._keys}
-            print("-----------------lmlmllmlml")
-            print(self._keys)
+            self._parameters = {key: str(default_values[key]) for key in self._keys}
+            print("----------------- setMethod1 (TestQML) ----------")
+            print(self._parameters)
             #self._parameters = {key: None for key in self._keys.values()}
             self.methodChanged.emit()
             self.parametersChanged.emit()

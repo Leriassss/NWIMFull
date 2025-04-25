@@ -39,6 +39,13 @@ class SCSModel:
             }
 
     @staticmethod
+    def get_default_values():
+        return {
+            "curve_number": 25,
+            "i_a" : 0.2
+        }
+
+    @staticmethod
     def validate_parameter(key, value):
         try:
             value = float(value)  # S'assure que la valeur est un nombre

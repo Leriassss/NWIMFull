@@ -40,6 +40,14 @@ class NashModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            'nash_k': 25,
+            'nash_n': 3,
+            'time_base': 8
+        }
+
+    @staticmethod
     def get_parameter_names():
         """
         Retourne les noms des paramètres pour la méthode Nash.

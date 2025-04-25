@@ -37,6 +37,12 @@ class EToLossModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            "alpha" : 1
+        }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique.

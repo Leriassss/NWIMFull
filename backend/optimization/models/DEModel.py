@@ -26,6 +26,16 @@ class DEModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            'maxiter': 1000,
+            'popsize': 15,
+            'tol': 0.01,
+            'mutation': 0.5,
+            'recombination': 0.7
+        }
+
+    @staticmethod
     def get_parameter_names():
         """ Retourne les noms des paramètres avec leurs descriptions. """
         return {
@@ -34,7 +44,7 @@ class DEModel:
             'tol': "Tolérance d'arrêt",
             'mutation': "Probabilité de mutation",
             'recombination': "Taux de recombinaison"
-        }
+            }
 
     @staticmethod
     def validate_parameter(key, value):

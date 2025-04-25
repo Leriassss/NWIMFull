@@ -57,6 +57,14 @@ class MuskingumModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            "K": 10,
+            "x": 0.27,
+            "dt": 1
+    }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique.

@@ -49,6 +49,8 @@ class ProductionFactory:
         model_class = ProductionFactory.getModel(method_name)
         return model_class.get_parameter_names()
 
+
+
     @classmethod
     def getMethodKeys(cls):
         """Retourne la liste des noms de méthodes disponibles."""

@@ -3,7 +3,7 @@ class WModel:
     Modèle de données pour valider les paramètres nécessaires à la méthode WMin.
     """
 
-    def __init__(self, runoff_coef: float):
+    def __init__(self, runoff_coef = 0.25):
         """
         Initialise et valide les données pour la méthode WMin.
 
@@ -32,6 +32,11 @@ class WModel:
         return {
             "w": "coef. ruissellement"
         }
+    @staticmethod
+    def get_default_values():
+        return {
+                "w": 0.25
+            }
 
     @staticmethod
     def validate_parameter(key, value):

@@ -43,6 +43,12 @@ class EckhardtModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+                'alpha': 0.925,
+                'bfi_max' : 0.3
+        }
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique pour Eckhardt.

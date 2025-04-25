@@ -27,6 +27,12 @@ class HUNModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+                "time_base": 8
+            }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique pour la méthode HUN.

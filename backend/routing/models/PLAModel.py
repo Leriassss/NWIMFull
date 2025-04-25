@@ -49,6 +49,15 @@ class PLAModel:
         }
 
     @staticmethod
+    def get_default_values():
+        return {
+            'mu': 1.03,
+            'landa': 9,
+            't_x': 0.25,
+            's_f': 0.025
+        }
+
+    @staticmethod
     def get_parameter_names():
         """
         Retourne les noms des paramètres pour la méthode PLA.

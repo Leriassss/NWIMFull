@@ -44,6 +44,14 @@ class HortonModel:
     }
 
     @staticmethod
+    def get_default_values():
+        return {
+                "f_0" : 10,
+                "f_t" : 1.5,
+                "k" : 1
+            }
+
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique.

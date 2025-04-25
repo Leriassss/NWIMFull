@@ -54,6 +54,13 @@ class WMinModel:
             "alpha": "alpha",
             "loss_days": "loss days"
         }
+    @staticmethod
+    def get_default_values(self):
+        return {
+                'S': 0,
+                'alpha': 0.25,
+                'loss_days': 1
+            }
 
     @staticmethod
     def validate_parameter(key, value):

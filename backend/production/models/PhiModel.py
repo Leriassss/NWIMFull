@@ -3,6 +3,7 @@ class PhiModel:
     Modèle de données pour valider les paramètres nécessaires à la méthode Phi.
     """
 
+
     def __init__(self, c_r: float):
         """
         Initialise et valide les données pour la méthode Phi.
@@ -12,6 +13,12 @@ class PhiModel:
         """
         self.c_r = c_r
         self.validate()
+
+    @staticmethod
+    def get_default_values():
+        return {
+                "c_r": 0.25
+            }
 
     def validate(self):
         """
@@ -24,6 +31,7 @@ class PhiModel:
         return {
                     'c_r': self.c_r
                 }
+
 
     @staticmethod
     def get_parameter_names():

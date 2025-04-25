@@ -21,17 +21,30 @@ class GAModel:
             if validation is not True:
                 raise ValueError(validation)
 
-    def to_dict(self):
+    def get_default_values():
         """ Retourne les paramètres sous forme de dictionnaire. """
         return {
-            'max_num_iteration': self.max_num_iteration,
-            'population_size': self.population_size,
-            'mutation_probability': self.mutation_probability,
-            'elit_ratio': self.elit_ratio,
-            'crossover_probability': self.crossover_probability,
-            'parents_portion': self.parents_portion,
-            'crossover_type':self.crossover_type,
-            'max_iteration_without_improv' : self.max_iteration_without_improv
+            'max_num_iteration': 3000,
+            'population_size': 100,
+            'mutation_probability': 0.1,
+            'elit_ratio': 0.01,
+            'crossover_probability': 0.5,
+            'parents_portion': 0.3,
+            'crossover_type':'uniform',
+            'max_iteration_without_improv' : None
+        }
+
+    @staticmethod
+    def to_dict(self):
+        return {
+                'max_num_iteration': self.max_num_iteration,
+                'population_size': self.population_size,
+                'mutation_probability': self.mutation_probability,
+                'elit_ratio': self.elit_ratio,
+                'crossover_probability': self.crossover_probability,
+                'parents_portion': self.parents_portion,
+                'crossover_type':self.crossover_type,
+                'max_iteration_without_improv' : self.max_iteration_without_improv
         }
 
     @staticmethod
