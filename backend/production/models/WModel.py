@@ -13,8 +13,14 @@ class WModel:
         self.validate()
 
     def validate(self):
-        if self.runoff_coef <= 0 or self.runoff_coef > 1:
-            raise ValueError("Le coefficient de ruissellement doit être compris entre 0 et 1.")
+        try:
+            if key == "w":
+                self.runoff_coef = value = float(value)  # S'assure que la valeur est un nombre
+                if (value <= 0 or value > 1):
+                    raise ValueError("Le coefficient de ruissellement doit être compris entre 0 et 1.")
+            return True
+        except Exception as e:
+            return str(e)
 
     def to_dict(self):
         return {

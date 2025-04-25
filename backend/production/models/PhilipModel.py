@@ -19,9 +19,15 @@ class PhilipModel:
         """
         Valide les paramètres du modèle.
         """
-        if self.S <= 0 or self.K <= 0:
-            raise ValueError("Les paramètres 'S' et 'K' doivent être positifs.")
-
+        try:
+            value = float(value)  # S'assure que la valeur est un nombre
+            if key == "S" and value <= 0:
+                raise ValueError("Le paramètre 'S' doit être strictement positif.")
+            elif key == "K" and value <= 0:
+                raise ValueError("Le paramètre 'K' doit être strictement positif.")
+            return True  # Si aucune erreur, le paramètre est valide
+        except Exception as e:
+            return str(e)  # Retourne le message d'erreur
 
     def to_dict(self):
         return {

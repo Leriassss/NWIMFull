@@ -21,7 +21,8 @@ class ManualCalibration(QObject):
         self._sim = {
                     "SIM" : {"CALIBRATION":[], "VALIDATION":[]},
                      "OBS" : {"CALIBRATION":[], "VALIDATION":[]},
-                    "DATES" : {"CALIBRATION":[], "VALIDATION":[]}
+                    "DATES" : {"CALIBRATION":[], "VALIDATION":[]},
+                    "CRITERIA" : {"CALIBRATION":[], "VALIDATION":[]}
                     }
 
 
@@ -74,6 +75,7 @@ class ManualCalibration(QObject):
 
         print("---- setParameters MC --------")
         print(self._parameter_bundle)
+        print(self._parameters_methods)
 
         if any(item is None for values in self._parameter_bundle.values() for item in values):
             self._errors.append("Provided parameters are non-correct")
@@ -105,8 +107,13 @@ class ManualCalibration(QObject):
 
         self._sim["DATES"]["CALIBRATION"] = calibration_df["Dates"].tolist()
         self._sim["DATES"]["VALIDATION"] = validation_df["Dates"].tolist()
+
+        self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  sim.calibration_metric.items()}
+        self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  hun_sim_val[0].items()}
         print("------------------------- SIM ---------------")
         print(self._sim)
+
+
 
         self.simChanged.emit()
 

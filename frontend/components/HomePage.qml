@@ -25,6 +25,11 @@ Rectangle{
         "sim": routing_params.parameterModel,
         "loss" : loss_params.parameterModel
     }
+    property int activate: production_params.checkPassed +
+                           recession_params.checkPassed +
+                           routing_params.checkPassed +
+                           loss_params.checkPassed
+
     signal runningClicked
     Row {
         anchors.fill: parent
@@ -84,6 +89,7 @@ Rectangle{
                         width: parent.width
                         height: parent.height * 0.8
                         color : "transparent"
+                        enabled: fileHandler.activate ? true : false
                         SplitView {
                             anchors.fill: parent
                             orientation: Qt.Vertical
@@ -286,11 +292,15 @@ Rectangle{
                                             border.width: 1
                                             border.color: "grey"
                                             CustomCheckDelegate{
+                                                id : calibrationCheckBox
                                                 text: "CALIBRATION"
                                                 checked: true
                                                 anchors.centerIn: parent
                                                 font.bold: true
                                                 font.pointSize: 10
+                                                onCheckedChanged: {
+                                                    homepage.runningClicked()
+                                                }
 
                                             }
                                         }
@@ -300,12 +310,12 @@ Rectangle{
                                             columns: 2
                                             leftPadding: 10
                                             Column{
-                                                width: parent.width*0.3
+                                                width: parent.width*0.15
                                                 height:  parent.height
                                                 Label{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    text: "Bilan : "
+                                                    text: "Bilan"
                                                     font.bold: true
                                                     font.pointSize: 10
                                                     color: "black"
@@ -313,14 +323,14 @@ Rectangle{
                                                 Label{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    text: "Criteria : "
+                                                    text: "Criteria"
                                                     font.bold: true
                                                     font.pointSize: 10
                                                     color: "black"
                                                 }
                                             }
                                             Column{
-                                                width: parent.width*0.7
+                                                width: parent.width*0.85
                                                 height:  parent.height
                                                 Row{
                                                     width: parent.width
@@ -354,32 +364,42 @@ Rectangle{
                                                 Row{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    spacing: 10
+                                                    property real labWidth: 40
+                                                    spacing: 5
                                                     Label{
-                                                        text: "NSE"
-                                                        width: 20
+                                                        text: "NSE : "
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        id : calibration_nse
-                                                        width: 20
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text: "KGE"
-                                                        width: 20
+                                                        text: "KGE : "
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        id : calibration_kge
-                                                        width: 20
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        text : "BIAIS"
-                                                        width: 20
+                                                        text : "MAE : "
+                                                        width: parent.labWidth
                                                     }
                                                     Label{
-                                                        id : calibration_bias
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
+                                                        width: parent.labWidth
+                                                    }
+                                                    Label{
+                                                        text : "R2 : "
+                                                        width: parent.labWidth
+                                                    }
+                                                    Label{
+                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["R2"]
                                                         width: 20
                                                     }
                                                 }
+
                                             }
 
                                         }
@@ -403,12 +423,15 @@ Rectangle{
                                             color: "transparent"
 
                                             CustomCheckDelegate{
+                                                id : validationCheckBox
                                                 text: "VALIDATION"
                                                 checked: true
                                                 anchors.centerIn: parent
                                                 font.bold: true
                                                 font.pointSize: 10
-
+                                                onCheckedChanged: {
+                                                    homepage.runningClicked()
+                                                }
                                             }
                                         }
                                         Grid{
@@ -422,7 +445,7 @@ Rectangle{
                                                 Label{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    text: "Bilan : "
+                                                    text: "Bilan"
                                                     font.bold: true
                                                     font.pointSize: 10
                                                     color: "black"
@@ -430,7 +453,7 @@ Rectangle{
                                                 Label{
                                                     width: parent.width
                                                     height:  parent.height *0.5
-                                                    text: "Criteria : "
+                                                    text: "Criteria"
                                                     font.bold: true
                                                     font.pointSize: 10
                                                     color: "black"
@@ -519,6 +542,7 @@ Rectangle{
                             id: simChart
                             width: parent.width
                             height: parent.height
+
                             Connections {
                                 target: homePage
                                 function onRunningClicked(){
@@ -527,10 +551,21 @@ Rectangle{
                                     let dates = manualCalibration.simulationValues["DATES"]
                                     let q_obs = manualCalibration.simulationValues["OBS"]
                                     let q_sim = manualCalibration.simulationValues["SIM"]
-
-                                    simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
-                                                [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
-                                                [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
+                                    if (calibrationCheckBox.checked && validationCheckBox.checked){
+                                        simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
+                                                    [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
+                                                    [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
+                                    }
+                                    else if(calibrationCheckBox.checked && !validationCheckBox.checked){
+                                        simChart.updateChart([...dates["CALIBRATION"]],
+                                                    [...q_obs["CALIBRATION"]],
+                                                    [...q_sim["CALIBRATION"]])
+                                    }
+                                    else if(!calibrationCheckBox.checked && validationCheckBox.checked){
+                                        simChart.updateChart([...dates["VALIDATION"]],
+                                                    [...q_obs["VALIDATION"]],
+                                                    [...q_sim["VALIDATION"]])
+                                    }
                                 }
                             }
                         }

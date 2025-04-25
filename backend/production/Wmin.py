@@ -13,9 +13,9 @@ class WMin(Production) :
         
     def compute(self):
         prec = self.ptq.p.copy()
-        smax = self.data_model.S
-        alpha = self.data_model.alpha
-        loss_days = self.data_model.loss_days
+        smax = float(self.data_model.S)
+        alpha = float(self.data_model.alpha)
+        loss_days = int(self.data_model.loss_days)
 
         rainfall_ini_loss = self.adapter(prec,loss_days, smax)
 

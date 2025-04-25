@@ -56,8 +56,6 @@ Rectangle {
     }
 
     function updateChart(dates, q_obs_series, q_sim_series) {
-        console.log("---SIM CHART--")
-        console.log(dates, q_obs_series, q_sim_series)
         seriesQ.clear()
         seriesQModel.clear()
 

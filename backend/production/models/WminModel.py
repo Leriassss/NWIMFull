@@ -13,19 +13,26 @@ class WMinModel:
         """
         self.S = S
         self.alpha = alpha
-        self.loss_days = int(loss_days)
+        self.loss_days = loss_days
         self.validate()
 
     def validate(self):
         """
         Vérifie que les paramètres sont valides.
         """
-        if self.loss_days < 0:
-            raise ValueError("Le paramètre 'loss_days' doit être positif.")
-        if self.alpha < 0 or self.alpha > 1:
-            raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
-        if self.S < 0:
-            raise ValueError("Le paramètre 'S' doit être positif.")
+        try:
+            value = float(value)  # Vérifie que la valeur est numérique
+            if key == "S" and value < 0:
+                raise ValueError("Le paramètre 'S' doit être positif.")
+            elif key == "alpha" and (value < 0 or value > 1):
+                raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
+            elif key == "loss_days":
+                value = int(value)  # Convertit en entier
+                if value < 0:
+                    raise ValueError("Le paramètre 'loss_days' doit être positif.")
+            return True
+        except Exception as e:
+            return str(e)
 
     def to_dict(self):
         """

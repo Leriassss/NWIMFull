@@ -10,6 +10,7 @@ class TestQML(QObject):
     parametersChanged = Signal()
     methodChanged = Signal()
     parameterErrorChanged = Signal()
+    desactivatedChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -18,6 +19,11 @@ class TestQML(QObject):
         self._methods =[]
         self._parameterErrors = {}
         self._keys = []
+        self._desactivated = True
+
+    @Property(bool, notify=desactivatedChanged)
+    def desactivated(self):
+        return self._desactivated
 
     @Property('QVariant', notify=parametersChanged)
     def availableMethods(self):
@@ -73,6 +79,7 @@ class TestQML(QObject):
             #self._parameters = {key: None for key in self._keys.values()}
             self.methodChanged.emit()
             self.parametersChanged.emit()
+            self.parameterErrorChanged.emit()
 
     @Slot(str, str)
     def updateParameter(self, key, value):
@@ -90,13 +97,16 @@ class TestQML(QObject):
 
             if validation_result is True:
                 self._parameterErrors[key] = ""  # Pas d'erreur
+                self._desactivated = False
             else:
                 self._parameterErrors[key] = validation_result  # Stocke l'erreur
+                self._desactivated = True
 
                 print(f"Validation pour {key}: {validation_result}")
 
             self.parametersChanged.emit()
             self.parameterErrorChanged.emit()
+            self.desactivatedChanged.emit()
 
     @Property('QVariant', notify=parameterErrorChanged)
     def parameterErrors(self):

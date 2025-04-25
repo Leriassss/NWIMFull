@@ -25,8 +25,8 @@ class Philip(Production):
         :return: Série pandas du ruissellement.
         """
         prec = self.initial_loss
-        S = self._data_model.S
-        K = self._data_model.K
+        S = float(self._data_model.S)
+        K = float(self._data_model.K)
 
         # Calcul de l'infiltration selon le modèle de Philip
         infiltration_philip =  S + K

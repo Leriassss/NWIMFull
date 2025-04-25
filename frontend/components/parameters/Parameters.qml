@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
+import Qt5Compat.GraphicalEffects
 Column {
 
     Component.onCompleted: {
@@ -14,6 +14,7 @@ Column {
 
     // Get the parameters and the values typed by user
     property var parameters: parameterModel?.parameters
+    property bool checkPassed: parameterModel?.desactivated
 
     // Sélecteur de méthode
     ComboBox {
@@ -21,11 +22,34 @@ Column {
         width: parent.width
         height: 40
         id: methodSelector
+
         background: Rectangle{
             anchors.fill: parent
             color: "#ebebeb"
             border.width: 1
             border.color: "grey"
+        }
+        popup: Popup {
+            y: methodSelector.height - 1
+            width: methodSelector.width
+            height: Math.min(contentItem.implicitHeight, methodSelector.Window.height - topMargin - bottomMargin)
+            padding: 1
+
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: methodSelector.popup.visible ? methodSelector.delegateModel : null
+                currentIndex: methodSelector.highlightedIndex
+
+
+                ScrollIndicator.vertical: ScrollIndicator { }
+            }
+
+            background: Rectangle {
+                id : rec
+                border.color: "#21be2b"
+            }
+
         }
 
         indicator: Canvas {

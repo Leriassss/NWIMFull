@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 import "frontend/components"
 //import "./frontend/components/parameters"
@@ -47,6 +48,14 @@ ApplicationWindow {
                 border.width: 1
 
                 anchors.fill: parent
+                DataErrorsDialog {
+                    id: runningErrors
+                    title: "❌ ERREURS DETECTEES !!!"
+                    standardButtons: Dialog.Ok
+                    width: 400
+                    height: 300
+                    errors : manualCalibration.errors
+                }
                 Row{
                     anchors.fill: parent
                     spacing: 1
@@ -78,31 +87,57 @@ ApplicationWindow {
                         }
                     }
                     ToolButton {
-                        id : run
+                        id: run
                         width: 50
                         height: parent.height
                         hoverEnabled: true
+                        checkable: true
+                        enabled: fileHandler.activate && homepage.activate === 0 ? true : false
+                        text: qsTr("▶️")
                         ToolTip.visible: hovered
                         ToolTip.text: qsTr("Run Model")
-                        text: qsTr("▶️")
-                        //enabled: false
-                        background: Rectangle{
+
+                        property color defaultColor: "transparent"
+                        property color hoverColor: "#d6f5e5"
+                        property color pressedColor: "#a9e0c2"
+                        property color borderColor: "#1fa869"
+
+                        background: Rectangle {
+                            id: bg
                             anchors.fill: parent
-                            color: "#ebebeb"
-                            opacity: run.hovered ?  1 : 0.3
-                            radius: run.hovered ?  5 : 0
-                            border.width: run.hovered ? 1 : 0
-                            border.color: run.hovered ?  "#1fa869" : "transparent"
+                            color: run.pressed ? run.pressedColor :
+                                   run.hovered ? run.hoverColor :
+                                   run.defaultColor
+                            border.width: run.hovered  ? 1 : 0
+                            border.color: run.hovered ? run.borderColor : "transparent"
+                            opacity: 1
+
+                            Behavior on color {
+                                ColorAnimation { duration: 75 }
+                            }
+                            Behavior on border.width {
+                                NumberAnimation { duration: 100 }
+                            }
                         }
 
-                        DataErrorsDialog {
-                            id: runningErrors
-                            title: "❌ ERREURS DETECTEES !!!"
-                            standardButtons: Dialog.Ok
-                            width: 400
-                            height: 300
-                            errors : manualCalibration.errors
+                        // Optionnel : effet visuel à l'appui
+                        onPressedChanged: {
+                            if (pressed) {
+                                bg.scale = 0.95
+                            } else {
+                                bg.scale = 1.0
+                            }
                         }
+
+                        layer.enabled: run.hovered
+                        layer.effect: DropShadow {
+                            horizontalOffset: 0
+                            verticalOffset: 2
+                            radius: 4
+                            samples: 10
+                            color: "#888888"
+                        }
+
                         onClicked: {
 
                             console.log("------------ HOME PAGE ---------------")
@@ -225,10 +260,8 @@ ApplicationWindow {
         anchors.top: toolBar.bottom
         width: parent.width
         height: parent.height
-        onRunningClicked: {
-
-        }
     }
+
     footer : Rectangle{
         height: 35
         width: parent.width
@@ -241,6 +274,8 @@ ApplicationWindow {
     }
     LoadData {
         id: loadDataDialog
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
     }
     Optimization{
         id: gapOptim

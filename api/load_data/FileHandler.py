@@ -40,6 +40,8 @@ class FileHandler(QObject):
         self._calibration_length = []
         self._validation_length = []
 
+        self._activate = False
+
         self._ptq ={}
 
     headersChanged = Signal(list)
@@ -61,7 +63,12 @@ class FileHandler(QObject):
     ptqChanged = Signal()
 
     errorsChanged = Signal()
+    activateChanged = Signal()
 
+
+    @Property(bool, notify=activateChanged)
+    def activate(self):
+        return self._activate
 
     @Property(list, notify=errorsChanged)
     def errors(self):
@@ -98,6 +105,7 @@ class FileHandler(QObject):
     @Slot(dict)
     def updateCalibrationAndValibationDates(self, dates):
         self._errors = []
+
         try : 
             dates_list = self._data_manager.updateCalibrationAndValibationDates(dates)
             self._calibration_length = dates_list[0]
@@ -113,7 +121,7 @@ class FileHandler(QObject):
             self.updateFields()
             self._ptq = self._data_manager._ptq
 
-            print(self._ptq)
+            self._activate = True
 
             self.qInfosChanged.emit()
             self.pInfosChanged.emit()
@@ -121,6 +129,7 @@ class FileHandler(QObject):
             self.etpInfosChanged.emit()
             self.datesInfosChanged.emit()
             self.ptqChanged.emit()
+            self.activateChanged.emit()
 
         except Exception as e:
             print('EXECEPTION LEVEE ------------------------------')

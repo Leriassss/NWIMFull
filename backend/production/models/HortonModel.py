@@ -18,8 +18,15 @@ class HortonModel:
         self.validate()
 
     def validate(self):
-        if any(param <= 0 for param in [self.f_0, self.f_t, self.k]):
-            raise ValueError("Les paramètres 'f_0', 'f_t' et 'k' doivent être strictement positifs.")
+        try:
+            value = float(value)  # S'assure que la valeur est un nombre
+            if key == "curve_number" and not (0 <= value <= 100):
+                raise ValueError("Le paramètre 'curve_number' doit être compris entre 0 et 100.")
+            elif key == "i_a" and not (0 < value <= 1):
+                raise ValueError("Le paramètre 'i_a' doit être compris entre 0 et 1.")
+            return True
+        except Exception as e:
+            return str(e)
 
     def to_dict(self):
         return {
