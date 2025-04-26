@@ -10,8 +10,8 @@ class EckhardtModel:
 
         :param alpha: Coefficient alpha pour la récession Eckhardt (entre 0 et 1).
         """
-        self.alpha = alpha
-        self.bfi_max = bfi_max
+        self.alpha = float(alpha)
+        self.bfi_max = float(bfi_max)
         self.validate()
 
     def validate(self):
@@ -48,6 +48,14 @@ class EckhardtModel:
                 'alpha': 0.925,
                 'bfi_max' : 0.3
         }
+    
+    @staticmethod
+    def get_default_ranges():
+        return {
+                'alpha': [0.1,1],
+                'bfi_max' : [0.1,1]
+        }
+    
     @staticmethod
     def validate_parameter(key, value):
         """

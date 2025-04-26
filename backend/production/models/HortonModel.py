@@ -12,21 +12,15 @@ class HortonModel:
         :param f_t: Taux d'infiltration final (en mm/h).
         :param k: Constante de décroissance exponentielle (en 1/h).
         """
-        self.f_0 = f_0
-        self.f_t = f_t
-        self.k = k
+        self.f_0 = float(f_0)
+        self.f_t = float(f_t)
+        self.k = float(k)
         self.validate()
 
     def validate(self):
-        try:
-            value = float(value)  # S'assure que la valeur est un nombre
-            if key == "curve_number" and not (0 <= value <= 100):
-                raise ValueError("Le paramètre 'curve_number' doit être compris entre 0 et 100.")
-            elif key == "i_a" and not (0 < value <= 1):
-                raise ValueError("Le paramètre 'i_a' doit être compris entre 0 et 1.")
-            return True
-        except Exception as e:
-            return str(e)
+        if any(param <= 0 for param in [self.f_0, self.f_t, self.k]):
+            raise ValueError("Les paramètres doivent être strictement positifs.")
+
 
     def to_dict(self):
         return {
@@ -44,6 +38,13 @@ class HortonModel:
     }
 
     @staticmethod
+    def get_default_ranges():
+        return {
+                "f_0" : [1,10],
+                "f_t" : [1,1.5],
+                "k" : [1,1.5]
+        }
+    @staticmethod
     def get_default_values():
         return {
                 "f_0" : 10,
@@ -53,20 +54,17 @@ class HortonModel:
 
     @staticmethod
     def validate_parameter(key, value):
-        """
-        Vérifie dynamiquement la validité d'un paramètre spécifique.
-
-        :param key: Nom du paramètre à vérifier.
-        :param value: Valeur du paramètre à valider.
-        :return: True si valide, sinon un message d'erreur est retourné.
-        """
         try:
             value = float(value)  # S'assure que la valeur est un nombre
-            if key == "curve_number" and not (0 <= value <= 100):
-                raise ValueError("Le paramètre 'curve_number' doit être compris entre 0 et 100.")
-            elif key == "i_a" and not (0 < value <= 1):
-                raise ValueError("Le paramètre 'i_a' doit être compris entre 0 et 1.")
-            return True
+
+            if key == "f_0" and value <= 0:
+                raise ValueError("Le paramètre doit être strictement positif.")
+            elif key == "f_t" and value <= 0:
+                raise ValueError("Le paramètre doit être strictement positif.")
+            elif key == "k" and value <= 0:
+                raise ValueError("Le paramètre doit être strictement positif.")
+            return True  # Si aucune erreur, le paramètre est valide
+
         except Exception as e:
-            return str(e)
+            return str(e)  # Retourne le message d'erreur
 

@@ -11,9 +11,9 @@ class MuskingumModel:
         :param x: Pondération (comprise entre 0 et 0.5).
         :param dt: Intervalle de temps utilisé (en jours).
         """
-        self.K = K
-        self.x = x
-        self.dt = dt
+        self.K = float(K)
+        self.x = float(x)
+        self.dt = float(dt)
         self.validate()
 
     def validate(self):
@@ -64,6 +64,14 @@ class MuskingumModel:
             "dt": 1
     }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+            "K": [1,10],
+            "x": [0,0.5],
+            "dt": [1,1.1]
+            }
+    
     @staticmethod
     def validate_parameter(key, value):
         """

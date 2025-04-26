@@ -11,10 +11,10 @@ class HoltanModel:
         :param k: Exposant empirique du modèle.
         :param storage_capacity: Capacité de stockage du sol (en mm).
         """
-        self.f_0 = f_0
-        self.f_t = f_t
-        self.k = k
-        self.storage_capacity = storage_capacity
+        self.f_0 = float(f_0)
+        self.f_t = float(f_t)
+        self.k = float(k)
+        self.storage_capacity = float(storage_capacity)
         self.validate()
 
     def validate(self):
@@ -41,6 +41,15 @@ class HoltanModel:
                 "k" : "k",
                 "storage_capacity" : "sc"
         }
+    
+    @staticmethod
+    def get_default_ranges():
+        return {
+                "f_0" : [1,10],
+                "f_t" : [1,1.5],
+                "k" : [1,1.5],
+                "storage_capacity" : [1,20]
+        }
 
     @staticmethod
     def get_default_values():
@@ -64,13 +73,13 @@ class HoltanModel:
             value = float(value)  # S'assure que la valeur est un nombre
 
             if key == "f_0" and value <= 0:
-                raise ValueError("Le paramètre 'f_0' doit être strictement positif.")
+                raise ValueError("Le paramètre doit être strictement positif.")
             elif key == "f_t" and value <= 0:
-                raise ValueError("Le paramètre 'f_t' doit être strictement positif.")
+                raise ValueError("Le paramètre doit être strictement positif.")
             elif key == "k" and value <= 0:
-                raise ValueError("Le paramètre 'k' doit être strictement positif.")
+                raise ValueError("Le paramètre doit être strictement positif.")
             elif key == "storage_capacity" and value <= 0:
-                raise ValueError("Le paramètre 'storage_capacity' doit être strictement positif.")
+                raise ValueError("Le paramètre doit être strictement positif.")
 
             return True  # Si aucune erreur, le paramètre est valide
 

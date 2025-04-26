@@ -12,10 +12,10 @@ class PLAModel:
         :param t_x: Paramètre t_x, doit être strictement positif.
         :param s_f: Paramètre s_f, doit être strictement positif.
         """
-        self.mu = mu
-        self.landa = landa
-        self.t_x = t_x
-        self.s_f = s_f
+        self.mu = float(mu)
+        self.landa = float(landa)
+        self.t_x = float(t_x)
+        self.s_f = float(s_f)
         self.validate()
 
     def validate(self):
@@ -57,6 +57,15 @@ class PLAModel:
             's_f': 0.025
         }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+            'mu': [1,10],
+            'landa': [1,10],
+            't_x': [0.1,0.5],
+            's_f': [0.01,0.05]
+            }
+    
     @staticmethod
     def get_parameter_names():
         """

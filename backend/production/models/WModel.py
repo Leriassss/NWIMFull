@@ -9,18 +9,12 @@ class WModel:
 
         :param runoff_coef: Coefficient de ruissellement, doit être compris entre 0 et 1.
         """
-        self.runoff_coef = runoff_coef
+        self.runoff_coef = int(runoff_coef)
         self.validate()
 
     def validate(self):
-        try:
-            if key == "w":
-                self.runoff_coef = value = float(value)  # S'assure que la valeur est un nombre
-                if (value <= 0 or value > 1):
-                    raise ValueError("Le coefficient de ruissellement doit être compris entre 0 et 1.")
-            return True
-        except Exception as e:
-            return str(e)
+        if (self.runoff_coef <= 0 or self.runoff_coef> 1):
+            raise ValueError("Le coefficient de ruissellement doit être compris entre 0 et 1.")
 
     def to_dict(self):
         return {
@@ -32,6 +26,13 @@ class WModel:
         return {
             "w": "coef. ruissellement"
         }
+    
+    @staticmethod
+    def get_default_ranges():
+        return {
+                "w": [0,1],
+            }
+    
     @staticmethod
     def get_default_values():
         return {

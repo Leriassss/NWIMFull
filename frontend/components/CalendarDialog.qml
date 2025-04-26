@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 Dialog{
+    modal: true
     property var calibration_dates
     property var user_calibration: {
         "calibration": calibrationYear.currentText + "-" + calibrationMonth.currentText + "-" + calibrationDay.currentText,

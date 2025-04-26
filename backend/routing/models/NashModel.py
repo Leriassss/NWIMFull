@@ -11,8 +11,8 @@ class NashModel:
         :param nash_n: Paramètre de la méthode Nash (doit être strictement positif).
         :param time_base: Temps de base pour le transfert (jour), valeur par défaut est 5.
         """
-        self.nash_k = nash_k
-        self.nash_n = nash_n
+        self.nash_k = float(nash_k)
+        self.nash_n = float(nash_n)
         self.time_base = int(time_base)
         self.validate()
 
@@ -47,6 +47,13 @@ class NashModel:
             'time_base': 8
         }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+            'nash_k': [1,100],
+            'nash_n': [1,5],
+            'time_base': [1,30]
+            }
     @staticmethod
     def get_parameter_names():
         """

@@ -11,7 +11,7 @@ class PhiModel:
         :param prec: Série pandas contenant les précipitations (en mm).
         :param c_r: Coefficient de ruissellement (entre 0 et 1).
         """
-        self.c_r = c_r
+        self.c_r = float(c_r)
         self.validate()
 
     @staticmethod
@@ -20,11 +20,16 @@ class PhiModel:
                 "c_r": 0.25
             }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+                "c_r": [0.1,0.9]
+        }
     def validate(self):
         """
         Valide les paramètres du modèle.
         """
-        if self.c_r <= 0 or self.c_r > 1:
+        if self.c_r <= 0 or self.c_r >= 1:
             raise ValueError("Le coefficient de ruissellement 'c_r' doit être compris entre 0 et 1.")
 
     def to_dict(self):
@@ -36,7 +41,7 @@ class PhiModel:
     @staticmethod
     def get_parameter_names():
         return {
-                    'c_r': "coef. ruissellement",
+                    'c_r': "coef. ruissellement"
     }
 
     @staticmethod

@@ -26,9 +26,6 @@ class W(Production):
         """
         prec =self.initial_loss
         runoff_coef = float(self._data_model.runoff_coef)
-        print("-*-*-**-*-*-*-*-*-*-* Compute (W) **********")
-        print(runoff_coef)
-        print(prec)
         return prec * runoff_coef
 
     @classmethod

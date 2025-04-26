@@ -39,9 +39,6 @@ class BaseFlowRoutine:
         #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
         self.a,self.b  = self.regBaseFlow(data['qbase'] , qobs)
         #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
-        print("--------- BFR -----------")
-        print(prev_day-1)
-        print(data)
         q_obs_mean = data["qmean"][prev_day-1]
         #DETERMINATION DU DEBIT DE BASE PRECEDENT
         q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)

@@ -9,8 +9,8 @@ class FureyGuptaModel:
         :param gamma: Paramètre gamma (doit être un nombre positif).
         :param cs_over_c: Ratio cs_over_c (doit être un nombre positif).
         """
-        self.gamma = gamma
-        self.cs_over_c = cs_over_c
+        self.gamma = float(gamma)
+        self.cs_over_c = float(cs_over_c)
         self.validate()
 
     def validate(self):
@@ -49,6 +49,13 @@ class FureyGuptaModel:
         }
 
     @staticmethod
+    def get_default_ranges():
+        return {
+            "gamma": [0.1,1],
+            "cs_over_c": [1,1.1]
+        }
+    
+    @staticmethod
     def validate_parameter(key, value):
         """
         Vérifie dynamiquement la validité d'un paramètre spécifique pour Furey-Gupta.
@@ -60,9 +67,9 @@ class FureyGuptaModel:
         try:
             value = float(value)  # S'assure que la valeur est un nombre
             if key == "gamma" and value <= 0:
-                raise ValueError("Le paramètre 'gamma' doit être un nombre positif.")
+                raise ValueError("Le paramètre 'gamma' doit être un nombre strictement positif.")
             elif key == "cs_over_c" and value <= 0:
-                raise ValueError("Le paramètre 'cs_over_c' doit être un nombre positif.")
+                raise ValueError("Le paramètre 'cs_over_c' doit être un nombre strictement positif.")
             return True
         except Exception as e:
             return str(e)

@@ -11,8 +11,8 @@ class PhilipModel:
         :param S: Paramètre d'absorption (positif).
         :param K: Conductivité hydraulique (positif).
         """
-        self.S = S
-        self.K = K
+        self.S = float(S)
+        self.K = float(K)
         self.validate()
 
     def validate(self):
@@ -20,10 +20,9 @@ class PhilipModel:
         Valide les paramètres du modèle.
         """
         try:
-            value = float(value)  # S'assure que la valeur est un nombre
-            if key == "S" and value <= 0:
+            if self.S  <= 0:
                 raise ValueError("Le paramètre 'S' doit être strictement positif.")
-            elif key == "K" and value <= 0:
+            elif self.K <= 0:
                 raise ValueError("Le paramètre 'K' doit être strictement positif.")
             return True  # Si aucune erreur, le paramètre est valide
         except Exception as e:
@@ -42,6 +41,13 @@ class PhilipModel:
                 "K" : "K"
         }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+                'S': [1,10],
+                "K" : [1,10]
+        }
+    
     @staticmethod
     def get_default_values():
         return {

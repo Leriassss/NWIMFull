@@ -27,6 +27,12 @@ class HUNModel:
         }
 
     @staticmethod
+    def get_default_ranges():
+        return {
+                "time_base": [1,30]
+            }
+    
+    @staticmethod
     def get_default_values():
         return {
                 "time_base": 8

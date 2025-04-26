@@ -20,7 +20,15 @@ class RangeParametersQML(QObject):
         self._parameters = {}
         self._parameterErrors = {}
         self._methods = []
+        self._keys = []
 
+    @Property('QVariant')
+    def methodKeys(self):
+        return self._keys
+
+    @Property(str, notify=methodChanged)
+    def currentMethod(self):
+        return self._current_method
 
     @Property('QVariant', notify=methodChanged)
     def availableMethods(self):
@@ -71,9 +79,10 @@ class RangeParametersQML(QObject):
         # Récupération du model
         model = self._factory.getModel(method_name)
 
-        default_values = model.get_parameter_names()
-        self._parameters = {key: [None,None] for key in default_values}
-        self._parameterErrors = {key: {"min":True,"max":True} for key in default_values}
+        self._keys = model.get_parameter_names()
+        default_values = model.get_default_ranges()
+        self._parameters = {key: default_values[key] for key in self._keys}
+        self._parameterErrors = {key: {"min":True,"max":True} for key in self._keys}
 
         self.methodChanged.emit()
         self.parametersChanged.emit()

@@ -8,9 +8,9 @@ class SeparationModel:
 
         :param lambda_: Paramètre lambda (doit être un nombre positif).
         """
-        self.lambda_ = lambda_
-        self.lag_time = lag_time
-        self.k = k
+        self.lambda_ = float(lambda_)
+        self.lag_time = float(lag_time)
+        self.k = float(k)
         self.validate()
 
     def validate(self):
@@ -48,11 +48,20 @@ class SeparationModel:
         }
     @staticmethod
     def get_default_values():
-            return {
+        return {
                 "lambda": 0.8,
                 "k" : 0.5,
                 "lag_time" : 2
             }
+
+    @staticmethod
+    def get_default_ranges():
+        return {
+                "lambda": [0.1,1],
+                "k" : [0.1,1],
+                "lag_time" : [1,10]
+        }
+    
     @staticmethod
     def validate_parameter(key, value):
         """
@@ -65,9 +74,11 @@ class SeparationModel:
         try:
             value = float(value)  # S'assure que la valeur est un nombre
             if key == "lambda" and value <= 0:
-                raise ValueError("Le paramètre 'lambda' doit être un nombre positif.")
-            if key == "lag_time" and value <= 0:
-                raise ValueError("Le paramètre 'lag_time' doit être un nombre positif.")
+                raise ValueError("Le paramètre doit être un nombre strictement positif.")
+            elif key == "lag_time" and value <= 0:
+                raise ValueError("Le paramètre doit être un nombre strictement positif.")
+            elif key == "k" and value <= 0:
+                raise ValueError("Le paramètre doit être un nombre strictement positif.")
             return True
         except Exception as e:
             return str(e)

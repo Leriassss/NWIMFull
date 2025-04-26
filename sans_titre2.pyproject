@@ -32,6 +32,8 @@
         "api/load_data/DataManager.py",
         "api/load_data/PandasModel.py",
         "frontend/components/DataErrorsDialog.qml",
-        "api/simulation/ManualCalibration.py"
+        "api/simulation/ManualCalibration.py",
+        "api/simulation/AutomaticCalibration.py",
+        "frontend/components/CustomComboBox.qml"
     ]
 }

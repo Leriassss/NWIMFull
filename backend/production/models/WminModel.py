@@ -11,28 +11,21 @@ class WMinModel:
         :param alpha: Coefficient de pertes initiales (doit être compris entre 0 et 1).
         :param loss_days: Nombre de jours de pertes (doit être ≥ 0).
         """
-        self.S = S
-        self.alpha = alpha
-        self.loss_days = loss_days
+        self.S = float(S)
+        self.alpha = float(alpha)
+        self.loss_days = int(loss_days)
         self.validate()
 
     def validate(self):
         """
         Vérifie que les paramètres sont valides.
         """
-        try:
-            value = float(value)  # Vérifie que la valeur est numérique
-            if key == "S" and value < 0:
+        if self.S < 0:
                 raise ValueError("Le paramètre 'S' doit être positif.")
-            elif key == "alpha" and (value < 0 or value > 1):
+        if (self.alpha < 0 or self.alpha > 1):
                 raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
-            elif key == "loss_days":
-                value = int(value)  # Convertit en entier
-                if value < 0:
-                    raise ValueError("Le paramètre 'loss_days' doit être positif.")
-            return True
-        except Exception as e:
-            return str(e)
+        if self.loss_days <= 0:
+                    raise ValueError("Le paramètre doit être strictement positif .")
 
     def to_dict(self):
         """
@@ -54,8 +47,17 @@ class WMinModel:
             "alpha": "alpha",
             "loss_days": "loss days"
         }
+
     @staticmethod
-    def get_default_values(self):
+    def get_default_ranges():
+        return {
+                'S': [0,20],
+                'alpha': [0,1],
+                'loss_days': [1,10]
+            }
+    
+    @staticmethod
+    def get_default_values():
         return {
                 'S': 0,
                 'alpha': 0.25,
@@ -79,7 +81,7 @@ class WMinModel:
                 raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
             elif key == "loss_days":
                 value = int(value)  # Convertit en entier
-                if value < 0:
+                if value <= 0:
                     raise ValueError("Le paramètre 'loss_days' doit être positif.")
             return True
         except Exception as e:

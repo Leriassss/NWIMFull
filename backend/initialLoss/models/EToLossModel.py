@@ -9,7 +9,7 @@ class EToLossModel:
 
         :param alpha: Coefficient d'évapotranspiration (doit être compris entre 0 et 1).
         """
-        self.alpha = alpha
+        self.alpha = float(alpha)
         self.validate()
 
     def validate(self):
@@ -42,6 +42,12 @@ class EToLossModel:
             "alpha" : 1
         }
 
+    @staticmethod
+    def get_default_ranges():
+        return {
+            "alpha": [-1,1]
+        }
+    
     @staticmethod
     def validate_parameter(key, value):
         """

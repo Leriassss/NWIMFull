@@ -14,6 +14,7 @@ from api.load_data.TableModel import TableModel
 from api.load_data.EToManager import EToManager
 from api.FactoryManager import FactoryManager
 from api.simulation.ManualCalibration import ManualCalibration
+from api.simulation.AutomaticCalibration import AutomaticCalibration
 
 # Implémentation de votre Message Handler
 def qtMessageHandler(mode, context, message):
@@ -43,8 +44,10 @@ if __name__ == "__main__":
     model = TableModel()
     factory_manager = FactoryManager()
     manual_calibration = ManualCalibration()
+    automatic_calibration = AutomaticCalibration()
 
     engine.rootContext().setContextProperty("manualCalibration", manual_calibration)
+    engine.rootContext().setContextProperty("automaticCalibration", automatic_calibration)
     engine.rootContext().setContextProperty("dataTableModel", model)
     engine.rootContext().setContextProperty("fileHandler", file_handler)
     engine.rootContext().setContextProperty("etoManager", eto_manager)

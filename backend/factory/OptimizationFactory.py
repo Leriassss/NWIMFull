@@ -17,10 +17,12 @@ class OptimizationFactory:
 
     @staticmethod
     def createInstance(method_name: str, *args):
+        print("-----------OPTIMIZATION FACTORY ----------")
+        print(args[2:])
         return OptimizationFactory.methods[method_name][0](
             args[0],  # sim
             args[1],  # bundle
-            OptimizationFactory.methods[method_name][1](*args[2:])  # Model instancié avec les paramètres restants
+            OptimizationFactory.methods[method_name][1](**args[2:][0])  # Model instancié avec les paramètres restants
         )
 
     def getMethods(self, method_name: str):

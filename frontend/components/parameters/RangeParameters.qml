@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import ".."
+
 ScrollView {
     id: scrollView
     contentWidth: -1
@@ -20,18 +22,17 @@ ScrollView {
         anchors.fill: parent
         anchors.margins: 10
 
-        // Sélecteur de méthode
-        ComboBox {
-            id: methodSelector
+        CustomComboBox {
             leftPadding: 10
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
             Layout.preferredHeight: 40
-            model: parameterModel.availableMethods
-
+            id: methodSelector
+            model: parameterModel?.availableMethods
             onCurrentIndexChanged: {
                 parameterModel.setMethod(methodSelector.currentIndex)
             }
         }
+
 
         // Section pour les paramètres associés à la méthode sélectionnée
         GridLayout {
@@ -75,7 +76,7 @@ ScrollView {
                     }
 
                     background: Rectangle {
-                        color: "white"
+                        color: "#ebebeb"
                         border.color: {
                             let errors = parameterModel.parameterErrors[modelData];
                             return (errors && errors.min) ? "red" : "gray";
@@ -103,7 +104,7 @@ ScrollView {
                     }
 
                     background: Rectangle {
-                        color: "white"
+                        color: "#ebebeb"
                         border.color: {
                             let errors = parameterModel.parameterErrors[modelData];
                             return (errors && errors.max) ? "red" : "gray";

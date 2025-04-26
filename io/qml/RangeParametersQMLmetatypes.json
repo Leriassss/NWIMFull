@@ -19,30 +19,43 @@
                 ],
                 "properties": [
                     {
-                        "name": "availableMethods",
+                        "name": "methodKeys",
                         "type": "QVariant",
                         "index": 0,
+                        "read": "methodKeys"
+                    },
+                    {
+                        "name": "currentMethod",
+                        "type": "QString",
+                        "index": 1,
+                        "read": "currentMethod",
+                        "notify": "methodChanged"
+                    },
+                    {
+                        "name": "availableMethods",
+                        "type": "QVariant",
+                        "index": 2,
                         "read": "availableMethods",
                         "notify": "methodChanged"
                     },
                     {
                         "name": "parameterErrors",
                         "type": "QVariant",
-                        "index": 1,
+                        "index": 3,
                         "read": "parameterErrors",
                         "notify": "parameterErrorChanged"
                     },
                     {
                         "name": "parameterNames",
                         "type": "QVariant",
-                        "index": 2,
+                        "index": 4,
                         "read": "parameterNames",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameters",
                         "type": "QVariant",
-                        "index": 3,
+                        "index": 5,
                         "read": "parameters",
                         "notify": "parametersChanged"
                     }

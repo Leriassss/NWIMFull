@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 class Simulation:
     Metrics2 = ["RMSE", "MAE", "MAPE", "R2", "NSE", "KGE"]
-    Metrics = ["RMSE", "MAE", "MAPE", "R2", "NSE", "KGE"]
+    Metrics = ["NSE", "KGE", "RMSE", "MAE", "MAPE", "R2"]
     def __init__(self,production_method,recession_method,routing_method, loss_method,
                  ptq_calage: PTQ,ptq_validation : PTQ):
         self.methods = {
