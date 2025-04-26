@@ -1,8 +1,8 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
-import QtQuick.Effects
+import QtQuick.Controls.Basic
+
+
 ComboBox {
     id: methodSelector
 
@@ -37,14 +37,6 @@ ComboBox {
         background: Rectangle {
             id : rec
             border.color: "#21be2b"
-            layer.enabled: rec.hovered
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 5
-                radius: 4
-                samples: 20
-                color: "red"//"#888888"
-            }
         }
 
     }

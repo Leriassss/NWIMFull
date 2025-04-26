@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-
+import QtQuick.Effects
 import "./parameters"
 import "../../io/qml"
 import io.qml
@@ -62,14 +62,48 @@ Dialog {
 
         Rectangle{
             color: "#ebebeb"
+            border.width: 1
+            border.color: "grey"
             SplitView.minimumWidth:  parent.width*0.2
             SplitView.preferredWidth: parent.width*0.4
             //width: parent.width*0.4
             //height: parent.height
             Column{
-                anchors.fill: parent
-                anchors.left: parent.left
+                width: parent.width - 5
+                height: parent.height - 5
+                anchors.centerIn: parent
                 spacing : 20
+                Rectangle {
+                    width: parent.width
+                    height: 15
+                    color : "transparent"
+                    Label {
+                        id : outputLabel
+                        anchors.margins: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "OPTIMIZATION OPTIONS"
+                        horizontalAlignment: Qt.AlignHCenter
+                        font.bold: true
+                        font.pointSize: 11
+                        padding: 5
+                        color: "black"
+                        width: parent.width
+                        background: Rectangle {
+                            border.width: 1
+                            border.color: "#17a81a"
+                            radius : 2
+                            color : "transparent"
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                shadowEnabled: true
+                                shadowHorizontalOffset: 2
+                                shadowVerticalOffset: 2
+                                shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                            }
+                        }
+                    }
+                }
+
                 GroupBox{
                     height: parent.height *0.2
                     width: parent.width
@@ -80,13 +114,12 @@ Dialog {
                         anchors.fill: parent
                         //border.width: 1
                         spacing : 10
-                        CheckBox {
+                        CustomCheckDelegate{
                             checked: true
                             text: "OBJECTIF"
                         }
 
                         Row{
-                            padding: 30
                             Layout.preferredHeight: parent.height *0.9
                             Layout.preferredWidth: parent.width
                             spacing : 5
@@ -120,78 +153,18 @@ Dialog {
                 GroupBox{
                     height: parent.height *0.2
                     width: parent.width
-                    label: Label{
-                        text: "CRITERIA"
-                        color: "grey"
-                        font.bold: true
-                        font.pointSize: 10
-                    }
+                    title: "CRITERIA"
 
                     ColumnLayout{
                         anchors.fill: parent
                         //border.width: 1
                         spacing : 10
-                        ComboBox {
+                        CustomComboBox {
                             leftPadding: 10
                             Layout.preferredWidth: parent.width
                             Layout.preferredHeight: 40
                             id: methodSelector
-                            model: automaticCalibration.metrics
-
-                            background: Rectangle{
-                                anchors.fill: parent
-                                color: "#ebebeb"
-                                border.width: 1
-                                border.color: "grey"
-                            }
-                            popup: Popup {
-                                y: methodSelector.height - 1
-                                width: methodSelector.width
-                                height: Math.min(contentItem.implicitHeight, methodSelector.Window.height - topMargin - bottomMargin)
-                                padding: 1
-
-                                contentItem: ListView {
-                                    clip: true
-                                    implicitHeight: contentHeight
-                                    model: methodSelector.popup.visible ? methodSelector.delegateModel : null
-                                    currentIndex: methodSelector.highlightedIndex
-
-
-                                    ScrollIndicator.vertical: ScrollIndicator { }
-                                }
-
-                                background: Rectangle {
-                                    id : rec
-                                    border.color: "#21be2b"
-                                }
-
-                            }
-
-                            indicator: Canvas {
-                                   id: canvas
-                                   x: methodSelector.width - width - methodSelector.rightPadding
-                                   y: methodSelector.topPadding + (methodSelector.availableHeight - height) / 2
-                                   width: 12
-                                   height: 8
-                                   contextType: "2d"
-
-                                   Connections {
-                                       target: methodSelector
-                                       function onPressedChanged() { canvas.requestPaint(); }
-                                   }
-
-                                   onPaint: {
-                                       context.reset();
-                                       context.moveTo(0, 0);
-                                       context.lineTo(width, 0);
-                                       context.lineTo(width / 2, height);
-                                       context.closePath();
-                                       context.fillStyle = methodSelector.pressed ? "#17a81a" : "#21be2b";
-                                       context.fill();
-                                   }
-                               }
-
-
+                            model: automaticCalibration?.metrics
                             onCurrentTextChanged: {
                                 automaticCalibration.setMetric(methodSelector.currentText)
                             }
@@ -226,12 +199,12 @@ Dialog {
 
                     }
 
-
-                Button{
-                    text: "Optimize"
-                    width: 100
+                Button {
+                    id: control
+                    text: qsTr("Optimize")
                     font.bold: true
                     font.pointSize: 10
+                    anchors.right: parent.right
                     //enabled: fileHandler.activate
                     onClicked: {
                         if(!fileHandler.activate){
@@ -244,6 +217,24 @@ Dialog {
                         console.log(JSON.stringify(dialogOptim.parameters_bundle))
                         automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
                     }
+                    contentItem: Text {
+                        text: control.text
+                        font: control.font
+                        opacity: enabled ? 1.0 : 0.3
+                        //color: control.down ? "#17a81a" : "#21be2b"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 100
+                        implicitHeight: 40
+                        opacity: enabled ? 1 : 0.3
+                        border.color: control.down ? "#17a81a" : "#21be2b"
+                        border.width: 1
+                        radius: 2
+                    }
                 }
 
             }
@@ -251,49 +242,169 @@ Dialog {
         }
 
         Rectangle{
+            border.width: 1
+            border.color: "grey"
             width: parent.width*0.6
             height: parent.height
             color: "#ebebeb"
             Column{
-                anchors.fill: parent
-
-                anchors.right: parent.right
-                RangeParameters{
-                    id : productionRange
-                    parameterModel : RangeParametersQML{}
-                    factoryName : "Production"
-                    height: parent.height *0.25
+                width: parent.width - 5
+                height: parent.height - 5
+                anchors.centerIn: parent
+                spacing: 2
+                clip: true
+                Label {
+                    id : methodsLabel
+                    anchors.margins: 5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "PARAMETERS"
+                    horizontalAlignment: Qt.AlignHCenter
+                    font.bold: true
+                    font.pointSize: 11
+                    padding: 5
+                    color: "black"
                     width: parent.width
-                }
-                RangeParameters{
-                    id : initialLossRange
-                    anchors.right: parent.right
-                    parameterModel : RangeParametersQML{}
-                    factoryName : "InitialLoss"
-                    height: parent.height *0.25
-                    width: parent.width
-                }
-                RangeParameters{
-                    id : routingRange
-                    parameterModel : RangeParametersQML{}
-                    factoryName : "Routing"
-                    height: parent.height *0.25
-                    width: parent.width
-                }
-                RangeParameters{
-                    id : recessionRange
-                    anchors.right: parent.right
-                    parameterModel : RangeParametersQML{}
-                    factoryName : "Recession"
-                    height: parent.height *0.25
-                    width: parent.width
-                    /*background: Rectangle {
-                        color: "white"
+                    background: Rectangle {
                         border.width: 1
-                    }*/
+                        border.color: "#17a81a"
+                        radius : 2
+                        color : "transparent"
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            shadowEnabled: true
+                            shadowHorizontalOffset: 2
+                            shadowVerticalOffset: 2
+                            shadowColor: methodsLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: simParameters
+                    width: parent.width
+                    height: parent.height * 0.8
+                    color : "transparent"
+                    SplitView {
+                        anchors.fill: parent
+                        orientation: Qt.Vertical
+                        handle: Rectangle {
+                            implicitWidth: 4
+                            implicitHeight: 4
+                            color: SplitHandle.pressed ? "#81e889"
+                                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+                            border.width: 1
+                            border.color: "grey"
+                        }
+                        Rectangle{
+                            SplitView.minimumHeight: 45
+                            SplitView.preferredHeight: 250
+                            color : "#ebebeb"
+                            Column {
+                                anchors.fill: parent
+                                spacing: 5
+                                padding: 10
+
+                                Label {
+                                    width: parent.width
+                                    text: "Production Methods"
+                                    font.bold: true
+                                    font.pointSize: 11
+                                    padding: 5
+                                    color: "black"
+                                    horizontalAlignment: Qt.AlignHCenter
+                                }
+
+                                RangeParameters{
+                                    id : productionRange
+                                    parameterModel : RangeParametersQML{}
+                                    factoryName : "Production"
+                                    height: childrenRect.height
+                                    width: parent.width - 2*parent.padding
+                                    spacing: 10
+                                }
+
+                                RangeParameters{
+                                    id : initialLossRange
+                                    parameterModel : RangeParametersQML{}
+                                    factoryName : "InitialLoss"
+                                    height: 75
+                                    width: parent.width - 2*parent.padding
+                                    spacing: 10
+                                }
+                            }
+                        }
+
+                        Rectangle{
+                            SplitView.minimumHeight: 45
+                            SplitView.preferredHeight: 150
+                            color : "#ebebeb"
+                            Column {
+                                spacing: 5
+                                padding: 10
+                                anchors.fill: parent
+
+                                Label {
+                                    width: parent.width
+                                    height: 15
+                                    text: "Routing Methods"
+                                    font.bold: true
+                                    font.pointSize: 11
+                                    padding: 5
+                                    color: "black"
+                                    horizontalAlignment: Qt.AlignHCenter
+                                }
+
+                                RangeParameters{
+                                    id : routingRange
+                                    parameterModel : RangeParametersQML{}
+                                    factoryName : "Routing"
+                                    height: childrenRect.height
+                                    width: parent.width - 2*parent.padding
+                                    spacing: 10
+                                }
+
+                            }
+
+                        }
+
+                        Rectangle{
+                            color : "#ebebeb"
+                            SplitView.minimumHeight: 100
+                            Column {
+                                anchors.fill: parent
+                                width: parent.width
+                                spacing: 5
+                                padding: 10
+
+                                Label {
+                                    width: parent.width
+                                    text: "Recession Methods"
+                                    font.bold: true
+                                    font.pointSize: 11
+                                    padding: 5
+                                    color: "black"
+                                    horizontalAlignment: Qt.AlignHCenter
+                                }
+                                RangeParameters{
+                                    id : recessionRange
+                                    parameterModel : RangeParametersQML{}
+                                    factoryName : "Recession"
+                                    height: childrenRect.height
+                                    width: parent.width - 2*parent.padding
+                                    spacing: 10
+                                }
+                            }
+
+                        }
+
+
+                    }
 
                 }
+
+
             }
+
 
         }
 

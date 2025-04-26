@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import Qt5Compat.GraphicalEffects
+import ".."
 Column {
     id : control
     Component.onCompleted: {
@@ -19,65 +20,11 @@ Column {
     property bool checkPassed: parameterModel?.desactivated
 
     // Sélecteur de méthode
-    ComboBox {
+    CustomComboBox {
         leftPadding: 10
         width: parent.width
         height: 40
         id: methodSelector
-
-        background: Rectangle{
-            anchors.fill: parent
-            color: "#ebebeb"
-            border.width: 1
-            border.color: "grey"
-        }
-        popup: Popup {
-            y: methodSelector.height - 1
-            width: methodSelector.width
-            height: Math.min(contentItem.implicitHeight, methodSelector.Window.height - topMargin - bottomMargin)
-            padding: 1
-
-            contentItem: ListView {
-                clip: true
-                implicitHeight: contentHeight
-                model: methodSelector.popup.visible ? methodSelector.delegateModel : null
-                currentIndex: methodSelector.highlightedIndex
-
-
-                ScrollIndicator.vertical: ScrollIndicator { }
-            }
-
-            background: Rectangle {
-                id : rec
-                border.color: "#21be2b"
-            }
-
-        }
-
-        indicator: Canvas {
-               id: canvas
-               x: methodSelector.width - width - methodSelector.rightPadding
-               y: methodSelector.topPadding + (methodSelector.availableHeight - height) / 2
-               width: 12
-               height: 8
-               contextType: "2d"
-
-               Connections {
-                   target: methodSelector
-                   function onPressedChanged() { canvas.requestPaint(); }
-               }
-
-               onPaint: {
-                   context.reset();
-                   context.moveTo(0, 0);
-                   context.lineTo(width, 0);
-                   context.lineTo(width / 2, height);
-                   context.closePath();
-                   context.fillStyle = methodSelector.pressed ? "#17a81a" : "#21be2b";
-                   context.fill();
-               }
-           }
-
         model: parameterModel?.availableMethods
         onCurrentIndexChanged: {
             parameterModel.setMethod(methodSelector.currentIndex)
