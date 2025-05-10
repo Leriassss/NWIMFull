@@ -27,6 +27,7 @@ Column {
         id: methodSelector
         model: parameterModel?.availableMethods
         onCurrentIndexChanged: {
+            console.log("-------------CC----------------")
             parameterModel.setMethod(methodSelector.currentIndex)
         }
     }
@@ -41,7 +42,7 @@ Column {
 
         // Répétiteur pour afficher les labels des paramètres
         Repeater {
-            model: Object.keys(parameterModel.parameterNames)
+            model: parameterModel.parameterNames
 
             delegate: RowLayout {
                 Layout.column: 0 // Première colonne pour les labels
@@ -49,14 +50,18 @@ Column {
                 Layout.preferredWidth: parent.width * 0.5
                 // Label pour chaque paramètre
                 Label {
-                    text: parameterModel?.parameterNames[modelData]
+                    text: modelData
                 }
             }
         }
 
         // Répétiteur pour afficher les TextField dynamiquement
         Repeater {
-            model: Object.keys(parameterModel.parameters)
+            model: {
+                console.log("*-*-* RES1 *-*-")
+                console.log(parameterModel.parameterValues)
+                parameterModel.parameterValues
+            }
 
             delegate: RowLayout {
                 Layout.column: 1 // Deuxième colonne pour les TextField
@@ -67,13 +72,13 @@ Column {
                 // Zone de texte pour la saisie des valeurs
                 TextField {
                     id : param_value
-                    property string modelName: modelData
-                    property var errors: parameterModel.parameterErrors[param_value.modelName]
+                    property string modelName: parameterModel.parameterNames[index]
+                    property var errors: parameterModel.parameterErrors[modelName]
                     ToolTip.delay: 500
                     ToolTip.timeout: 5000
                     ToolTip.visible: hovered &&  errors !== "" ? true : false
-                    ToolTip.text: qsTr(parameterModel.parameterErrors[param_value.modelName])
-                    text: parameterModel?.parameters[modelData]
+                    ToolTip.text: qsTr(parameterModel.parameterErrors[modelName])
+                    text: modelData
                     onTextChanged: {
                         parameterModel.updateParameter(modelName, text)
                         console.log("----------------- RESULTATS -----------------------")

@@ -13,7 +13,7 @@ Column{
 
     Connections {
         target: fileHandler
-        function onDataDictChanged() {
+        function onPInfosChanged() {
             populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
                            "Calibration" : fileHandler.pInfos["data_cal"],
                             "VDates" : fileHandler.datesInfos["data_val"],
@@ -223,7 +223,7 @@ Column{
                                 id : pCalibrationChart
                                 Layout.preferredWidth: parent.width / 2
                                 Layout.preferredHeight:parent.height
-                                chartName : "Rainfall Calibration"
+                                chartName : "Rainfall Calibration"                              
 
                             }
                             RainChart{

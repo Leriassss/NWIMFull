@@ -15,7 +15,7 @@ Column{
     property var columnMapping: ({})
     Connections {
         target: fileHandler
-        function onDataDictChanged() {
+        function onEtpInfosChanged() {
             populateTable({"CDates" : fileHandler.datesInfos["data_cal"],
                            "Calibration" : fileHandler.etpInfos["data_cal"],
                             "VDates" : fileHandler.datesInfos["data_val"],

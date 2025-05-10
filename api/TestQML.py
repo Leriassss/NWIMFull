@@ -1,3 +1,4 @@
+
 from PySide6.QtCore import QObject, Property, Signal, Slot
 from PySide6.QtQml import QmlElement
 from api.FactoryManager import FactoryManager
@@ -44,8 +45,15 @@ class TestQML(QObject):
         return list(self._parameters.keys())
 
     @Property('QVariant', notify=parametersChanged)
+    def parameterValues(self):
+        """Retourne les noms des paramètres disponibles."""
+        return list(self._parameters.values())
+
+    @Property(dict, notify=parametersChanged)
     def parameters(self):
         """Retourne les paramètres """
+        print("-*-*-*-*- PARAMETERS TESTQML *-*-*-*-*-*")
+        print(self._parameters)
         return self._parameters
 
 
@@ -78,6 +86,8 @@ class TestQML(QObject):
             self._keys = model.get_parameter_names()
             #UTILISER LES CLES PLUTOT QUE LES VALEURS
             self._parameters = {key: str(default_values[key]) for key in self._keys}
+            self._parameterErrors = {key: "" for key in self._keys}
+
             print("----------------- setMethod1 (TestQML) ----------")
             print(self._parameters)
             #self._parameters = {key: None for key in self._keys.values()}
@@ -87,6 +97,7 @@ class TestQML(QObject):
 
     @Slot(str, str)
     def updateParameter(self, key, value):
+
         if key in self._keys:
             """Met à jour un paramètre et applique la validation."""
             self._parameters[key] = value

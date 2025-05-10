@@ -53,16 +53,23 @@
                         "notify": "parametersChanged"
                     },
                     {
-                        "name": "parameters",
+                        "name": "parameterValues",
                         "type": "QVariant",
                         "index": 5,
+                        "read": "parameterValues",
+                        "notify": "parametersChanged"
+                    },
+                    {
+                        "name": "parameters",
+                        "type": "dict",
+                        "index": 6,
                         "read": "parameters",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameterErrors",
                         "type": "QVariant",
-                        "index": 6,
+                        "index": 7,
                         "read": "parameterErrors",
                         "notify": "parameterErrorChanged"
                     }

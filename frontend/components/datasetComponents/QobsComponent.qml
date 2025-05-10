@@ -13,7 +13,7 @@ Column{
 
     Connections {
         target: fileHandler
-        function onDataDictChanged() {
+        function onQInfosChanged() {
             populateTable({
                 "CDates": fileHandler.datesInfos["data_cal"],
                 "Calibration": fileHandler.qInfos["data_cal"],

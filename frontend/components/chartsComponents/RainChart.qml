@@ -19,6 +19,7 @@ Rectangle {
 
         BarSeries {
                 id: mySeries
+                barWidth : 0
                 axisX: BarCategoryAxis {
                     categories: axisXValues
                 }
@@ -27,7 +28,7 @@ Rectangle {
                     min:minValue
                     max:1.1*maxValue
                 }
-                BarSet { label: "Pluies"; values: barValues}
+                BarSet { label: chartContainer.chartName; values: barValues}
             }
     }
 

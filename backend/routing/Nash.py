@@ -44,7 +44,7 @@ class Nash(Routing):
 
         # Assemblage des résultats et découpage à la taille initiale
         q_sim_direct =  pd.concat(nash_time_base).reset_index(drop=True)[:n]
-        return np.maximum(0,q_sim_direct + datas["qbase"])
+        return np.maximum(0,q_sim_direct)
     
     def validation(self, datas : DataSimulation):
         nash_k = self.nashModel.nash_k
@@ -79,7 +79,7 @@ class Nash(Routing):
 
         # Assemblage des résultats et découpage à la taille initiale
         q_sim_direct =  pd.concat(nash_time_base).reset_index(drop=True)[:n]
-        return np.maximum(0,q_sim_direct + datas["qbase"])
+        return np.maximum(0,q_sim_direct)
     
     @staticmethod
     def help():

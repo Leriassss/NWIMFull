@@ -255,6 +255,7 @@ ApplicationWindow {
 
 
        }
+
     HomePage{
         id : homepage
         anchors.top: toolBar.bottom

@@ -15,8 +15,6 @@ Column {
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)  // Charger la factory au démarrage
     }
-    spacing: 10
-    anchors.fill: parent
     anchors.margins: 10
 
     CustomComboBox {

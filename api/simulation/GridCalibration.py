@@ -5,10 +5,9 @@ import datetime
 from backend.simulation.Simulation import Simulation
 from backend.ptq.PTQ import PTQ
 from backend.factory.OptimizationFactory import OptimizationFactory
-from backend.results.ResultsFileManager import ResultsFileManager
 from PySide6.QtCore import QObject, Signal, Slot, Property
 
-class AutomaticCalibration(QObject):
+class GridCalibration(QObject):
     def __init__(self):
         super().__init__()
         self._parameter_bundle =  {}
@@ -112,10 +111,6 @@ class AutomaticCalibration(QObject):
         print(sim_r_hun.calibration_metric)
         print(sim_r_hun.validation_metric)
 
-        print("-------- saving ----------")
-        rfm = ResultsFileManager()
-        print(optim_parameters)
-        rfm.serialize_optim_range_params(optim_parameters, optimizator)
 
 
 

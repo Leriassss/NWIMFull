@@ -3,7 +3,7 @@ import QtQuick.Controls
 import Qt.labs.platform
 
 
-    FileDialog {
+    FolderDialog {
         title: "Sélectionnez un fichier"
 
     }

@@ -89,7 +89,7 @@ Rectangle{
                         width: parent.width
                         height: parent.height * 0.8
                         color : "transparent"
-                        enabled: fileHandler.activate ? true : false
+                        //enabled: fileHandler.activate ? true : false
                         SplitView {
                             anchors.fill: parent
                             orientation: Qt.Vertical
@@ -578,8 +578,8 @@ Rectangle{
                             Connections {
                                 target: homePage
                                 function onRunningClicked(){
-                                    console.log("------------- SIMCHART RUNNIG---------------")
-                                    console.log(JSON.stringify(manualCalibration.simulationValues))
+                                    //console.log("------------- SIMCHART RUNNIG---------------")
+                                    //console.log(JSON.stringify(manualCalibration.simulationValues))
                                     let dates = manualCalibration.simulationValues["DATES"]
                                     let q_obs = manualCalibration.simulationValues["OBS"]
                                     let q_sim = manualCalibration.simulationValues["SIM"]

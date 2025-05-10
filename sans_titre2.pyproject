@@ -34,6 +34,9 @@
         "frontend/components/DataErrorsDialog.qml",
         "api/simulation/ManualCalibration.py",
         "api/simulation/AutomaticCalibration.py",
-        "frontend/components/CustomComboBox.qml"
+        "frontend/components/CustomComboBox.qml",
+        "api/simulation/GridCalibration.py",
+        "frontend/components/CustomToolButton.qml",
+        "frontend/components/CustomFolderDialog.qml"
     ]
 }

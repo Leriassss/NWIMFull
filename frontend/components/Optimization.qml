@@ -5,7 +5,7 @@ import QtQuick.Effects
 import "./parameters"
 import "../../io/qml"
 import io.qml
-
+import Qt5Compat.GraphicalEffects
 Dialog {
     title: "OPTIMIZATION"
     implicitWidth:  1000
@@ -14,11 +14,60 @@ Dialog {
     popupType: Popup.Window
     id: dialogOptim
 
-    standardButtons: Dialog.Ok | Dialog.Cancel
+    standardButtons: Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
-    padding: 5
+    //padding: 5
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
+
+    header: ToolBar {
+            id: toolBar
+            height: 30
+            //implicitHeight: 35
+            implicitWidth:  200
+
+            clip: true
+            Rectangle{
+                //gradient: Gradient.AboveTheSky
+                color:"#ebebeb"
+                //border.color: "#6b6b6b"
+                //border.width: 1
+
+                anchors.fill: parent
+                Row{
+                    anchors.fill: parent
+                    spacing: 1
+                    CustomToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("📥")
+                        ToolTip.text: qsTr("Load Parameters")
+                        onClicked: {
+                            loadRangeParams.open()
+                        }
+                    }
+
+                    CustomToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("💾")
+                        ToolTip.text: qsTr("Save Parameters")
+                    }
+                    CustomToolButton {
+                        width: 50
+                        height: parent.height
+                        text: qsTr("▶️")
+                        ToolTip.text: qsTr("Optimize")
+                        onClicked: {
+                            console.log("------------ HOME PAGE ---------------")
+                            console.log(JSON.stringify(homepage.parameter_bundle))
+                        }
+                    }
+                }
+            }
+
+
+       }
 
     property var parameters_bundle: {
         "pn":productionRange.parameterModel,
@@ -27,6 +76,31 @@ Dialog {
         "loss" : initialLossRange.parameterModel
     }
     property var optimization_bundle: [optimizationParameter.parameterModel]
+
+    FileChoose {
+        id: loadRangeParams
+        fileMode: FileDialog.SaveFile
+        nameFilters: ["JSON (*.json)"]
+        folder: shortcuts.home
+        property string fileName: ""
+
+        onAccepted: {
+            fileName = cleanFilePath(loadRangeParams.file.toString());
+            if (fileName) {
+                try {
+                    console.log("------ OPTIM NAME------")
+                    console.log(fileName)
+                } catch (error) {
+                    errorDialog.text = "Erreur lors du chargement du fichier : " + error
+                    errorDialog.open()
+                }
+            }
+        }
+        onRejected: {
+            console.log("Sélection annulée");
+        }
+
+    }
 
     Dialog {
         id: errorDialog
@@ -64,8 +138,8 @@ Dialog {
             color: "#ebebeb"
             border.width: 1
             border.color: "grey"
-            SplitView.minimumWidth:  parent.width*0.2
-            SplitView.preferredWidth: parent.width*0.4
+            SplitView.minimumWidth:  parent.width*0.5
+            SplitView.preferredWidth: parent.width*0.5
             //width: parent.width*0.4
             //height: parent.height
             Column{
@@ -84,7 +158,7 @@ Dialog {
                         text: "OPTIMIZATION OPTIONS"
                         horizontalAlignment: Qt.AlignHCenter
                         font.bold: true
-                        font.pointSize: 11
+                        font.pointSize: 10
                         padding: 5
                         color: "black"
                         width: parent.width
@@ -107,7 +181,7 @@ Dialog {
                 GroupBox{
                     height: parent.height *0.2
                     width: parent.width
-                    title: "TARGETTING"
+                    title: "Objective"
                     bottomInset: 10
 
                     ColumnLayout{
@@ -116,7 +190,7 @@ Dialog {
                         spacing : 10
                         CustomCheckDelegate{
                             checked: true
-                            text: "OBJECTIF"
+                            text: "Set"
                         }
 
                         Row{
@@ -150,54 +224,65 @@ Dialog {
                     }
 
                 }
-                GroupBox{
-                    height: parent.height *0.2
-                    width: parent.width
-                    title: "CRITERIA"
 
-                    ColumnLayout{
-                        anchors.fill: parent
-                        //border.width: 1
-                        spacing : 10
-                        CustomComboBox {
-                            leftPadding: 10
-                            Layout.preferredWidth: parent.width
-                            Layout.preferredHeight: 40
-                            id: methodSelector
-                            model: automaticCalibration?.metrics
-                            onCurrentTextChanged: {
-                                automaticCalibration.setMetric(methodSelector.currentText)
+                Row{
+                    spacing: 5
+                    width: parent.width
+                    height: parent.height * 0.2
+                    GroupBox{
+                        height: parent.height
+                        width: parent.width * 0.5
+                        title: "Criteria"
+
+                        ColumnLayout{
+                            height: parent.height
+                            width: parent.width
+                            ComboBox {
+                                leftPadding: 10
+                                Layout.preferredWidth: parent.width
+                                Layout.preferredHeight: 40
+                                id: metricsComboBox
+                                model: automaticCalibration.metrics
+                                onCurrentTextChanged: {
+                                    //console.log("-----------------------------")
+                                    automaticCalibration?.setMetric(metricsComboBox.currentText)
+                                }
+                                /*onCurrentIndexChanged: {
+                                    console.log("-----------------------------")
+                                }*/
+                            }
+
+
+                        }
+
+                    }
+
+                    GroupBox{
+                        height: parent.height
+                        width: parent.width * 0.5 - parent.spacing
+                        title: "Optimizator"
+
+
+                        ColumnLayout{
+                            anchors.fill: parent
+                            //border.width: 1
+                            spacing : 10
+                            Parameters{
+                                id : optimizationParameter
+                                Layout.preferredHeight: childrenRect.height
+                                Layout.preferredWidth: parent.width
+                                height: childrenRect.height
+                                spacing: 10
+                                parameterModel : TestQML{}
+                                factoryName : "Optimization"
                             }
                         }
 
 
-                    }
+                        }
 
                 }
 
-                GroupBox{
-                    height: parent.height *0.2
-                    width: parent.width
-                    title: "OPTIMIZATION PARAMETERS"
-
-
-                    ColumnLayout{
-                        anchors.fill: parent
-                        //border.width: 1
-                        spacing : 10
-                        Parameters{
-                            id : optimizationParameter
-                            Layout.preferredHeight: childrenRect.height
-                            Layout.preferredWidth: parent.width
-                            height: childrenRect.height
-                            spacing: 10
-                            parameterModel : TestQML{}
-                            factoryName : "Optimization"
-                        }
-                    }
-
-
-                    }
 
                 Button {
                     id: control
@@ -260,7 +345,7 @@ Dialog {
                     text: "PARAMETERS"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
-                    font.pointSize: 11
+                    font.pointSize: 10
                     padding: 5
                     color: "black"
                     width: parent.width
@@ -300,18 +385,24 @@ Dialog {
                             SplitView.preferredHeight: 250
                             color : "#ebebeb"
                             Column {
-                                anchors.fill: parent
-                                spacing: 5
-                                padding: 10
+                                width: parent.width
+                                height: parent.height
+                                spacing: 2
+                                padding: 5
 
                                 Label {
                                     width: parent.width
                                     text: "Production Methods"
                                     font.bold: true
-                                    font.pointSize: 11
-                                    padding: 5
+                                    font.pointSize: 10
+                                    padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
+                                    background: Rectangle{
+                                        anchors.fill: parent
+                                        color: Qt.lighter("#c2f4c6", 1.1)
+                                        opacity: 0.7
+                                    }
                                 }
 
                                 RangeParameters{
@@ -339,19 +430,23 @@ Dialog {
                             SplitView.preferredHeight: 150
                             color : "#ebebeb"
                             Column {
-                                spacing: 5
-                                padding: 10
+                                spacing: 2
+                                padding: 5
                                 anchors.fill: parent
 
                                 Label {
                                     width: parent.width
-                                    height: 15
                                     text: "Routing Methods"
                                     font.bold: true
-                                    font.pointSize: 11
-                                    padding: 5
+                                    font.pointSize: 10
+                                    padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
+                                    background: Rectangle{
+                                        anchors.fill: parent
+                                        color: Qt.lighter("#c2f4c6", 1.1)
+                                        opacity: 0.7
+                                    }
                                 }
 
                                 RangeParameters{
@@ -373,17 +468,22 @@ Dialog {
                             Column {
                                 anchors.fill: parent
                                 width: parent.width
-                                spacing: 5
-                                padding: 10
+                                spacing: 2
+                                padding: 5
 
                                 Label {
                                     width: parent.width
                                     text: "Recession Methods"
                                     font.bold: true
-                                    font.pointSize: 11
-                                    padding: 5
+                                    font.pointSize: 10
+                                    padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
+                                    background: Rectangle{
+                                        anchors.fill: parent
+                                        color: Qt.lighter("#c2f4c6", 1.1)
+                                        opacity: 0.7
+                                    }
                                 }
                                 RangeParameters{
                                     id : recessionRange
@@ -410,5 +510,10 @@ Dialog {
 
 
     }
-
+    function cleanFilePath(filePath) {
+        if (filePath.startsWith("file:///")) {
+            return filePath.substring(8);
+        }
+        return filePath;
+    }
 }

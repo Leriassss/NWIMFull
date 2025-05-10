@@ -24,6 +24,8 @@ Column{
 
     FileChoose {
         id: fileChooseComponent
+        fileMode: FileDialog.OpenFile
+        nameFilters: ["Excel (*.xlsx)","Texte (*.txt)"]
         property string fileName: ""
 
         onAccepted: {

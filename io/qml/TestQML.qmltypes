@@ -47,11 +47,19 @@ Module {
             isReadonly: true
         }
         Property {
-            name: "parameters"
+            name: "parameterValues"
             type: "QVariant"
-            read: "parameters"
+            read: "parameterValues"
             notify: "parametersChanged"
             index: 5
+            isReadonly: true
+        }
+        Property {
+            name: "parameters"
+            type: "dict"
+            read: "parameters"
+            notify: "parametersChanged"
+            index: 6
             isReadonly: true
         }
         Property {
@@ -59,7 +67,7 @@ Module {
             type: "QVariant"
             read: "parameterErrors"
             notify: "parameterErrorChanged"
-            index: 6
+            index: 7
             isReadonly: true
         }
         Signal { name: "parametersChanged" }

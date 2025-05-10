@@ -59,9 +59,14 @@ class ManualCalibration(QObject):
         if self.check_keys_match(params_dict, self.parameters_type):
             for key in self.parameters_type :
                 obj = params_dict[key]
+
                 #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
                 methodKeys = list(obj.property('methodKeys').keys())
-                parameters_dict = obj.property('parameters')
+                parameters_dict = dict(zip(obj.property('parameterNames'), obj.property('parameterValues')))
+                #parameters_dict = obj.property('parameters')
+                print("---- setParameters2 MC --------")
+                print(parameters_dict)
+                print(methodKeys)
                 if self.check_keys_match(parameters_dict, methodKeys) :
                     self._parameter_bundle[key] = list(parameters_dict.values())
                     self._parameters_methods[key] = obj.property('currentMethod')
@@ -110,7 +115,7 @@ class ManualCalibration(QObject):
 
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  sim.calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  hun_sim_val[0].items()}
-        print("------------------------- SIM ---------------")
+        print("------------------------- SIM (MC)---------------")
         print(self._sim)
 
 
