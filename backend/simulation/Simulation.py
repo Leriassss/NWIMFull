@@ -1,5 +1,6 @@
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
+from backend.baseFlow.BaseFlowRoutine2 import BaseFlowRoutine2
 from backend.contracts.Bundle import DataInitialLoss, DataSimulation, RoutingData, DataBaseFlow
 from backend.factory.RoutingFactory import RoutingFactory
 from backend.factory.InitialLossFactory import InitialLossFactory
@@ -7,6 +8,10 @@ from backend.factory.ProductionFactory import ProductionFactory
 from backend.factory.RecessionFactory import RecessionFactory
 from backend.ptq.PTQ import PTQ
 from backend.routing.Routing import Routing
+
+from backend.baseFlow.ExponentialRecession import ExponentialRecessionCurve
+from backend.baseFlow.IHACRES import IHACRES
+from backend.baseFlow.NashBaseFlow import NashBaseFlow
 
 from permetrics.regression import RegressionMetric
 import numpy as np
@@ -38,22 +43,23 @@ class Simulation:
 
     def manual_calibration(self,kwargs: RoutingData):
         self.kwargs = kwargs
-
-        inf_rainfall = ProductionFactory.createInstance(self.methods["production"],self.ptq_calage.p,*kwargs["pn"]).compute()
         ia_bundle : DataInitialLoss = {
-            "net_rainfall" : inf_rainfall,
+            "net_rainfall" : self.ptq_calage.p,
             "etp" : self.ptq_calage.etp
         }
-        initial_loss = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
-        net_rainfall = pd.Series(np.maximum(0, inf_rainfall - initial_loss))
+        net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
+        
+        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],net_rainfall,*kwargs["pn"]).compute()
+                
 
         self.qbase_model : BaseFlow = RecessionFactory.createInstance(self.methods["recession"],*kwargs["qb"])
         
+
         """ --------------- TRANSFER ROUTINE ----------------"""
         q_base = self.qbase_model.compute(self.ptq_calage)
 
         routing_bundle : DataSimulation = {
-            "pn" : net_rainfall,
+            "pn" : prod_rainfall,
             "qbase" : q_base,
             "qobs" : self.ptq_calage.q,
             "p" : self.ptq_calage.p,
@@ -63,6 +69,7 @@ class Simulation:
         self.routing_model : Routing = RoutingFactory.createInstance(self.methods["routing"],self.kwargs["sim"])
         
         qsim = self.routing_model.calage(routing_bundle)
+
         """ --------------- BASE FLOW ROUTINE ----------------"""
         self.baseflow_routine = BaseFlowRoutine(self.qbase_model)
 
@@ -76,33 +83,35 @@ class Simulation:
         qbase_rev_corr = pd.Series(self.baseflow_routine.calibration_routine(baseflow_bundle))
         qsim_total = qsim+qbase_rev_corr
 
-        #plt.plot(qbase_rev_corr, "r")
-        #plt.plot(q_base, "b")
+        plt.plot(qbase_rev_corr, "r")
+        plt.plot(q_base, "b")
 
         evaluator = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
-        """
+        
         print("NSE BASEFLOW CALAGE -----------")
-        print(rain_lost.sum())
         evaluator = RegressionMetric(np.array(q_base), np.array(qbase_rev_corr))
+        evaluator2 = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
         print(evaluator.get_metrics_by_list_names(self.Metrics))
-        """
+        print(evaluator2.get_metrics_by_list_names(self.Metrics))
+        
         return qsim_total
     
 
     def validation(self):
         print("***** VALIDATION DANS SIMULATION ")
         #print(self.kwargs)
-        inf_rainfall = ProductionFactory.createInstance(self.methods["production"],self.ptq_validation.p,*self.kwargs["pn"]).compute()
         ia_bundle : DataInitialLoss = {
-            "net_rainfall" : inf_rainfall,
+            "net_rainfall" : self.ptq_validation.p,
             "etp" : self.ptq_validation.etp
         }
-        initial_loss = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
-        net_rainfall = pd.Series(np.maximum(0, inf_rainfall - initial_loss))
+        net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
+        
+        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],net_rainfall,*self.kwargs["pn"]).compute()
+
         
         datas_bundle : DataSimulation = {
-            "pn" : net_rainfall
+            "pn" : prod_rainfall
         }
         qsim = self.routing_model.validation(datas_bundle)
 
@@ -118,18 +127,22 @@ class Simulation:
         qsim_total = qsim + qbase_rev_corr
     
         print("NSE BASEFLOW VALIDATION -----------")
-        print((self.ptq_validation.p - net_rainfall).sum())
-        
-        evaluator = RegressionMetric(np.array(self.baseflow_routine.baseflowModel.compute(self.ptq_validation)),
-                                      np.array(qbase_rev_corr))
+         
+        bfm_values = self.baseflow_routine.baseflowModel.compute(self.ptq_validation)
+        evaluator = RegressionMetric(np.array(bfm_values),np.array(qbase_rev_corr))
         print(evaluator.get_metrics_by_list_names(self.Metrics))
 
         #plt.plot(qbase_rev_corr, "r")
-        #plt.plot(self.qbase_model.compute(self.ptq_validation), "b")
-        
-        evaluator = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
+        #plt.plot(bfm_values, "b")
+        plt.plot(self.ptq_validation.q, "b")
+        plt.plot(qsim_total, "r")
+        plt.plot(qbase_rev_corr, "black")
+        #plt.plot(self.ptq_validation.q, "g")
+        #plt.plot(qsim, "y")   
+        #plt.plot(self.ptq_calage.q, "black")    
+        evaluator2 = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
         print("----------- NSE --------------")
-        results = evaluator.get_metrics_by_list_names(self.Metrics)
+        results = evaluator2.get_metrics_by_list_names(self.Metrics)
         print(results)
         
         return results, qsim_total

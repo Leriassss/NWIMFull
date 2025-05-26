@@ -33,8 +33,7 @@ class GAModel:
             'crossover_type':'uniform',
             'max_iteration_without_improv' : None
         }
-
-    @staticmethod
+    
     def to_dict(self):
         return {
                 'max_num_iteration': self.max_num_iteration,

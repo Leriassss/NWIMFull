@@ -21,7 +21,8 @@ class PLA(Routing):
         landa = self.plaModel.landa
         t_x = self.plaModel.t_x 
         s_f = self.plaModel.s_f
-        
+        print("*/*/*/*/*/ IN PLA ---*-**-*-*-*-*-*--*")
+        print(mu,landa,t_x,s_f)
         epsilon = 1e-6
         n = len(q)
         x = np.zeros(n)

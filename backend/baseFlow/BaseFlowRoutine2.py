@@ -5,13 +5,13 @@ import numpy as np
 
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.contracts.Bundle import DataBaseFlow
-class BaseFlowRoutine:
+class BaseFlowRoutine2:
     """
     Classe pour implémenter la méthode de récession Chapman.
     """
     def __init__(self, baseflowModel : BaseFlow):
         self.baseflowModel = baseflowModel
-        self.a,self.b,self.correc_factor = 0, 0, 0
+        self.a,self.b,self.c,self.d,self.correc_factor = 0, 0, 0, 0, 0
         self.hun = []
 
     @staticmethod
@@ -31,44 +31,28 @@ class BaseFlowRoutine:
         print(description)
         
     def calibration_routine(self,data : DataBaseFlow):
-        dates = data['ptq'].dates
         qobs = data['ptq'].q
 
-        prev_day = self.get_qobs_mean(dates[0])
+        #FITTING DES COEFFICIENTS POUR LA RELATION QR-QOBS
+        self.c,self.d  = self.regDirectFlow(qobs, data['qsim'])
+
+        qobs_estimated = self.modele_baseflow(data['qsim'], self.c, self.d)
 
         #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
-        self.a,self.b  = self.regBaseFlow(data['qbase'] , qobs)
-        #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
-        q_obs_mean = data["qmean"][prev_day-1]
-        #DETERMINATION DU DEBIT DE BASE PRECEDENT
-        q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)
+        self.a,self.b  = self.regBaseFlow(data['qbase'] , qobs_estimated)
 
-        #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
-        qbase_rev = self.baseflowModel.reverse_compute(q_base_previous, data['qsim'])
-        
-        # CALCUL DU FACTEUR DE CORRECTION
-        self.correc_factor = self.correction_factor(qbase_rev, data['qbase'])
-        qbase_rev_corr =  self.correc_factor * qbase_rev
-        return qbase_rev_corr
+        qbase_estimated = self.modele_baseflow(qobs_estimated, self.a, self.b)
+
+        self.correc_factor = self.correction_factor(qbase_estimated, data['qbase'])
+
+        return self.correc_factor * qbase_estimated
     
     def validation_routine(self, data : DataBaseFlow):
-        dates = data['ptq'].dates
+        qobs_estimated = self.modele_baseflow(data['qsim'], self.c, self.d)
 
-        prev_day = self.get_qobs_mean(dates[0])
-        
-        #DETERMINATION DU DEBIT MOYEN JOURNALIER CORRESPONDANT
-        q_obs_mean = data["qmean"][prev_day-1]
-        #q_obs_mean = 0
-        #DETERMINATION DU DEBIT DE BASE PRECEDENT
-        q_base_previous = self.modele_baseflow(q_obs_mean, self.a, self.b)
-        #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
-        
-        qbase_rev = self.baseflowModel.reverse_compute(q_base_previous, data['qsim'])
+        qbase_estimated = self.modele_baseflow(qobs_estimated, self.a, self.b)
 
-        
-        qbase_rev_corr =  self.correc_factor * qbase_rev
-        #qbase_rev_corr =  qbase_rev
-        return qbase_rev_corr
+        return self.correc_factor * qbase_estimated
     
     
     def corr_qbase(self,Q_base_rev, Q_base):            
@@ -83,11 +67,15 @@ class BaseFlowRoutine:
         correc_factor, _ = curve_fit(self.correction_factor_model, Q_base_rev, Q_base, p0=[0.01])
         return correc_factor[0]
 
-    def modele_baseflow(self, Q_obs, a, b):
-            return a * Q_obs ** b
+    def modele_baseflow(self, Q, a, b):
+            return a * Q ** b
         
     def regBaseFlow(self,Q_base, Q_obs):
         params_opt, _ = curve_fit(self.modele_baseflow, Q_obs, Q_base, p0=[1, 1], maxfev=10000)
+        return params_opt
+
+    def regDirectFlow(self, Q_obs, Qr):
+        params_opt, _ = curve_fit(self.modele_baseflow, Qr, Q_obs, p0=[1, 1], maxfev=10000)
         return params_opt
 
     def daily_qobs_mean(self, dates, Q_obs):

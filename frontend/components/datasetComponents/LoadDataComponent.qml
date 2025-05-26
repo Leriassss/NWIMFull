@@ -9,16 +9,6 @@ import io.qml
 Column{
     clip: true
 
-    Connections {
-        target: etoManager
-        function onComputationChanged(){
-            fileHandler.setEToValues(etoManager.etpComputed)
-            populateTable(fileHandler.dataDict)
-            console.log("Connexion ------------------------")
-            console.log(JSON.stringify(fileHandler.dataDict))
-            etpChart.updateChart(fileHandler.datesInfos["data"],fileHandler.etpInfos["data"])
-        }
-    }
     property var fileData: null
     property var columnMapping: ({})
 

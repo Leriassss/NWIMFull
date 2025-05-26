@@ -16,7 +16,7 @@ class ResultsFileManager:
     def deserialize_params(data):
         try:
             if "params" not in data:
-                raise ValueError(f"Donnée manquante dans le fichier JSON : {key}")               
+                raise ValueError(f"Donnée manquante dans le fichier JSON ")               
             return data["params"]
         
         except ValueError as e:

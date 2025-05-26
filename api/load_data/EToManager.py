@@ -114,6 +114,8 @@ class EToManager(QObject):
         self._etp_computation["ETP"] = (ETo(self._etoModel).calculate(self._method).round(3)).tolist()
         self._etp_computation["Dates"] = self._data_dict["Dates"]
         self.computationChanged.emit()
+        print(" ------------------------- EToManager --- computation -------------------")
+        print(self._etp_computation)
 
     @Property(dict, notify = computationChanged)
     def etpComputed(self):

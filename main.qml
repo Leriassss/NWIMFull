@@ -211,6 +211,9 @@ ApplicationWindow {
                             anchors.fill: parent
                             color: "transparent"
                         }
+                        onClicked : {
+                            etpComputing.open()
+                        }
                     }
                     ToolButton {
                         width: 50
@@ -283,6 +286,10 @@ ApplicationWindow {
     }
     GridParametersDialog{
         id:  gridOptim
+    }
+
+    ETPComputing{
+        id : etpComputing
     }
 
 
