@@ -22,8 +22,9 @@ Column {
     // Sélecteur de méthode
     CustomComboBox {
         leftPadding: 10
+        anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
-        height: 40
+        height: 30
         id: methodSelector
         model: parameterModel?.availableMethods
         onCurrentIndexChanged: {
@@ -83,6 +84,7 @@ Column {
                         parameterModel.updateParameter(modelName, text)
                         console.log("----------------- RESULTATS -----------------------")
                         console.log(JSON.stringify(parameterModel.parameters))
+                        focus = true
                     }
                     Layout.preferredWidth: 100 // Largeur fixe pour les TextField
                     Layout.alignment: Qt.AlignRight

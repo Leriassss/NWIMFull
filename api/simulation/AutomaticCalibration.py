@@ -19,6 +19,7 @@ class AutomaticCalibration(QObject):
         self._sim = None
         self._metrics = Simulation.Metrics
         self._optim_metric = "NSE"
+        self._optim_result = None
 
     metricsChanged = Signal()
     errorsChanged = Signal()
@@ -58,6 +59,8 @@ class AutomaticCalibration(QObject):
             "pn":None,"qb":None,"sim": None,"loss" : None
         }
 
+        self._optim_result = None
+
         self._ptq = ptq
 
         if self.check_keys_match(params_dict, self.parameters_type):
@@ -75,10 +78,6 @@ class AutomaticCalibration(QObject):
                     self._errors.append("Required parameters not provided")
         else:
             self._errors.append("Required methods not provided")
-
-        print("---- setParameters AC --------")
-        print(self._parameter_bundle)
-        print(self._parameters_methods)
 
         if any(item is None for values in self._parameter_bundle.values() for item in values):
             self._errors.append("Provided parameters are non-correct")
@@ -102,22 +101,32 @@ class AutomaticCalibration(QObject):
         optim_parameters = optim.property('parameters')
         optimizator_name = optim.property('currentMethod')
         optimizator = OptimizationFactory.createInstance(optimizator_name, sim, self._parameter_bundle, optim_parameters)
-        print("---- setParameters 2 AC --------")
-        print(optim_parameters)
-        print(optimizator)
 
         sim_r_hun = optimizator.optim()
-        print(" ------ optim res -------")
-        print(sim_r_hun.params)
-        print(sim_r_hun.calibration_metric)
-        print(sim_r_hun.validation_metric)
+
+        param_names = {section: list(params.keys()) for section, params in self._parameter_bundle.items()}
+        original_dict = {}
+
+        for section in self._parameters_methods:
+            model = self._parameters_methods[section]
+            params_by_section = param_names[section]
+            values = sim_r_hun.params[section]
+
+            # Associer les noms de paramètres aux valeurs converties en chaînes
+            param_dict = {name: str(value) for name, value in zip(params_by_section, values)}
+
+            # Construire le dictionnaire imbriqué
+            original_dict[section] = {model: param_dict}
+
+        self._optim_result = original_dict
 
         print("-------- saving ----------")
-        rfm = ResultsFileManager()
-        print(optim_parameters)
-        rfm.serialize_optim_range_params(optim_parameters, optimizator)
 
 
+    @Slot(str)
+    def saveSimulationResults(self, path):
+        if self._optim_result is not None :
+            ResultsFileManager.save_calibration_results(self._optim_result, path)
 
 
     def check_keys_match(self, d, keys_list):

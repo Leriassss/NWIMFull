@@ -137,6 +137,21 @@
                             }
                         ],
                         "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "setParameter",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "dict"
+                            },
+                            {
+                                "name": "a2",
+                                "type": "QString"
+                            }
+                        ],
+                        "returnType": "void"
                     }
                 ]
             }

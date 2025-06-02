@@ -3,6 +3,7 @@ import numpy as np
 import datetime
 
 from backend.simulation.Simulation import Simulation
+from backend.results.ResultsFileManager import ResultsFileManager
 from backend.ptq.PTQ import PTQ
 from api.load_data.DataManager import DataManager
 from dateutil import parser
@@ -87,8 +88,6 @@ class ManualCalibration(QObject):
             return
 
 
-        print(self._errors)
-        print("*/*/*/*/*//*/*/")
         calibration_df = pd.DataFrame(self._ptq["CALIBRATION"])
         validation_df = pd.DataFrame(self._ptq["VALIDATION"])
 
@@ -116,12 +115,49 @@ class ManualCalibration(QObject):
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  sim.calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  hun_sim_val[0].items()}
         print("------------------------- SIM (MC)---------------")
-        print(self._sim)
 
 
 
         self.simChanged.emit()
 
+    @Slot(dict, str)
+    def saveParameters(self, params_dict, path):
+        parameter_bundle = {}
+        parameters_methods = {}
+        if self.check_keys_match(params_dict, self.parameters_type):
+            for key in self.parameters_type :
+                obj = params_dict[key]
+
+                #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
+                methodKeys = list(obj.property('methodKeys').keys())
+                parameters_dict = dict(zip(obj.property('parameterNames'), obj.property('parameterValues')))
+                #parameters_dict = obj.property('parameters')
+                print("---- setParameters2 MC --------")
+                print(parameters_dict)
+                if self.check_keys_match(parameters_dict, methodKeys) :
+                    parameter_bundle[key] = {obj.property('currentMethod') :  parameters_dict }
+                else:
+                    raise("Required parameters not provided")
+        else:
+            raise("Required parameters not provided")
+
+        ResultsFileManager.save_calibration_results(parameter_bundle, path)
+
+    @Slot(str, dict)
+    def loadParameters(self, path,params_dict):
+        model_data = ResultsFileManager.load_calibration_results(path)
+        print("--------------- MC LP----------------")
+        print(model_data)
+
+        if self.check_keys_match(params_dict, self.parameters_type) and self.check_keys_match(model_data, self.parameters_type):
+            for key in self.parameters_type :
+                obj = params_dict[key]
+                method = next(iter(model_data[key]))
+                obj.setParameter(model_data[key][method],method)
+        else:
+            self._errors.append("Required methods not provided")
+
+        print(path)
 
 
     def check_keys_match(self, d, keys_list):

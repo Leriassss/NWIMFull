@@ -123,6 +123,27 @@ class TestQML(QObject):
             self.parameterErrorChanged.emit()
             self.desactivatedChanged.emit()
 
+    @Slot(dict, str)
+    def setParameter(self, params, method_name):
+        if method_name in self._factory.methods:
+            self._current_method =  method_name
+            model = self._factory.getModel(method_name)
+            print("----------------- setParameter (TestQML) ----------")
+
+            default_values = params
+            print(default_values)
+            self._keys = model.get_parameter_names()
+            #UTILISER LES CLES PLUTOT QUE LES VALEURS
+            self._parameters = {key: str(default_values[key]) for key in self._keys}
+            self._parameterErrors = {key: "" for key in self._keys}
+
+            print("----------------- setParameter1 (TestQML) ----------")
+            print(self._parameters)
+            #self._parameters = {key: None for key in self._keys.values()}
+            self.methodChanged.emit()
+            self.parametersChanged.emit()
+            self.parameterErrorChanged.emit()
+
     @Property('QVariant', notify=parameterErrorChanged)
     def parameterErrors(self):
         """Retourne les erreurs de validation pour chaque paramètre."""

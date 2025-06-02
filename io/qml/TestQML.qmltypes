@@ -87,5 +87,10 @@ Module {
             Parameter { name: "a1"; type: "QString" }
             Parameter { name: "a2"; type: "QString" }
         }
+        Method {
+            name: "setParameter"
+            Parameter { name: "a1"; type: "dict" }
+            Parameter { name: "a2"; type: "QString" }
+        }
     }
 }

@@ -37,7 +37,7 @@ Rectangle{
         //spacing: 5
         clip: true
             Rectangle{
-                width: parent.width * 0.25
+                width: parent.width * 0.2
                 height: parent.height
                 anchors.left: parent.left
                 clip: true
@@ -115,7 +115,7 @@ Rectangle{
                                         width: parent.width
                                         text: "Production Methods"
                                         font.bold: true
-                                        font.pointSize: 11
+                                        font.pointSize: 10
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
@@ -156,7 +156,7 @@ Rectangle{
                                         width: parent.width
                                         text: "Routing Methods"
                                         font.bold: true
-                                        font.pointSize: 11
+                                        font.pointSize: 10
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
@@ -187,7 +187,7 @@ Rectangle{
                                         width: parent.width
                                         text: "Recession Methods"
                                         font.bold: true
-                                        font.pointSize: 11
+                                        font.pointSize: 10
                                         padding: 5
                                         color: "black"
                                         horizontalAlignment: Qt.AlignHCenter
@@ -216,7 +216,7 @@ Rectangle{
             Rectangle {
                 color: "transparent"
                 id: simulationPane
-                width: parent.width * 0.75 - parent.spacing
+                width: parent.width * 0.8 - parent.spacing
                 height: parent.height
                 //border.width: 1
                 anchors.right: parent.right

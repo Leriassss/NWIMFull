@@ -72,6 +72,9 @@ ApplicationWindow {
                             anchors.fill: parent
                             color: "transparent"
                         }
+                        onClicked: {
+                            loadFileDialog.open()
+                        }
                     }
 
                     ToolButton {
@@ -84,6 +87,9 @@ ApplicationWindow {
                         background: Rectangle{
                             anchors.fill: parent
                             color: "transparent"
+                        }
+                        onClicked: {
+                            saveFileDialog.open()
                         }
                     }
                     ToolButton {
@@ -276,6 +282,40 @@ ApplicationWindow {
     FileChoose{
         id: fileChooseComponent
     }
+
+    FileChoose {
+         id: loadFileDialog
+         title: "Please choose a folder"
+         nameFilters: ["JSON (*.json)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(loadFileDialog.file.toString());
+             manualCalibration.loadParameters(fileName, homepage.parameter_bundle2)
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
+
+    FileChoose {
+         id: saveFileDialog
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["JSON (*.json)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveFileDialog.file.toString());
+             manualCalibration.saveParameters(homepage.parameter_bundle2, fileName)
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
+
+
+
     LoadData {
         id: loadDataDialog
         x: Math.round((parent.width - width) / 2)
@@ -292,7 +332,12 @@ ApplicationWindow {
         id : etpComputing
     }
 
-
+    function cleanFilePath(filePath) {
+        if (filePath.startsWith("file:///")) {
+            return filePath.substring(8);
+        }
+        return filePath;
+    }
 
 
 }

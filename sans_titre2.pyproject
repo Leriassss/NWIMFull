@@ -38,6 +38,7 @@
         "api/simulation/GridCalibration.py",
         "frontend/components/CustomToolButton.qml",
         "frontend/components/CustomFolderDialog.qml",
-        "frontend/components/ETPComputing.qml"
+        "frontend/components/ETPComputing.qml",
+        "frontend/components/Regression.qml"
     ]
 }

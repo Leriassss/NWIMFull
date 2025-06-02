@@ -52,6 +52,9 @@ Dialog {
                         height: parent.height
                         text: qsTr("💾")
                         ToolTip.text: qsTr("Save Parameters")
+                        onClicked: {
+                            saveResultsDialog.open()
+                        }
                     }
                     CustomToolButton {
                         width: 50
@@ -101,6 +104,22 @@ Dialog {
         }
 
     }
+
+    FileChoose {
+         id: saveResultsDialog
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["JSON (*.json)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveResultsDialog.file.toString());
+             automaticCalibration.saveSimulationResults(fileName)
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
 
     Dialog {
         id: errorDialog
@@ -299,7 +318,6 @@ Dialog {
                         }
 
                         console.log("--------- OPTIMIZE -----------------")
-                        console.log(JSON.stringify(dialogOptim.parameters_bundle))
                         automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
                     }
                     contentItem: Text {
