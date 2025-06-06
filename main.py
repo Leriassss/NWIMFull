@@ -12,6 +12,7 @@ from api.GridParametersQML import GridParametersQML
 from api.load_data.FileHandler import FileHandler
 from api.load_data.TableModel import TableModel
 from api.load_data.EToManager import EToManager
+from api.load_data.RegressionFile import RegressionFile
 from api.FactoryManager import FactoryManager
 from api.simulation.ManualCalibration import ManualCalibration
 from api.simulation.AutomaticCalibration import AutomaticCalibration
@@ -45,7 +46,9 @@ if __name__ == "__main__":
     factory_manager = FactoryManager()
     manual_calibration = ManualCalibration()
     automatic_calibration = AutomaticCalibration()
+    regression_file = RegressionFile()
 
+    engine.rootContext().setContextProperty("regressionFile", regression_file)
     engine.rootContext().setContextProperty("manualCalibration", manual_calibration)
     engine.rootContext().setContextProperty("automaticCalibration", automatic_calibration)
     engine.rootContext().setContextProperty("dataTableModel", model)

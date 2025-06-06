@@ -43,6 +43,7 @@ class FileHandler(QObject):
         self._activate = False
 
         self._ptq ={}
+        self._data_parameters = {}
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)

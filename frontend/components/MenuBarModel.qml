@@ -8,6 +8,7 @@ MenuBar {
     signal loadDataTriggred
     signal gapTriggered
     signal gridTriggered
+    signal regressionTriggered
     Menu {
         title: qsTr("File")
         Action {
@@ -37,7 +38,10 @@ MenuBar {
     }
     Menu {
         title: qsTr("&Regression")
-        Action { text: qsTr("&Edit") }
+        Action {
+            text: qsTr("&Edit")
+            onTriggered: regressionTriggered()
+        }
     }
     Menu {
         title: qsTr("&Help")

@@ -9,7 +9,7 @@ import Qt5Compat.GraphicalEffects
 import Qt.labs.qmlmodels
 Dialog {
     title: "Machine Learning"
-    implicitWidth:  1000
+    implicitWidth:  1300
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
@@ -44,7 +44,7 @@ Dialog {
                         text: qsTr("➕")
                         ToolTip.text: qsTr("Add Model")
                         onClicked: {
-                            loadETPparams.open()
+                            loadFileDialog.open()
                         }
                     }
                     CustomToolButton {
@@ -106,28 +106,24 @@ Dialog {
     }
 
     FileChoose {
-        id: loadETPparams
-        nameFilters: ["Excel (*.xlsx)","Texte (*.txt)"]
-        property string fileName: ""
+         id: loadFileDialog
+         title: "Please choose a folder"
+         nameFilters: ["JSON (*.json)"]
+         fileMode: FileChoose.OpenFiles
+         property string fileName: ""
+         onAccepted: {
+            console.log("*/*/*/**/ FM /*///*/*/*/*/**/")
+            console.log(loadFileDialog.files)
+            fileName = cleanFilePath(loadFileDialog.file.toString());
+            regressionFile.getParameters(fileName)
+            console.log("*/*/*/**//*///*/*/*/*/**/")
+            console.log(JSON.stringify(regressionFile.parametersList))
 
-        onAccepted: {
-            fileName = cleanFilePath(loadETPparams.file.toString());
-            if (fileName) {
-                try {
-                    etoManager.readFile(fileName)
-                    var headers = etoManager.headers
-                    columnMappingDialog.headers = headers
-                } catch (error) {
-                    errorDialog.text = "Erreur lors du chargement du fichier : " + error
-                    errorDialog.open()
-                }
-            }
-        }
-        onRejected: {
-            console.log("Sélection annulée");
-        }
-
-    }
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
 
     Dialog {
         id: errorDialog
@@ -184,7 +180,7 @@ Dialog {
                     id : methodsLabel
                     anchors.margins: 5
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "DATA MAPPING"
+                    text: "MODELS"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
                     font.pointSize: 10
@@ -206,127 +202,117 @@ Dialog {
                     }
                 }
 
-                RowLayout{
-                    width: parent.width *0.9
-                    height: parent.height *0.9
-                    spacing: 10
+                /*Rectangle {
+                    width: 180; height: 200
 
-
-                    GridLayout {
-                        Layout.preferredHeight:  parent.height
-                        Layout.preferredWidth:  parent.width * 0.5
-                        columns: 2
-                        columnSpacing: 10
-                        rowSpacing: 10
-
-                        Label {
-                            text: "Dates"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: datesComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-
-                        Label {
-                            text: "Teméprature Moy. [°C]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: tMeanComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-
-                        // Ligne pour Dates
-                        Label {
-                            text: "Température Min. [°C]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: tMinComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-                        // Ligne pour Dates
-                        Label {
-                            text: "Température Max. [°C]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: tMaxComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-                        Label {
-                            text: "Humidité relative de l'air [%]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: rhComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-
-                        Label {
-                            text: "Rad. Solaire/ \nRad. Net/\nNb Heures d'Enso."
-                            Layout.alignment: Qt.AlignLeft
-                            Layout.preferredWidth: 100
-                            wrapMode: Text.Wrap
-                        }
-                        ComboBox {
-                            id: rsComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-
-                        Label {
-                            text: "Vitesse moy. [m/s]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        ComboBox {
-                            id: u2ComboBox
-                            model: columnMappingDialog.headers
-                            currentIndex: 0
-                            Layout.fillWidth: true
-                        }
-
-                        // Ligne pour ETP
-                        Label {
-                            text: "Latitude [rad]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        TextField {
-                            id: lat
-                            text : "5"
-                            Layout.fillWidth: true
-                            validator: DoubleValidator {
-                                bottom: 0
-                                notation: DoubleValidator.StandardNotation
-                            }
-                        }
-                        Label {
-                            text: "Altitude [m]"
-                            Layout.alignment: Qt.AlignLeft
-                        }
-                        TextField {
-                            id: elevation
-                            Layout.fillWidth: true
-                            text : "150"
-                            validator: DoubleValidator {
-                                bottom: 0
-                                notation: DoubleValidator.StandardNotation
+                    Component {
+                        id: contactDelegate
+                        Item {
+                            id: myItem
+                            required property string name
+                            required property string number
+                            width: 180; height: 40
+                            Column {
+                                Text { text: '<b>Name:</b> ' + myItem.name }
+                                Text { text: '<b>Number:</b> ' + myItem.number }
                             }
                         }
                     }
 
+                    ListView {
+                        anchors.fill: parent
+                        model: [{"name":1,"number":4},{"name":1,"number":4},{"name":1,"number":4},{"name":1,"number":4}]
+                        delegate: contactDelegate
+                        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+                        focus: true
+                    }
+                }*/
+                Rectangle{
+                    width: parent.width *0.9
+                    height: parent.height *0.9
+                    Component {
+                        id : paramsComponent
+                        Rectangle {
+                        width: parent.width
+                        height: 150
+                        color: "white"
+                        border.color: "gray"
+                        border.width: 1
+                        required property string id
+                        required property var loss
+                        required property var pn
+                        required property var sim
+                        required property var qb
+
+                        Row{
+                            anchors.fill: parent
+                            Column {
+                                spacing: 6
+                                width: parent.width
+                                padding: 10
+                                Button{
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: "🗑️"
+                                    width: 100
+                                    //color : "red"
+                                }
+                                Text {
+                                    anchors.left: parent.left
+                                    text: "File : " + id
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    text: {
+                                        let index = Object.keys(loss)[0]
+                                        let value = JSON.stringify(loss[index]).replace(/"/g, " ");
+                                        index + " : " + value
+                                    }
+                                    font.bold: true
+                                }
+
+
+                                Text {
+                                    text: {
+                                        let index = Object.keys(pn)[0]
+                                        let value = JSON.stringify(pn[index]).replace(/"/g, " ");
+                                        index + " : " + value
+                                    }
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    text: {
+                                        let index = Object.keys(sim)[0]
+                                        let value = JSON.stringify(sim[index]).replace(/"/g, " ");
+                                        index + " : " + value
+                                    }
+                                    font.bold: true
+                                }
+
+
+                                Text {
+                                    text: {
+                                        let index = Object.keys(qb)[0]
+                                        let value = JSON.stringify(qb[index]).replace(/"/g, " ");
+                                        index + " : " + value
+                                    }
+                                    font.bold: true
+                                }
+                            }
+
+                            }
+
+                        }
+
+
+                    }
+                    ListView {
+                        anchors.fill: parent
+                        model: regressionFile.parametersList
+                        delegate: paramsComponent
+
+                    }
 
 
                 }
@@ -353,7 +339,7 @@ Dialog {
                     id : dataLabel
                     anchors.margins: 5
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "CALCULATION"
+                    text: "PLOT"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
                     font.pointSize: 10
@@ -502,3 +488,4 @@ Dialog {
         }
     }
 }
+

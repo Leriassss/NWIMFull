@@ -36,6 +36,9 @@ ApplicationWindow {
         onGridTriggered: {
             gridOptim.open()
         }
+        onRegressionTriggered: {
+            regression.open()
+        }
     }
     header: ToolBar {
             id: toolBar
@@ -330,6 +333,10 @@ ApplicationWindow {
 
     ETPComputing{
         id : etpComputing
+    }
+
+    Regression{
+        id: regression
     }
 
     function cleanFilePath(filePath) {

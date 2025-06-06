@@ -159,7 +159,6 @@ class ManualCalibration(QObject):
 
         print(path)
 
-
     def check_keys_match(self, d, keys_list):
         dict_keys = set(d.keys())
         list_keys = set(keys_list)
