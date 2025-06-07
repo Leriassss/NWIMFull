@@ -9,7 +9,7 @@ import numpy as np
 from backend.simulation.models.SimulationModel import SimulationModel
 from permetrics.regression import RegressionMetric
 class Regressor:
-    
+    Metrics = ["NSE", "KGE", "RMSE", "MAE", "MAPE", "R2"]
     def __init__(self, ptq_calage: PTQ, ptq_validation: PTQ):
         self.calage = ptq_calage
         self.validation = ptq_validation
@@ -23,7 +23,8 @@ class Regressor:
 
         return best_calibration_results, best_validation_results
 
-    def knn(self, models_results : SimulationModel, n):
+    def knn(self, models_results : SimulationModel):
+        n = 100
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
 
         
@@ -42,11 +43,11 @@ class Regressor:
         q_sim_knn_calage = np.maximum(0, best_knn.predict(best_calibration_results))
         q_sim_knn_validation = np.maximum(0, best_knn.predict(best_validation_results))
 
-        nse_knn_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_knn_calage)).get_metrics_by_list_names(["NSE"])
+        nse_knn_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_knn_calage)).get_metrics_by_list_names(self.Metrics)
 
-        nse_knn_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_knn_validation)).get_metrics_by_list_names(["NSE"])
+        nse_knn_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_knn_validation)).get_metrics_by_list_names(self.Metrics)
 
-        return SimulationModel(q_sim_knn_calage, q_sim_knn_validation, grid_search.best_params_, nse_knn_calage, nse_knn_validation)
+        return SimulationModel(q_sim_knn_calage, q_sim_knn_validation, grid_search.best_params_, None, None), [nse_knn_calage, nse_knn_validation]
 
     def linreg(self, models_results):
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
@@ -57,7 +58,21 @@ class Regressor:
         q_sim_lin_calage = np.maximum(0, linreg.predict(best_calibration_results))
         q_sim_lin_validation = np.maximum(0, linreg.predict(best_validation_results))
 
-        nse_lin_calage = Criteria().nse(self.calage.q, q_sim_lin_calage)
-        nse_lin_validation = Criteria().nse(self.validation.q, q_sim_lin_validation)
+        nse_lin_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_lin_calage)).get_metrics_by_list_names(self.Metrics)
 
-        return SimulationModel(q_sim_lin_calage,q_sim_lin_validation, [linreg.coef_,linreg.intercept_] , nse_lin_calage, nse_lin_validation)
+        nse_lin_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_lin_validation)).get_metrics_by_list_names(self.Metrics)
+
+        return SimulationModel(q_sim_lin_calage,q_sim_lin_validation, [linreg.coef_,linreg.intercept_] , nse_lin_calage, nse_lin_validation), [nse_lin_calage, nse_lin_validation]
+
+    def methods(self):
+        return {
+        "knn" : self.knn,
+        "linreg" : self.linreg
+
+    }
+    @staticmethod
+    def methodsList():
+        return [
+        "knn",
+        "linreg"
+    ]

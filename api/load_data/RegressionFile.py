@@ -18,10 +18,31 @@ class RegressionFile(QObject):
         self._errors = []
         self._data_parameters = {}
         self._data_parameters_list = []
+        self._metrics = Simulation.Metrics
+        self._sim = {"CALIBRATION":None,
+                    "VALIDATION" : None}
 
     parameters_type = ["pn","qb","sim","loss"]
     dataParametersListChanged = Signal()
+    simvaluesChanged = Signal()
 
+    @Property(list, constant = True)
+    def regressors(self):
+        print("/*/-*/-*/-*/*/-*/-*/ RF F")
+        print(Regressor.methodsList())
+        return Regressor.methodsList()
+
+    @Property(dict, notify = simvaluesChanged)
+    def simValues(self):
+        return self._sim
+
+
+    @Slot(str)
+    def setRegressor(self, metric):
+        if metric in list(Regressor.methods().keys()):
+            self._optim_metric = metric
+        else:
+            raise Exception("Metric not found")
 
     @Slot(list)
     def getParameters(self, paths):
@@ -32,8 +53,12 @@ class RegressionFile(QObject):
             self._data_parameters_list.append(model_data)
         self.dataParametersListChanged.emit()
 
-    @Slot(dict, dict)
-    def singleCalibration(self,original_dict, ptq):
+    @Slot(dict, dict, str)
+    def singleCalibration(self,original_dict, ptq, regressor):
+        if not regressor in Regressor.methodsList():
+            self._errors.append("Provided regressor or metric are non-correct")
+            return
+
         del original_dict['id']
 
         dict_params = {}
@@ -78,10 +103,24 @@ class RegressionFile(QObject):
 
 
         reg = Regressor(ptq_calibration,ptq_validation)
-        reg_knn = reg.knn([sm],100)
 
-        print("-*-*-*-*-*--*-*-*-*-*-**")
-        print(reg_knn.calibration_metric, reg_knn.validation_metric)
+        reg_method = reg.methods()[regressor]([sm])
+
+
+
+        self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
+        self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
+
+        metrics_calibration = reg_method[1][0]
+        metrics_validation = reg_method[1][1]
+
+        print("-*-*-*-*-*-RF SC-*-*-*-*-*-**")
+        print(reg_method)
+        print(self._sim)
+
+        print(metrics_calibration, metrics_validation)
+
+        self.simvaluesChanged.emit()
 
 
 

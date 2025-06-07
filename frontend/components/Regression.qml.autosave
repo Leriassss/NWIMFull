@@ -61,7 +61,6 @@ Dialog {
                         onClicked: {
 
                             regressionFile.singleCalibration(regressionFile.parametersList[0],fileHandler.ptq, regComboBox.currentText)
-                            console.log(JSON.stringify(regressionFile.simValues))
                             regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
                                         [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
                                         [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
