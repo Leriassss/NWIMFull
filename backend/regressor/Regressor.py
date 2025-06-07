@@ -1,13 +1,13 @@
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn import linear_model
 from sklearn.model_selection import GridSearchCV
-from ptq.PTQ import PTQ
-from criteria.Criteria import Criteria
+from backend.ptq.PTQ import PTQ
+from backend.criteria.Criteria import Criteria
 import pandas as pd
 import numpy as np
 
-from simulation.models.SimulationModel import SimulationModel
-
+from backend.simulation.models.SimulationModel import SimulationModel
+from permetrics.regression import RegressionMetric
 class Regressor:
     
     def __init__(self, ptq_calage: PTQ, ptq_validation: PTQ):
@@ -42,9 +42,9 @@ class Regressor:
         q_sim_knn_calage = np.maximum(0, best_knn.predict(best_calibration_results))
         q_sim_knn_validation = np.maximum(0, best_knn.predict(best_validation_results))
 
-        nse_knn_calage = Criteria().nse(self.calage.q, q_sim_knn_calage)
-        nse_knn_validation = Criteria().nse(self.validation.q, q_sim_knn_validation)
- 
+        nse_knn_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_knn_calage)).get_metrics_by_list_names(["NSE"])
+
+        nse_knn_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_knn_validation)).get_metrics_by_list_names(["NSE"])
 
         return SimulationModel(q_sim_knn_calage, q_sim_knn_validation, grid_search.best_params_, nse_knn_calage, nse_knn_validation)
 

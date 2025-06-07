@@ -82,9 +82,8 @@ Dialog {
 
     FileChoose {
         id: loadRangeParams
-        fileMode: FileDialog.SaveFile
+        fileMode: FileChoose.SaveFile
         nameFilters: ["JSON (*.json)"]
-        folder: shortcuts.home
         property string fileName: ""
 
         onAccepted: {

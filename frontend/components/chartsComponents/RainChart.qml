@@ -4,8 +4,8 @@ import QtCharts 2.3
 Rectangle {
     id : chartContainer
     visible: true
-    property string minDate
-    property string maxDate
+    property date minDate
+    property date maxDate
     property real minValue
     property real maxValue
     property var barValues

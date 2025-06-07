@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Effects
 import "./parameters"
 import "../../io/qml"
+import "./chartsComponents"
 import io.qml
 import Qt5Compat.GraphicalEffects
 import Qt.labs.qmlmodels
@@ -52,6 +53,9 @@ Dialog {
                         height: parent.height
                         text: qsTr("🟢")
                         ToolTip.text: qsTr("Compute")
+                        onClicked: {
+                            regressionFile.singleCalibration(regressionFile.parametersList[0],fileHandler.ptq)
+                        }
                     }
                     CustomToolButton {
                         width: 50
@@ -110,12 +114,10 @@ Dialog {
          title: "Please choose a folder"
          nameFilters: ["JSON (*.json)"]
          fileMode: FileChoose.OpenFiles
-         property string fileName: ""
          onAccepted: {
             console.log("*/*/*/**/ FM /*///*/*/*/*/**/")
             console.log(loadFileDialog.files)
-            fileName = cleanFilePath(loadFileDialog.file.toString());
-            regressionFile.getParameters(fileName)
+            regressionFile.getParameters(loadFileDialog.files)
             console.log("*/*/*/**//*///*/*/*/*/**/")
             console.log(JSON.stringify(regressionFile.parametersList))
 
@@ -202,31 +204,6 @@ Dialog {
                     }
                 }
 
-                /*Rectangle {
-                    width: 180; height: 200
-
-                    Component {
-                        id: contactDelegate
-                        Item {
-                            id: myItem
-                            required property string name
-                            required property string number
-                            width: 180; height: 40
-                            Column {
-                                Text { text: '<b>Name:</b> ' + myItem.name }
-                                Text { text: '<b>Number:</b> ' + myItem.number }
-                            }
-                        }
-                    }
-
-                    ListView {
-                        anchors.fill: parent
-                        model: [{"name":1,"number":4},{"name":1,"number":4},{"name":1,"number":4},{"name":1,"number":4}]
-                        delegate: contactDelegate
-                        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
-                        focus: true
-                    }
-                }*/
                 Rectangle{
                     width: parent.width *0.9
                     height: parent.height *0.9
@@ -364,29 +341,7 @@ Dialog {
                     height:   100
                     width:  parent.width *0.7
 
-                    ComboBox {
-                        leftPadding: 10
-                        Layout.preferredWidth:  150
-                        Layout.preferredHeight: 40
-                        id: methodSelector
-                        model: etoManager.availableMethods
-                        onCurrentTextChanged: {
-                            etoManager.setMethod(methodSelector.currentText)
-                        }
-                        Component.onCompleted: {
-                            etoManager.setMethod(methodSelector.currentText)
-                        }
-                    }
-                    Label{
-                        id : requiredParams
-                        text : "PARAMETRES REQUIS : " + etoManager.methodParameters
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 50
-                        wrapMode: Text.Wrap
-                        font.bold: true
 
-
-                    }
                 }
 
                 Rectangle {
@@ -395,68 +350,11 @@ Dialog {
                     height: parent.height * 0.8
                     color : "transparent"
 
-                    HorizontalHeaderView {
-                        id: horizontalHeader
-                        anchors.left: tableView.left
-                        anchors.top: parent.top
-                        syncView: tableView
-                        model: [ "Dates", "ETP"]
-                        clip: true
-                    }
-
-                    VerticalHeaderView {
-                        id: verticalHeader
-                        anchors.top: tableView.top
-                        anchors.left: parent.left
-                        syncView: tableView
-                        clip: true
-                    }
-
-                    TableView {
-                        id: tableView
+                    SimChart{
+                        id: regChart
                         width: parent.width
                         height: parent.height
-                        anchors.left: verticalHeader.right
-                        anchors.top: horizontalHeader.bottom
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        clip: true
-
-                        columnSpacing: 0
-                        rowSpacing: 0
-
-                        model: TableModel {
-                            id: tableModel
-                            TableModelColumn { display: "Dates" }
-                            TableModelColumn { display: "ETP" }
-
-                            rows: [
-                                    { Dates : "", ETP : ""},
-                                    {  Dates : "", ETP : ""}
-                                ]
-                        }
-
-                        delegate: Item {
-                            implicitWidth: 70
-                            implicitHeight: 20
-
-                            Rectangle {
-                                anchors.fill: parent
-                                border.width: 0.5
-                                color: "#fafafa"
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: model.display
-                                    font.pixelSize: 10
-                                    wrapMode: Text.WordWrap
-                                    horizontalAlignment: Text.AlignHCenter
-                                }
-                            }
-                        }
                     }
-
-
                 }
 
 

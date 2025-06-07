@@ -5,8 +5,8 @@ import QtCharts 2.3
 Rectangle {
     id: qobsChart
     visible: true
-    property string minDate
-    property string maxDate
+    property date minDate
+    property date maxDate
     property real minValue
     property real maxValue
 

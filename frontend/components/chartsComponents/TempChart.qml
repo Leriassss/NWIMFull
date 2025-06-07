@@ -6,8 +6,8 @@ Rectangle {
 
     id: tempChart
     visible: true
-    property string minDate
-    property string maxDate
+    property date minDate
+    property date maxDate
     property real minValue
     property real maxValue
 

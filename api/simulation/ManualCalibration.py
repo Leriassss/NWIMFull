@@ -120,6 +120,7 @@ class ManualCalibration(QObject):
 
         self.simChanged.emit()
 
+
     @Slot(dict, str)
     def saveParameters(self, params_dict, path):
         parameter_bundle = {}
