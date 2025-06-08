@@ -45,8 +45,6 @@ Rectangle {
     }
     function updateChart(dates, etp_series) {
         if(etp_series){
-            console.log("---- qseries")
-            console.log(etp_series)
             seriesETP.clear();
             etpChart.minDate = dates[0]
             etpChart.maxDate = dates[dates.length-1]

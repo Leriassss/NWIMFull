@@ -44,6 +44,14 @@ class ResultsFileManager:
         except IOError as e:
             raise RuntimeError(f"Failed to save results: {str(e)}")
 
+    @staticmethod
+    def save_regression_results(data, path) -> None:
+        file_path = Path(path)
+        try:
+            with open(file_path, 'w') as f:
+                json.dump(data, f, indent=2)
+        except IOError as e:
+            raise RuntimeError(f"Failed to save results: {str(e)}")
 
     def load_optim_range_params(self, filename):
             try:
@@ -65,6 +73,25 @@ class ResultsFileManager:
 
     @staticmethod
     def load_calibration_results(filename):
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+            return data
+        except FileNotFoundError:
+            print(f"Erreur : Le fichier {filename} n'existe pas.")
+            return None
+        except json.JSONDecodeError:
+            print(f"Erreur : Le fichier {filename} n'est pas un JSON valide.")
+            return None
+        except IOError as e:
+            print(f"Erreur lors de la lecture du fichier {filename}: {e}")
+            return None
+        except Exception as e:
+            print(f"Une erreur inattendue s'est produite lors de la lecture : {e}")
+            return None
+
+    @staticmethod
+    def load_regression_results(filename):
         try:
             with open(filename, 'r') as f:
                 data = json.load(f)

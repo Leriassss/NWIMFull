@@ -8,7 +8,7 @@ class HUNModel:
         Initialise et valide les données pour la méthode HUN.
         :param time_base: Temps de base observé pour le transfert (en jours).
         """
-        self.time_base = int(time_base)
+        self.time_base = int(float(time_base))
         self.validate()
 
     def validate(self):

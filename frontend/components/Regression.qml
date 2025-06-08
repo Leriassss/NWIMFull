@@ -42,11 +42,16 @@ Dialog {
                     spacing: 1
                     CustomToolButton {
                         width: 50
-                        height: {
-                            console.log(" FH----")
-                            console.log(JSON.stringify(fileHandler.ptq))
-                            parent.height
+                        height:parent.height
+                        text: qsTr("📥")
+                        ToolTip.text: qsTr("Load Regression")
+                        onClicked: {
+                            loadRegressionDialog.open()
                         }
+                    }
+                    CustomToolButton {
+                        width: 50
+                        height:parent.height
                         text: qsTr("➕")
                         ToolTip.text: qsTr("Add Model")
                         onClicked: {
@@ -60,8 +65,8 @@ Dialog {
                         ToolTip.text: qsTr("Compute")
                         onClicked: {
 
-                            regressionFile.singleCalibration(regressionFile.parametersList[0],fileHandler.ptq, regComboBox.currentText)
-                            console.log(JSON.stringify(regressionFile.simValues))
+                            regressionFile.singleCalibration(regressionFile.parametersList,fileHandler.ptq, regComboBox.currentText)
+
                             regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
                                         [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
                                         [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
@@ -73,6 +78,9 @@ Dialog {
                         height: parent.height
                         text: qsTr("💾")
                         ToolTip.text: qsTr("Save Regression")
+                        onClicked: {
+                            saveRegressionDialog.open()
+                        }
                     }
                 }
             }
@@ -81,16 +89,49 @@ Dialog {
        }
 
     FileChoose {
+         id: loadRegressionDialog
+         title: "Please choose a folder"
+         nameFilters: ["JSON (*.json)"]
+         fileMode: FileChoose.OpenFile
+         onAccepted: {
+            let fileName = cleanFilePath(loadRegressionDialog.file.toString());
+            regressionFile.loadParameters(fileName)
+
+            let index = regComboBox.model.indexOf(regressionFile?.currentRegressor)
+                 console.log(index)
+                 if (index >= 0)
+                    regComboBox.currentIndex = index;
+
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
+
+    FileChoose {
          id: loadFileDialog
          title: "Please choose a folder"
          nameFilters: ["JSON (*.json)"]
          fileMode: FileChoose.OpenFiles
          onAccepted: {
-            console.log("*/*/*/**/ FM /*///*/*/*/*/**/")
-            console.log(loadFileDialog.files)
             regressionFile.getParameters(loadFileDialog.files)
-            console.log("*/*/*/**//*///*/*/*/*/**/")
-            console.log(JSON.stringify(regressionFile.parametersList))
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
+
+    FileChoose {
+         id: saveRegressionDialog
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["JSON (*.json)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveRegressionDialog.file.toString());
+            regressionFile.saveParameters(regComboBox.currentText, fileName)
 
          }
          onRejected: {
@@ -137,12 +178,9 @@ Dialog {
             color: "#ebebeb"
             border.width: 1
             border.color: "grey"
-            SplitView.minimumWidth:  parent.width*0.5
-            SplitView.preferredWidth: parent.width*0.5
+            SplitView.minimumWidth:  parent.width*0.2
+            SplitView.preferredWidth: parent.width*0.2
 
-            property var headers: etoManager.headers
-            //width: parent.width*0.4
-            //height: parent.height
             Column{
                 width: parent.width - 5
                 height: parent.height - 5
@@ -176,8 +214,8 @@ Dialog {
                 }
 
                 Rectangle{
-                    width: parent.width *0.9
-                    height: parent.height *0.9
+                    width: parent.width
+                    height: parent.height
                     Component {
                         id : paramsComponent
                         Rectangle {
@@ -315,29 +353,68 @@ Dialog {
 
                     GroupBox{
                         height: parent.height
-                        width: parent.width * 0.5 - parent.spacing
+                        width: parent.width * 0.3
                         title: "Regressor"
 
 
                         ColumnLayout{
                             anchors.fill: parent
                             //border.width: 1
+
                             spacing : 10
                             ComboBox {
                                 leftPadding: 10
-                                Layout.preferredWidth: parent.width * 0.3
+                                Layout.preferredWidth: parent.width
                                 Layout.preferredHeight: 20
                                 id: regComboBox
-                                model: {
-                                    console.log("*-*-*--**-*-*-*-")
-                                    console.log(regressionFile?.regressors)
-                                    regressionFile?.regressors
-                                }
+                                model:regressionFile?.regressors
                             }
                         }
 
 
+                    }
+
+                    GroupBox{
+                        height: parent.height
+                        width: parent.width * 0.7 - parent.spacing
+                        title: "Criteria"
+
+
+                        RowLayout{
+                            anchors.fill: parent
+                            //border.width: 1
+                            spacing : 10
+                            ComboBox {
+                                leftPadding: 10
+                                Layout.preferredWidth: 90
+                                Layout.preferredHeight: 20
+                                id: criteriaComboBox
+                                model: Object.keys(regressionFile?.metricsSummary)
+                            }
+
+                            Label{
+                                Layout.preferredWidth: 100
+                                text: "Calibration : "
+                                font.bold: true
+                            }
+                            Text{
+                                Layout.preferredWidth: 50
+                                text: (regressionFile?.metricsSummary[criteriaComboBox.currentText][0])?.toFixed(3)
+                            }
+                            Label{
+                                Layout.preferredWidth: 100
+                                text: "Validation : "
+                                font.bold: true
+                            }
+                            Text{
+                                Layout.preferredWidth: 50
+                                text:  (regressionFile?.metricsSummary[criteriaComboBox.currentText][1])?.toFixed(3)
+                            }
+
                         }
+
+
+                    }
 
                 }
 
@@ -372,18 +449,5 @@ Dialog {
         return filePath;
     }
 
-    function populateTable(columnMapping) {
-        tableModel.clear();
-        const mykeys = ["Dates","ETP"];
-
-        // Trouver la longueur maximale en une seule passe
-        const maxLength = mykeys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
-        // Remplir le modèle de données
-        for (let i = 0; i < maxLength; i++) {
-            let rowData = {};
-            mykeys.forEach(key => rowData[key] = columnMapping[key]?.[i] ?? "");
-            tableModel.appendRow(rowData);
-        }
-    }
 }
 

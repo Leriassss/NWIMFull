@@ -147,18 +147,6 @@ class DataManager:
                 parsed_dates = []
 
             dataset = np.array([d.strftime(date_format) for d in parsed_dates])
-            print("-------- updateDatesInfos (DATAMANAGER)---------------")
-            print(dataset)
-            print(c_length)
-            print(v_length)
-            print({
-                "data": dataset.tolist(),
-                "data_cal": dataset[c_length].tolist(),
-                "data_val": dataset[v_length].tolist(),
-                "min": parsed_dates[0].strftime(date_format),
-                "max": parsed_dates[-1].strftime(date_format),
-                "count": len(parsed_dates)
-            })
             self._ptq["CALIBRATION"]["Dates"] = dataset[c_length].tolist()
             self._ptq["VALIDATION"]["Dates"] = dataset[v_length].tolist()
             return  {

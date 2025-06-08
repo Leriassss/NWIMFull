@@ -81,18 +81,12 @@ class FileHandler(QObject):
 
     @Slot()
     def calibrationTime(self):
-        print("------------------- CT")
-        print(self._data_dict)
         dates = self._data_dict["Dates"]
         self._calibration_time = self._data_manager.getDatasDatesCalendar(dates)
-        print("APPEL------------- 2")
-        print(self._calibration_time)
         self.calibrationTimeChanged.emit()
 
     @Property(dict, notify=calibrationTimeChanged)
     def calendar_dates(self):
-        print("CALENDAR-------------")
-        print(self._calibration_time)
         return self._calibration_time
 
     @Property(str, notify=calibrationDateChanged)
@@ -115,10 +109,6 @@ class FileHandler(QObject):
             self._validation_date = dates_list[3]
             self.calibrationDateChanged.emit()
             self.validationDateChanged.emit()
-            print("---------- uCAVD (fh)-----------")
-            print(dates)
-            print(self._calibration_date, self._validation_date)
-            print(" --------- EMISSION --------------")
             self.updateFields()
             self._ptq = self._data_manager._ptq
 
@@ -133,8 +123,6 @@ class FileHandler(QObject):
             self.activateChanged.emit()
 
         except Exception as e:
-            print('EXECEPTION LEVEE ------------------------------')
-            print(e)
             self._errors = e.args[0].split(";")
             self.errorsChanged.emit()
 
