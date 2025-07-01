@@ -19,14 +19,7 @@ class W(Production):
         self.initial_loss = initialLoss
 
     def compute(self):
-        """
-        Calcule le ruissellement en utilisant le coefficient de ruissellement.
-
-        :return: Série pandas contenant le ruissellement calculé.
-        """
-        prec =self.initial_loss
-        runoff_coef = float(self._data_model.runoff_coef)
-        return prec * runoff_coef
+        return self.initial_loss * float(self._data_model.runoff_coef)
 
     @classmethod
     def help(cls):

@@ -13,12 +13,19 @@ class BaseFlow(ABC):
         """
         pass
     @abstractmethod
-    def reverse_compute(self, *args, **kwargs):
+    def calibration_routine(self, *args, **kwargs):
         """
         Calcule le ruissellement net ou d'autres paramètres.
         """
         pass
 
+    @abstractmethod
+    def validation_routine(self, *args, **kwargs):
+        """
+        Calcule le ruissellement net ou d'autres paramètres.
+        """
+        pass
+    
     @abstractmethod
     def help():
         pass

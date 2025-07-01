@@ -65,7 +65,7 @@ Dialog {
                         ToolTip.text: qsTr("Compute")
                         onClicked: {
 
-                            regressionFile.singleCalibration(regressionFile.parametersList,fileHandler.ptq, regComboBox.currentText)
+                            regressionFile.singleCalibration(fileHandler.ptq, regComboBox.currentText)
 
                             regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
                                         [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
@@ -241,6 +241,9 @@ Dialog {
                                     text: "🗑️"
                                     width: 100
                                     //color : "red"
+                                    onClicked: {
+                                       regressionFile.deleteModel(id)
+                                    }
                                 }
                                 Text {
                                     anchors.left: parent.left

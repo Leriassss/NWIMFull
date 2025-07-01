@@ -2,14 +2,12 @@ class SeparationModel:
     """
     Classe pour valider les arguments communs aux méthodes de récession.
     """
-    def __init__(self, lambda_=0.3,k = 0.5, lag_time =  1):
+    def __init__(self, k =  0.1):
         """
         Initialise et valide les arguments communs aux méthodes de récession.
 
         :param lambda_: Paramètre lambda (doit être un nombre positif).
         """
-        self.lambda_ = float(lambda_)
-        self.lag_time = float(lag_time)
         self.k = float(k)
         self.validate()
 
@@ -20,20 +18,14 @@ class SeparationModel:
         try :
             self.k = float(self.k)
         except :
-            raise ValueError("Le paramètre 'lambda' doit être un nombre positif.")
-        if self.lambda_ <= 0:
-            raise ValueError("Le paramètre 'lambda' doit être un nombre positif.")
-        if self.lag_time <= 0:
-            raise ValueError("Le paramètre 'lag_time' doit être un nombre positif.")
+            raise ValueError("Le paramètre 'k' doit être un nombre positif.")
 
     def to_dict(self):
         """
         Retourne les paramètres du modèle sous forme de dictionnaire.
         """
         return {
-            'lambda': self.lambda_,
-            'k' : self.k,
-            'lag_time': self.lag_time
+            'k': self.k
         }
 
     @staticmethod
@@ -42,24 +34,18 @@ class SeparationModel:
         Retourne le nom du paramètre 'lambda' pour le modèle Separation.
         """
         return {
-            "lambda": "lambda",
-            "k" : "k",
-            "lag_time" : "lag time"
+            "k" : "k"
         }
     @staticmethod
     def get_default_values():
         return {
-                "lambda": 0.8,
-                "k" : 0.5,
-                "lag_time" : 2
+                "k" : 0.1
             }
 
     @staticmethod
     def get_default_ranges():
         return {
-                "lambda": [0.1,1],
-                "k" : [0.1,1],
-                "lag_time" : [1,10]
+                "k" : [0.1,1]
         }
     
     @staticmethod
@@ -73,11 +59,7 @@ class SeparationModel:
         """
         try:
             value = float(value)  # S'assure que la valeur est un nombre
-            if key == "lambda" and value <= 0:
-                raise ValueError("Le paramètre doit être un nombre strictement positif.")
-            elif key == "lag_time" and value <= 0:
-                raise ValueError("Le paramètre doit être un nombre strictement positif.")
-            elif key == "k" and value <= 0:
+            if key == "k" and value <= 0:
                 raise ValueError("Le paramètre doit être un nombre strictement positif.")
             return True
         except Exception as e:

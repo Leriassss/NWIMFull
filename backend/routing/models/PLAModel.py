@@ -3,7 +3,7 @@ class PLAModel:
     Modèle de données pour valider les paramètres nécessaires à la méthode PLA.
     """
 
-    def __init__(self, mu, landa, t_x, s_f):
+    def __init__(self, mu, landa):
         """
         Initialise et valide les données pour la méthode PLA.
 
@@ -14,8 +14,6 @@ class PLAModel:
         """
         self.mu = float(mu)
         self.landa = float(landa)
-        self.t_x = float(t_x)
-        self.s_f = float(s_f)
         self.validate()
 
     def validate(self):
@@ -30,10 +28,6 @@ class PLAModel:
             raise ValueError("Le paramètre 'mu' doit être strictement positif.")
         if self.landa <= 0:
             raise ValueError("Le paramètre 'landa' doit être strictement positif.")
-        if self.t_x <= 0:
-            raise ValueError("Le paramètre 't_x' doit être strictement positif.")
-        if self.s_f <= 0:
-            raise ValueError("Le paramètre 's_f' doit être strictement positif.")
 
     def to_dict(self):
         """
@@ -43,27 +37,21 @@ class PLAModel:
         """
         return {
             'mu': self.mu,
-            'landa': self.landa,
-            't_x': self.t_x,
-            's_f': self.s_f
+            'landa': self.landa
         }
 
     @staticmethod
     def get_default_values():
         return {
             'mu': 1.03,
-            'landa': 9,
-            't_x': 0.25,
-            's_f': 0.025
+            'landa': 9
         }
 
     @staticmethod
     def get_default_ranges():
         return {
             'mu': [1,10],
-            'landa': [1,10],
-            't_x': [0.1,0.5],
-            's_f': [0.01,0.05]
+            'landa': [1,10]
             }
     
     @staticmethod
@@ -75,9 +63,7 @@ class PLAModel:
         """
         return {
             "mu": "mu",
-            "landa": "landa",
-            "t_x": "t_x",
-            "s_f": "s_f"
+            "landa": "landa"
         }
 
     @staticmethod
@@ -97,12 +83,6 @@ class PLAModel:
             elif key == "landa":
                 if value <= 0:
                     raise ValueError("Le paramètre 'landa' doit être strictement positif.")
-            elif key == "t_x":
-                if value <= 0:
-                    raise ValueError("Le paramètre 't_x' doit être strictement positif.")
-            elif key == "s_f":
-                if value <= 0:
-                    raise ValueError("Le paramètre 's_f' doit être strictement positif.")
             else:
                 raise ValueError(f"Paramètre inconnu: {key}")
             return True

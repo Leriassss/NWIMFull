@@ -15,14 +15,45 @@ class PLA(Routing):
     
     def validation(self,datas : DataSimulation):
         return self.sim(datas["pn"])
-        
+
+
+    def sim2(self, q):
+        n = len(q)
+        MU= self.plaModel.mu
+        LANDA = self.plaModel.landa
+
+        TX = 0.25
+        P2 = 1
+        SF = 0.025
+        # Initialisation de X
+        X = np.zeros(n)
+        # Calcul de X avec boucle à partir de l'indice 3 (comme en R)
+        for i in range(3, n):
+            if q[i] == 0:
+                X[i] = X[i - 1] - (MU / LANDA) * X[i - 1]
+            else:
+                X[i] = X[i - 1] + (MU / LANDA) * (q[i] ** (2 * MU - P2))
+
+        # Initialisation de Qsim et Qsimalpha
+        Qsim = np.zeros(n)
+        Qsimalpha = np.zeros(n)
+
+        # Calcul vectorisé partiel pour Qsim (boucle nécessaire à cause de dépendance récursive)
+        for i in range(2, n):
+            if X[i] * SF > TX:
+                SF1 = 0.025
+                Qsimalpha[i] = Qsim[i - 1] - (MU / LANDA) * (Qsim[i - 1] ** (2 * MU - 1)) + SF1 * X[i] * q[i - 1] / LANDA
+            else:
+                Qsimalpha[i] = Qsim[i - 1] - (MU / LANDA) * (Qsim[i - 1] ** (2 * MU - P2)) + SF * X[i] * 0.00 / LANDA
+
+            Qsim[i] = max(Qsimalpha[i], 0)
+        return Qsim
+
     def sim(self,q):
         mu= self.plaModel.mu
         landa = self.plaModel.landa
-        t_x = self.plaModel.t_x 
-        s_f = self.plaModel.s_f
-        print("*/*/*/*/*/ IN PLA ---*-**-*-*-*-*-*--*")
-        print(mu,landa,t_x,s_f)
+        t_x = 0.25
+        s_f = 0.025
         epsilon = 1e-6
         n = len(q)
         x = np.zeros(n)

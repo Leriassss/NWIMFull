@@ -1,10 +1,10 @@
 from joblib import Parallel, delayed
-from factory.OptimizationFactory import OptimizationFactory
-from grid.models.GridModel import GridModel
-from optimization.Optimization import Optimization
-from ptq.PTQ import PTQ
-from simulation.Simulation import Simulation
-from simulation.models.SimulationModel import SimulationModel
+from backend.factory.OptimizationFactory import OptimizationFactory
+from backend.grid.models.GridModel import GridModel
+from backend.optimization.Optimization import Optimization
+from backend.ptq.PTQ import PTQ
+from backend.simulation.Simulation import Simulation
+from backend.simulation.models.SimulationModel import SimulationModel
 
 class Grid:
     def __init__(self, grid_data: GridModel, ptq_calage: PTQ, ptq_validation: PTQ):
@@ -16,7 +16,7 @@ class Grid:
     def _evaluate_combination(self, names, bundle, optim_name, optim_params):
         """Évalue une combinaison et retourne son score et le modèle correspondant."""
         sim = Simulation(*names, self.ptq_calage, self.ptq_validation)
-        optim_method: Optimization = OptimizationFactory.createInstance(optim_name, sim, bundle, **optim_params)
+        optim_method: Optimization = OptimizationFactory.createInstance(optim_name, sim, bundle, optim_params)
         optimization_results: SimulationModel = optim_method.optim()
         return optimization_results.validation_metric, names, optimization_results
 
@@ -34,3 +34,4 @@ class Grid:
             return best_result
         else:
             raise ValueError("Aucun résultat satisfaisant")
+

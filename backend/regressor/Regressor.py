@@ -24,7 +24,7 @@ class Regressor:
         return best_calibration_results, best_validation_results
 
     def knn(self, models_results : SimulationModel):
-        n = 100
+        n = 35
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
 
         

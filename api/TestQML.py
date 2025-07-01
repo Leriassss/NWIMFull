@@ -97,15 +97,15 @@ class TestQML(QObject):
 
     @Slot(str, str)
     def updateParameter(self, key, value):
-
         if key in self._keys:
-            """Met à jour un paramètre et applique la validation."""
             self._parameters[key] = value
             model = self._factory.getModel(self._current_method)
 
             validation_result = model.validate_parameter(key, value)
 
             print("---------------------UP")
+            print("key : ", key)
+            print("model : ", model)
             print(self._parameters)
             print(self._current_method)
             print(validation_result)
@@ -119,9 +119,9 @@ class TestQML(QObject):
 
                 print(f"Validation pour {key}: {validation_result}")
 
-            self.parametersChanged.emit()
             self.parameterErrorChanged.emit()
             self.desactivatedChanged.emit()
+
 
     @Slot(dict, str)
     def setParameter(self, params, method_name):

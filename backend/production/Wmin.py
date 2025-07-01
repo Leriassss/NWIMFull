@@ -3,41 +3,36 @@ import pandas as pd
 
 from backend.production.Production import Production
 from backend.production.models.WMinModel import WMinModel
-from backend.ptq.PTQ import PTQ
 
 
 class WMin(Production) :
-    def __init__(self, ptq : PTQ, data_model: WMinModel):
+    def __init__(self, initialLoss : pd.Series, data_model: WMinModel):
         self.data_model = data_model
-        self.ptq = ptq
+        self.initial_loss = initialLoss
         
     def compute(self):
-        prec = self.ptq.p.copy()
+        prec = self.initial_loss
         smax = float(self.data_model.S)
         alpha = float(self.data_model.alpha)
-        loss_days = int(self.data_model.loss_days)
 
-        rainfall_ini_loss = self.adapter(prec,loss_days, smax)
+        rainfall_ini_loss = self.init_loss(prec, smax, alpha)
 
-        rainfall_without_loss = self.w_runoff(rainfall_ini_loss,self.ptq.p.copy(), alpha)
-        return rainfall_without_loss
+        return rainfall_ini_loss
     
-    def init_loss(self, prec,loss_days, smax):
+    def init_loss(self, prec, smax, alpha):
         valeurs = np.array(prec, dtype=float)  
         pertes_restantes = smax  
-        seq = np.arange(loss_days) if len(valeurs) >= loss_days else np.arange(len(valeurs))
-        for i in seq:
+        i = 0
+        while i < len(valeurs):
             if pertes_restantes > 0:
                 if valeurs[i] >= pertes_restantes:
                     valeurs[i] -= pertes_restantes
+                    valeurs[i] *= alpha
                 else:
                     pertes_restantes -= valeurs[i]
                     valeurs[i] = 0 
+            i+=1
         return pd.Series(valeurs)
-    
-    def w_runoff(self,rain,etp, alpha):
-        return np.maximum(0, rain - alpha*etp)
-
 
     def adapter(self,prec:pd.Series, loss_days, smax):
         non_null_groups = prec.groupby((np.round(prec,2) == 0.0).cumsum())

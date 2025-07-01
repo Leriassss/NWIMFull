@@ -32,9 +32,10 @@ class Muskingum(Routing):
                 C0 * production[t]
                 + C1 * production[t - 1]
                 + C2 * hydrogramm_muskingum[t - 1]
-            )
+            )   
+        return np.maximum(0,hydrogramm_muskingum) 
+    
 
-        return np.maximum(0,hydrogramm_muskingum)
 
     def validation(self,datas : DataSimulation):
         production = datas["pn"]
@@ -58,8 +59,9 @@ class Muskingum(Routing):
                 + C1 * production[t - 1]
                 + C2 * hydrogramm_muskingum[t - 1]
             )
-          
-        return np.maximum(0,hydrogramm_muskingum)
+             
+    
+        return np.maximum(0,hydrogramm_muskingum) 
     
     @staticmethod
     def help():
@@ -69,3 +71,6 @@ class Muskingum(Routing):
         Implémente l'Hydrogramme selon Muskingum
         """
         print(description)
+
+
+    

@@ -23,9 +23,10 @@ class DataSimulation(TypedDict):
 
 class DataBaseFlow(TypedDict):
     qsim : pd.Series
-    qbase : pd.Series
-    ptq : PTQ
-    qmean : pd.Series
+    qObs : pd.Series
+    p : pd.Series
+    prevObs : float
+    factors : tuple
 
 class DataInitialLoss(TypedDict):
     net_rainfall : pd.Series

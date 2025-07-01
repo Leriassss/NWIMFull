@@ -84,7 +84,6 @@ Column {
                         parameterModel.updateParameter(modelName, text)
                         console.log("----------------- RESULTATS -----------------------")
                         console.log(JSON.stringify(parameterModel.parameters))
-                        focus = true
                     }
                     Layout.preferredWidth: 100 // Largeur fixe pour les TextField
                     Layout.alignment: Qt.AlignRight

@@ -85,6 +85,25 @@ class FileHandler(QObject):
         self._calibration_time = self._data_manager.getDatasDatesCalendar(dates)
         self.calibrationTimeChanged.emit()
 
+    def setPeriodsDates(self, user_dates):
+        if user_dates["calibration"] and user_dates["validation"]:
+            c_start = pd.to_datetime(user_dates["calibration"][0])
+            c_end = pd.to_datetime(user_dates["calibration"][1])
+            v_start = pd.to_datetime(user_dates["validation"][0])
+            v_end = pd.to_datetime(user_dates["validation"][1])
+            if c_start >= c_end or v_start >= v_end or c_start == v_start or c_end == v_end or  c_start == v_end or v_start == v_end:
+                raise Exception("Dates non-corrects")
+            if c_start >= v_start and v_end >= c_start:
+                raise Exception("Crossing dates")
+            dates = self._data_dict["Dates"]
+            df = pd.DataFrame({"date": pd.to_datetime(dates)})
+            calib_dates = df[(df["date"] >= c_start) & (df["date"] <= c_end)]
+            valid_dates = df[(df["date"] >= v_start) & (df["date"] <= v_end)]
+            return calib_dates, valid_dates
+        else :
+            raise Exception("Define calibration and validation dates")
+
+
     @Property(dict, notify=calibrationTimeChanged)
     def calendar_dates(self):
         return self._calibration_time
@@ -102,11 +121,11 @@ class FileHandler(QObject):
         self._errors = []
 
         try : 
-            dates_list = self._data_manager.updateCalibrationAndValibationDates(dates)
-            self._calibration_length = dates_list[0]
-            self._validation_length = dates_list[1]
-            self._calibration_date =dates_list[2]
-            self._validation_date = dates_list[3]
+            dates_list = self.setPeriodsDates(dates)
+            self._calibration_length = dates_list[0].index
+            self._validation_length = dates_list[1].index
+            self._calibration_date = dates_list[0].iloc[0].dt.strftime("%Y-%m-%d").iloc[0] +" to " + dates_list[0].iloc[-1].dt.strftime("%Y-%m-%d").iloc[0]
+            self._validation_date = dates_list[1].iloc[0].dt.strftime("%Y-%m-%d").iloc[0] +" to "+ dates_list[1].iloc[-1].dt.strftime("%Y-%m-%d").iloc[0]
             self.calibrationDateChanged.emit()
             self.validationDateChanged.emit()
             self.updateFields()
@@ -217,10 +236,6 @@ class FileHandler(QObject):
             self._data_manager = DataManager(self._data, data_dict)
             self._data_dict = self._data_manager._data_dict
             self.dataDictChanged.emit()
-            self._calibration_date =self._data_dict["Dates"][0]
-            self._validation_date = self._data_dict["Dates"][0]
-            self.calibrationDateChanged.emit()
-            self.validationDateChanged.emit()
         except Exception as e :
             self._errors = e.args[0].split(";")
             self.errorsChanged.emit()

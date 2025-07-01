@@ -51,7 +51,7 @@ class Horton(Production):
         k = self._data_model.k
 
         # Utilisation de l'index temporel pour les calculs
-        t = 0
+        t = 1
         taux_infiltration = pd.Series(f_t + (f_0 - f_t) * np.exp(-k * t), index=prec.index)
 
         # Calcul du ruissellement

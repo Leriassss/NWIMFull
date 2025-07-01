@@ -181,7 +181,7 @@ ApplicationWindow {
                         CalendarDialog{
                             id : chooseDatePopup
                             width: 500
-                            height: 200
+                            height: 250
                             standardButtons: Dialog.Ok | Dialog.Cancel
                             title: qsTr("CHOOSE PERIODS BEGININS")
                             calibration_dates : fileHandler.calendar_dates

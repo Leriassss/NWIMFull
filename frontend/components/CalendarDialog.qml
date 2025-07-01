@@ -3,10 +3,11 @@ import QtQuick.Controls
 import QtQuick.Layouts
 Dialog{
     modal: true
+    id : calendarDialog
     property var calibration_dates
     property var user_calibration: {
-        "calibration": calibrationYear.currentText + "-" + calibrationMonth.currentText + "-" + calibrationDay.currentText,
-        "validation": validationYear.currentText + "-" + validationMonth.currentText + "-" + validationDay.currentText
+        "calibration": ["", ""],
+        "validation": ["", ""]
     }
 
 
@@ -23,7 +24,7 @@ Dialog{
                 width: parent.width
                 height: parent.height
                 padding: 5
-                RowLayout{
+                ColumnLayout{
                     spacing: 10
                     id : calibrationRow
                     width: parent.width
@@ -35,44 +36,47 @@ Dialog{
                         Layout.preferredWidth:  70
                     }
 
-                    ComboBox {
-                        id: calibrationYear
-                        model : Object.keys(calibration_dates)
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
-                        onCurrentTextChanged: {
-                            calibrationMonth.model = Object.keys(calibration_dates[calibrationYear.currentText])
+                    Row{
+                        width: 200
+                        spacing: 10
+                        Label{
+                            text: "Start "
                         }
-                    }
-                    Label{
-                        text: "-"
-                        font.bold: true
-                    }
-
-                    ComboBox {
-                        id: calibrationMonth
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
-                        onCurrentTextChanged: {
-                            calibrationDay.model =calibration_dates[calibrationYear.currentText][calibrationMonth.currentText]
-
+                        TextField{
+                            id : calibrationStart
+                            width: 100
+                            placeholderText: "Ex : 1999-01-01"
+                            onTextChanged: {
+                                calendarDialog.user_calibration["calibration"][0] = text
+                                if(!checkDates(calendarDialog.user_calibration)){
+                                    calibrationStart.color = "red"
+                                }
+                                else{
+                                    calibrationStart.color = "black"
+                                }
+                            }
                         }
-                    }
-                    Label{
-                        text: "-"
-                        font.bold: true
-                    }
-                    ComboBox {
-                        id: calibrationDay
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
+                        Label{
+                            text: "End "
+                        }
+                        TextField{
+                            id : calibrationEnd
+                            width: 100
+                            placeholderText: "Ex : 1999-01-01"
+                            text: "2000-12-31"
+                            onTextChanged: {
+                                calendarDialog.user_calibration["calibration"][1] = text
+                                if(!checkDates(calendarDialog.user_calibration)){
+                                    calibrationEnd.color = "red"
+                                }
+                                else{
+                                    calibrationEnd.color = "black"
+                                }
+                            }
+                        }
                     }
                 }
-
-                RowLayout{
+                ColumnLayout{
                     spacing: 10
                     id : validationRow
                     width: parent.width
@@ -84,40 +88,45 @@ Dialog{
                         Layout.preferredWidth:  70
                     }
 
-                    ComboBox {
-                        id: validationYear
-                        model : Object.keys(calibration_dates)
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
-                        onCurrentTextChanged: {
-                            validationMonth.model = Object.keys(calibration_dates[validationYear.currentText])
+                    Row{
+                        width: 200
+                        spacing: 10
+                        Label{
+                            text: "Start "
                         }
-                    }
-                    Label{
-                        text: "-"
-                        font.bold: true
-                    }
-
-                    ComboBox {
-                        id: validationMonth
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
-                        onCurrentTextChanged: {
-                            validationDay.model =calibration_dates[validationYear.currentText][validationMonth.currentText]
-
+                        TextField{
+                            id : validationStart
+                            width: 100
+                            placeholderText: "Ex : 1999-01-01"
+                            text: "2001-01-01"
+                            onTextChanged: {
+                                calendarDialog.user_calibration["validation"][0] = text
+                                if(!checkDates(calendarDialog.user_calibration)){
+                                    validationStart.color = "red"
+                                }
+                                else{
+                                    validationStart.color = "black"
+                                }
+                            }
                         }
-                    }
-                    Label{
-                        text: "-"
-                        font.bold: true
-                    }
-                    ComboBox {
-                        id: validationDay
-                        currentIndex: 0
-                        Layout.preferredWidth: 100
-                        Layout.preferredHeight: 30
+                        Label{
+                            text: "End "
+                        }
+                        TextField{
+                            id : validationEnd
+                            width: 100
+                            placeholderText: "Ex : 1999-01-01"
+                            text: "2003-12-31"
+                            onTextChanged: {
+                                calendarDialog.user_calibration["validation"][1] = text
+                                if(!checkDates(calendarDialog.user_calibration)){
+                                    validationEnd.color = "red"
+                                }
+                                else{
+                                    validationEnd.color = "black"
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -125,5 +134,21 @@ Dialog{
         }
 
     }
-
+    function checkDates(user_dates){
+        console.log(JSON.stringify(user_dates))
+        let c_start = new Date(user_dates["calibration"][0])
+        let c_end = new Date(user_dates["calibration"][1])
+        let v_start = new Date(user_dates["validation"][0])
+        let v_end = new Date(user_dates["validation"][1])
+        console.log(c_start >= c_end)
+        console.log(v_start >= v_end)
+        console.log(c_start == v_start)
+        console.log(c_end == v_end)
+        if (c_start >= c_end || v_start >= v_end || c_start == v_start || c_end == v_end || c_start == v_end){
+            return false
+        }
+        else{
+            return true
+        }
+    }
 }

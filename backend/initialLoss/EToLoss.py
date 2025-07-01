@@ -12,9 +12,9 @@ class EToLoss(Loss) :
         self.ia_bundle = ia_bundle
         
     def compute(self):
-        prec = self.ia_bundle['net_rainfall']
-        alpha = self.data_model.alpha
-        rainfall_without_loss = self.etp_loss(prec,self.ia_bundle['etp'], alpha)
+        rainfall_without_loss = self.etp_loss(self.ia_bundle['net_rainfall'],
+                                              self.ia_bundle['etp'], 
+                                              self.data_model.alpha)
         return rainfall_without_loss
     
     

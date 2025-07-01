@@ -120,6 +120,7 @@ class DataManager:
 
             return result
 
+
         def updateCalibrationAndValibationDates(self, dates):
             calibration_date = parser.parse(str(dates['calibration']))
             validation_date = parser.parse(str(dates['validation']))

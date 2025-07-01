@@ -1,6 +1,4 @@
 from backend.baseFlow.BaseFlow import BaseFlow
-from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
-from backend.baseFlow.BaseFlowRoutine2 import BaseFlowRoutine2
 from backend.contracts.Bundle import DataInitialLoss, DataSimulation, RoutingData, DataBaseFlow
 from backend.factory.RoutingFactory import RoutingFactory
 from backend.factory.InitialLossFactory import InitialLossFactory
@@ -8,12 +6,11 @@ from backend.factory.ProductionFactory import ProductionFactory
 from backend.factory.RecessionFactory import RecessionFactory
 from backend.ptq.PTQ import PTQ
 from backend.routing.Routing import Routing
-
-from backend.baseFlow.ExponentialRecession import ExponentialRecessionCurve
-from backend.baseFlow.IHACRES import IHACRES
-from backend.baseFlow.NashBaseFlow import NashBaseFlow
+from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
+from backend.smooth.Smooth import Smooth
 
 from permetrics.regression import RegressionMetric
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -36,34 +33,54 @@ class Simulation:
         self.ptq_validation = ptq_validation
         self.kwargs = {}
         self.calibration_metric = 0
-        self.q_means = np.array(ptq_calage.daily_qobs_mean())
-
-        self.baseflow_routine = None
+        self.q_means = ptq_calage.daily_qobs_mean()
+        self.prev_q_calib = ptq_calage.get_prev_q_obs()
+        self.prev_q_valid = ptq_validation.get_prev_q_obs()
         
+        #--------- ROUTING WARMUP ------------------------------------
+        self.qdirect_means = np.maximum(0, self.q_means - RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.q_means))
+        #-------- RECESSION WARMUP--------------------------------------
+        self.qbase_default = RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)
+        """
+        self.qdirect_means = pd.Series(np.maximum(0, 
+            self.ptq_calage.q - RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)))
+        
+        self.qdirect_means = self.qdirect_means.groupby(self.ptq_calage.dates.dt.strftime("%m-%d")).mean()
+        """
+        self.direct_flow_default = pd.Series(np.maximum(0, self.ptq_calage.q-
+                                              RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)))
+        
+        debit_sim = self.direct_flow_default.where(self.ptq_calage.p != 0).dropna()
+        debit_base = (self.qbase_default.where(self.ptq_calage.p != 0)).dropna()
+        self.recession_factors = BaseFlowRoutine.regBaseFlow(debit_base,debit_sim)
+
+        self.output_lim = 3.5
+        self.window = 1
+
+        
+    
 
     def manual_calibration(self,kwargs: RoutingData):
         self.kwargs = kwargs
+        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],self.ptq_calage.p,*kwargs["pn"]).compute()
+                
         ia_bundle : DataInitialLoss = {
-            "net_rainfall" : self.ptq_calage.p,
+            "net_rainfall" : prod_rainfall,
             "etp" : self.ptq_calage.etp
         }
         net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
-        
-        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],net_rainfall,*kwargs["pn"]).compute()
-                
 
         self.qbase_model : BaseFlow = RecessionFactory.createInstance(self.methods["recession"],*kwargs["qb"])
         
-
         """ --------------- TRANSFER ROUTINE ----------------"""
-        q_base = self.qbase_model.compute(self.ptq_calage)
 
         routing_bundle : DataSimulation = {
-            "pn" : prod_rainfall,
-            "qbase" : q_base,
+            "pn" : net_rainfall,
+            "qbase" : self.qbase_default,
             "qobs" : self.ptq_calage.q,
             "p" : self.ptq_calage.p,
-            "dates" : self.ptq_calage.dates
+            "dates" : self.ptq_calage.dates,
+            "qdirect_means": self.ptq_calage.expand_flow(self.ptq_calage.dates,self.qdirect_means)
         }
 
         self.routing_model : Routing = RoutingFactory.createInstance(self.methods["routing"],self.kwargs["sim"])
@@ -71,78 +88,72 @@ class Simulation:
         qsim = self.routing_model.calage(routing_bundle)
 
         """ --------------- BASE FLOW ROUTINE ----------------"""
-        self.baseflow_routine = BaseFlowRoutine(self.qbase_model)
 
         baseflow_bundle : DataBaseFlow = {
-            "ptq" : self.ptq_calage,
-            "qbase" : q_base,
-            "qsim" : qsim,
-            "qmean" : self.q_means
+            "p" : self.ptq_calage.p,
+            "qObs" : self.ptq_calage.q,
+            "qsim" : pd.Series(qsim),
+            "prevObs" : self.prev_q_calib,
+            "factors" : self.recession_factors
         }
 
-        qbase_rev_corr = pd.Series(self.baseflow_routine.calibration_routine(baseflow_bundle))
-        qsim_total = qsim+qbase_rev_corr
 
-        plt.plot(qbase_rev_corr, "r")
-        plt.plot(q_base, "b")
+        qbase_rev_corr = self.qbase_model.calibration_routine(baseflow_bundle)
+
+        qsim_total = qsim+qbase_rev_corr
+        
+        smooth_operation = Smooth(np.maximum(0,qsim_total))
+
+        qsim_total = smooth_operation.compute("rolling",self.output_lim)
+        qsim_total = smooth_operation.compute("smoothing",self.window)
 
         evaluator = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
-        
-        print("NSE BASEFLOW CALAGE -----------")
-        evaluator = RegressionMetric(np.array(q_base), np.array(qbase_rev_corr))
-        evaluator2 = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
-        print(evaluator.get_metrics_by_list_names(self.Metrics))
-        print(evaluator2.get_metrics_by_list_names(self.Metrics))
-        
+        print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
+        #◘plt.plot(qsim_total, "r")
+        #plt.plot(self.ptq_calage.q, "b")
         return qsim_total
     
 
     def validation(self):
-        print("***** VALIDATION DANS SIMULATION ")
-        #print(self.kwargs)
+        print("***** VALIDATION DANS SIMULATION ", self.kwargs)
+        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],self.ptq_validation.p,*self.kwargs["pn"]).compute()
+
         ia_bundle : DataInitialLoss = {
-            "net_rainfall" : self.ptq_validation.p,
+            "net_rainfall" : prod_rainfall,
             "etp" : self.ptq_validation.etp
         }
         net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
         
-        prod_rainfall = ProductionFactory.createInstance(self.methods["production"],net_rainfall,*self.kwargs["pn"]).compute()
 
-        
         datas_bundle : DataSimulation = {
-            "pn" : prod_rainfall
+            "pn" : net_rainfall,
+            "dates" : self.ptq_validation.dates,
+            "qdirect_means": self.ptq_validation.expand_flow(self.ptq_validation.dates,self.qdirect_means)
         }
         qsim = self.routing_model.validation(datas_bundle)
 
         baseflow_bundle : DataBaseFlow = {
-            "ptq" : self.ptq_validation,
+            "p" : self.ptq_validation.p,
             "qbase" : pd.Series(),
-            "qsim" : qsim,
-            "qmean" : self.q_means
+            "qsim" : pd.Series(qsim),
+            "prevObs" : self.prev_q_valid,
+            "factors" : self.recession_factors
         }
 
 
-        qbase_rev_corr = pd.Series(self.baseflow_routine.validation_routine(baseflow_bundle))
+        qbase_rev_corr = pd.Series(self.qbase_model.validation_routine(baseflow_bundle))
         qsim_total = qsim + qbase_rev_corr
-    
-        print("NSE BASEFLOW VALIDATION -----------")
-         
-        bfm_values = self.baseflow_routine.baseflowModel.compute(self.ptq_validation)
-        evaluator = RegressionMetric(np.array(bfm_values),np.array(qbase_rev_corr))
-        print(evaluator.get_metrics_by_list_names(self.Metrics))
 
-        #plt.plot(qbase_rev_corr, "r")
-        #plt.plot(bfm_values, "b")
-        plt.plot(self.ptq_validation.q, "b")
+        smooth_operation = Smooth(np.maximum(0,qsim_total))
+
+        qsim_total = smooth_operation.compute("rolling",self.output_lim)
+        qsim_total = smooth_operation.compute("smoothing",self.window)
+
+
+        evaluator = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
+        results = evaluator.get_metrics_by_list_names(self.Metrics)
+        print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
         plt.plot(qsim_total, "r")
-        plt.plot(qbase_rev_corr, "black")
-        #plt.plot(self.ptq_validation.q, "g")
-        #plt.plot(qsim, "y")   
-        #plt.plot(self.ptq_calage.q, "black")    
-        evaluator2 = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
-        print("----------- NSE --------------")
-        results = evaluator2.get_metrics_by_list_names(self.Metrics)
-        print(results)
-        
+        plt.plot(self.ptq_validation.q, "b")
         return results, qsim_total

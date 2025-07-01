@@ -14,7 +14,6 @@ class ProductionFactory:
             "WMin" : [WMin, WMinModel],
             "Horton" : [Horton, HortonModel],
             "Holtan" : [Holtan,  HoltanModel],
-            "Phi" : [Phi, PhiModel],
             "Philip" : [Philip, PhilipModel]
         }
             

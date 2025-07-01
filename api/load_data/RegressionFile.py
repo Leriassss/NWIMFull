@@ -60,16 +60,17 @@ class RegressionFile(QObject):
         for path in paths :
             path = path.toString()[8:]
             model_data = ResultsFileManager.load_calibration_results(path)
+            print("-------- GP RF -------")
+            print(model_data)
             model_data["id"] = path
             self._data_parameters_list.append(model_data)
         self.dataParametersListChanged.emit()
 
-    @Slot(list, dict, str)
-    def singleCalibration(self,list_original_dict, ptq, regressor):
+    @Slot(dict, str)
+    def singleCalibration(self, ptq, regressor):
         if not regressor in Regressor.methodsList():
             self._errors.append("Provided regressor or metric are non-correct")
             return
-
         calibration_df = pd.DataFrame(ptq["CALIBRATION"])
         validation_df = pd.DataFrame(ptq["VALIDATION"])
 
@@ -80,7 +81,10 @@ class RegressionFile(QObject):
         validation_df["Q"], validation_df["Dates"])
 
         sm_list = []
-        for original_dict in list_original_dict :
+        reg = None
+        print("RF SC; self._data_parameters_list : ", self._data_parameters_list)
+        for json_data_dict in self._data_parameters_list.copy() :
+            original_dict = dict(json_data_dict)
             del original_dict['id']
 
             dict_params = {}
@@ -93,6 +97,7 @@ class RegressionFile(QObject):
 
                 dict_methods[key] = model_name
                 dict_params[key] = list(model_params.values())
+
             else:
                 self._errors.append("Required methods not provided")
 
@@ -125,9 +130,6 @@ class RegressionFile(QObject):
 
         self._metrics_summary = merged = {k: [float(metrics_calibration[k]), float(metrics_validation[k])] for k in metrics_calibration}
 
-        print("-*-*-*-*-*-RF SC-*-*-*-*-*-**")
-        print(self._metrics_summary)
-
         self.simvaluesChanged.emit()
         self.metricsSummaryChanged.emit()
 
@@ -139,6 +141,13 @@ class RegressionFile(QObject):
         }
         ResultsFileManager.save_regression_results(parameter_bundle, path)
 
+    @Slot(str)
+    def deleteModel(self,id):
+        ids = [ model["id"] for model in self._data_parameters_list]
+        index = ids.index(id)
+        if(index != -1):
+            self._data_parameters_list.pop(index)
+            self.dataParametersListChanged.emit()
 
     @Slot(str)
     def loadParameters(self,path):

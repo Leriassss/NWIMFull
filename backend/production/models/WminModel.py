@@ -3,7 +3,7 @@ class WMinModel:
     Modèle de données pour valider les paramètres de la méthode des pertes initiales (Ia).
     """
 
-    def __init__(self, S: float, alpha: float, loss_days: int):
+    def __init__(self, S: float, alpha: float):
         """
         Initialise et valide les données pour le modèle de pertes initiales Ia.
 
@@ -13,7 +13,6 @@ class WMinModel:
         """
         self.S = float(S)
         self.alpha = float(alpha)
-        self.loss_days = int(loss_days)
         self.validate()
 
     def validate(self):
@@ -24,8 +23,6 @@ class WMinModel:
                 raise ValueError("Le paramètre 'S' doit être positif.")
         if (self.alpha < 0 or self.alpha > 1):
                 raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
-        if self.loss_days <= 0:
-                    raise ValueError("Le paramètre doit être strictement positif .")
 
     def to_dict(self):
         """
@@ -33,8 +30,7 @@ class WMinModel:
         """
         return {
             'S': self.S,
-            'alpha': self.alpha,
-            'loss_days': self.loss_days
+            'alpha': self.alpha
         }
 
     @staticmethod
@@ -44,24 +40,21 @@ class WMinModel:
         """
         return {
             "S": "S",
-            "alpha": "alpha",
-            "loss_days": "loss days"
+            "alpha": "alpha"
         }
 
     @staticmethod
     def get_default_ranges():
         return {
                 'S': [0,20],
-                'alpha': [0,1],
-                'loss_days': [1,10]
+                'alpha': [0,1]
             }
     
     @staticmethod
     def get_default_values():
         return {
                 'S': 0,
-                'alpha': 0.25,
-                'loss_days': 1
+                'alpha': 0.25
             }
 
     @staticmethod
@@ -79,10 +72,6 @@ class WMinModel:
                 raise ValueError("Le paramètre 'S' doit être positif.")
             elif key == "alpha" and (value < 0 or value > 1):
                 raise ValueError("Le paramètre 'alpha' doit être compris entre 0 et 1.")
-            elif key == "loss_days":
-                value = int(value)  # Convertit en entier
-                if value <= 0:
-                    raise ValueError("Le paramètre 'loss_days' doit être positif.")
             return True
         except Exception as e:
             return str(e)

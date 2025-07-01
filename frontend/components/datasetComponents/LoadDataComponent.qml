@@ -224,6 +224,7 @@ Column{
                     width: parent.width * 0.6
                     height: 30
                     text: fileChooseComponent.fileName
+                    anchors.verticalCenter: fileLocation.verticalCenter
                 }
 
                 Button {
@@ -392,16 +393,19 @@ Column{
                             CalendarDialog{
                                 id : chooseDatePopup
                                 width: 500
-                                height: 200
+                                height: 250
                                 standardButtons: Dialog.Ok | Dialog.Cancel
                                 title: qsTr("CHOOSE PERIODS BEGININS")
-                                calibration_dates : fileHandler.calendar_dates
+                                /*calibration_dates : {
+                                    console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
+                                    console.log(JSON.stringify(fileHandler.calendar_dates))
+                                    fileHandler.calendar_dates
+                                }*/
+
                                 onAccepted: {
                                     console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
-                                    console.log(chooseDatePopup.user_calibration)
                                     fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
-                                    console.log(fileHandler.calibrationDate)
-                                    console.log(fileHandler.validationDate)
+
                                     if(fileHandler.errors.length !==0){
 
                                         dataErrorsDialog.open()

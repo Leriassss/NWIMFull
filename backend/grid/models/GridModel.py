@@ -1,5 +1,5 @@
 from itertools import product
-from contracts.Bundle import RoutingData
+from backend.contracts.Bundle import RoutingData
 
 class GridModel:
     def __init__(self, productionBundle,recessionBundle,routingBundle,lossBundle):

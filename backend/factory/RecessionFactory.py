@@ -4,6 +4,7 @@ from backend.baseFlow.Eckhardt import Eckhardt, EckhardtModel
 from backend.baseFlow.ExponentialRecession import ExponentialRecessionCurve
 from backend.baseFlow.FureyGupta import FureyGupta, FureyGuptaModel
 from backend.baseFlow.QuadraticRecession import QuadraticRecessionCurve, SeparationModel
+from backend.baseFlow.MLBaseFlow import MLBaseFlow
 
 class RecessionFactory:
     methods = {
