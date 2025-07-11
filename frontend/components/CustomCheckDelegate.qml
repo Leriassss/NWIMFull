@@ -11,7 +11,7 @@ CheckDelegate {
         text: control.text
         font: control.font
         opacity: enabled ? 1.0 : 0.3
-        color: "grey"//control.down ? "#17a81a" : "#21be2b"
+        color: "black"
         elide: Text.ElideRight
         verticalAlignment: Text.AlignVCenter
     }

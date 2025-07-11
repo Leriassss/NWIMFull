@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Layouts
 import QtQuick.Effects
-
+import Qt5Compat.GraphicalEffects
 import "."
 import "./parameters"
 import "./chartsComponents"
@@ -13,6 +13,9 @@ import io.qml
 Rectangle{
     id: homePage
     color : "#ffffff"
+    border.color: "#ebebeb"
+    border.width: 1
+    clip: true
     property var parameter_bundle: {
         "pn":production_params.parameters,
         "qb":recession_params.parameters,
@@ -37,7 +40,7 @@ Rectangle{
     Row {
         anchors.fill: parent
         id: splitView
-        spacing: 25
+        spacing: 20
         clip: true
             Rectangle{
                 width: parent.width * 0.2
@@ -47,6 +50,11 @@ Rectangle{
                 border.width: 1
                 border.color: "transparent"
                 color: siderbarColor
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: "#ebebeb"
+                }
                 Column {
                     id: parameterPane
                     width: parent.width *0.99
@@ -61,7 +69,7 @@ Rectangle{
                         horizontalAlignment: Qt.AlignHCenter
                         text: "PARAMETERS"
                         //font.bold: true
-                        font.pointSize: 11
+                        font.pointSize: 10
                         //topPadding: 20
                         padding: 5
                         color: "black"
@@ -75,9 +83,9 @@ Rectangle{
                     }
 
                     Rectangle{
-                        width: parent.width*0.75
+                        width: parent.width*0.9
                         height: 1
-                        color: "grey"
+                        color: "#aaaaaa"
                         anchors.horizontalCenter: parent.horizontalCenter
                     }
 
@@ -212,7 +220,7 @@ Rectangle{
 
 
             Rectangle {
-                color: siderbarColor
+                color: "#fcffff"
                 id: simulationPane
                 width: parent.width * 0.80 - parent.spacing
                 height: parent.height
@@ -226,6 +234,7 @@ Rectangle{
                 Column {
                     width: parent.width
                     height: parent.height
+                    spacing: 25
 
                     Rectangle {
                         id: plotOptions
@@ -245,7 +254,7 @@ Rectangle{
                                     text: "OUTPUT AREA"
                                     horizontalAlignment: Qt.AlignHCenter
                                     //font.bold: true
-                                    font.pointSize: 11
+                                    font.pointSize: 10
                                     padding: 5
                                     color: "black"
                                     width: parent.width
@@ -255,20 +264,19 @@ Rectangle{
                                 id: parameterGrid
                                 width: parent.width
                                 height: parent.height *0.75
-                                spacing : 10
+                                spacing : 20
                                 Rectangle{
                                     width: parent.width * 0.5
                                     height:  parent.height
-                                    border.width: 1
                                     color: "#e2f7f4"
                                     radius : 5
-                                    layer.enabled: outputLabel.enabled
+                                    border.color: "#ebebeb"
+                                    border.width: 1
+                                    /*layer.enabled: true
                                     layer.effect: MultiEffect {
                                         shadowEnabled: true
-                                        shadowHorizontalOffset: 2
-                                        shadowVerticalOffset: 2
-                                        shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                                    }
+                                        shadowColor: "#ebebeb"
+                                    }*/
                                     Column{
                                         anchors.fill: parent
                                         spacing: 10
@@ -296,7 +304,7 @@ Rectangle{
                                             leftPadding:  10
                                             Rectangle{
                                                 color: "white"
-                                                width: parent.width * 0.5
+                                                width: (parent.width -parent.spacing-parent.leftPadding) * 0.5
                                                 height:  parent.height * 0.7
                                                 radius : 5
                                                 Grid{
@@ -330,6 +338,49 @@ Rectangle{
                                                 }
 
                                             }
+                                            Rectangle{
+                                                color: "white"
+                                                width: (parent.width -parent.spacing-parent.leftPadding) * 0.5 -parent.spacing
+                                                height:  parent.height * 0.7
+                                                radius : 5
+                                                Grid{
+                                                    width: parent.width * 0.5
+                                                    height:  parent.height * 0.7
+                                                    rows: 2
+                                                    leftPadding: 10
+                                                        property real labWidth: 40
+                                                        spacing: 5
+                                                        Label{
+                                                            text: "P : "
+                                                        }
+                                                        Label{
+                                                            text: ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text: "I : "
+                                                        }
+                                                        Label{
+                                                            text: ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "R : "
+                                                        }
+                                                        Label{
+                                                            text : ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "DS : "
+                                                        }
+                                                        Label{
+                                                            text : ""
+                                                            width: parent.labWidth
+                                                        }
+                                                }
+
+                                            }
 
                                         }
 
@@ -340,16 +391,10 @@ Rectangle{
                                 Rectangle{
                                     width: parent.width * 0.5 - parent.spacing * 2
                                     height:  parent.height
+                                    color: "#ffffcf"
+                                    border.color: "#ebebeb"
                                     border.width: 1
-                                    color: "#fcf7e0"
                                     radius : 5
-                                    layer.enabled: outputLabel.enabled
-                                    layer.effect: MultiEffect {
-                                        shadowEnabled: true
-                                        shadowHorizontalOffset: 2
-                                        shadowVerticalOffset: 2
-                                        shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                                    }
                                     Column{
                                         anchors.fill: parent
                                         spacing: 10
@@ -376,8 +421,8 @@ Rectangle{
                                             spacing: 10
                                             leftPadding:  10
                                             Rectangle{
-                                                color: "white"
-                                                width: parent.width * 0.5
+                                                color: "#fcffff"
+                                                width: (parent.width -parent.spacing-parent.leftPadding) * 0.5
                                                 height:  parent.height * 0.7
                                                 radius : 5
                                                 Grid{
@@ -411,6 +456,49 @@ Rectangle{
                                                 }
 
                                             }
+                                            Rectangle{
+                                                color: "white"
+                                                width: (parent.width -parent.spacing-parent.leftPadding) * 0.5 -parent.spacing
+                                                height:  parent.height * 0.7
+                                                radius : 5
+                                                Grid{
+                                                    width: parent.width * 0.5
+                                                    height:  parent.height * 0.7
+                                                    rows: 2
+                                                    leftPadding: 10
+                                                        property real labWidth: 40
+                                                        spacing: 5
+                                                        Label{
+                                                            text: "P : "
+                                                        }
+                                                        Label{
+                                                            text: ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text: "I : "
+                                                        }
+                                                        Label{
+                                                            text: ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "R : "
+                                                        }
+                                                        Label{
+                                                            text : ""
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "DS : "
+                                                        }
+                                                        Label{
+                                                            text : ""
+                                                            width: parent.labWidth
+                                                        }
+                                                }
+
+                                            }
 
                                         }
 
@@ -424,44 +512,16 @@ Rectangle{
                         }
                     }
 
-                    Rectangle {
+                    Column {
                         id: plot
                         width: parent.width
                         height: parent.height * 0.8 - parent.spacing
-                        border.width: 1
-                        border.color: "grey"
                         clip : true
-                        Row{
-                            width: parent.width
-                            height: parent.height * 0.1
-                            Button {
-                                z : 2
-                                height: parent.height
-                                text: qsTr("💾")
-                                hoverEnabled: true
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Save Plot")
-                                background: Rectangle{
-                                    anchors.fill: parent
-                                }
-                            }
-                            Button {
-                                z : 2
-                                height: parent.height
-                                text: qsTr("🔎")
-                                hoverEnabled: true
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Zoom")
-                                background: Rectangle{
-                                    anchors.fill: parent
-                                }
-                            }
-                        }
 
                         SimChart{
                             id: simChart
                             width: parent.width
-                            height: parent.height
+                            height: parent.height * 0.9
 
                             Connections {
                                 target: homePage
@@ -486,6 +546,74 @@ Rectangle{
                                                     [...q_obs["VALIDATION"]],
                                                     [...q_sim["VALIDATION"]])
                                     }
+                                }
+                            }
+                        }
+                        Row{
+                            anchors.right: parent.right
+                            //width: parent.width
+                            height: parent.height * 0.1
+                            spacing: 10
+                            rightPadding: 10
+                            Button{
+                                icon.source: "../icons/run.png"
+                                icon.height: 15
+                                icon.width: 55
+                                icon.color: "#ffffff"
+                                background: Rectangle{
+                                    width: 50
+                                    height: 20
+                                    radius: 5
+                                    color: "#0b7878"
+                                }
+
+                                onClicked: {
+
+                                    console.log("------------ HOME PAGE ---------------")
+                                    console.log(JSON.stringify(homepage.parameter_bundle))
+                                    //console.log(JSON.stringify(homepage.parameter_bundle2))
+                                    manualCalibration.setParameters(homepage.parameter_bundle2, fileHandler.ptq)
+                                    if(manualCalibration.errors.length !==0){
+                                        console.log(JSON.stringify(manualCalibration.errors))
+                                        runningErrors.open()
+                                    }
+                                    else{
+                                        homepage.runningClicked()
+                                    }
+                                }
+                            }
+
+                            Button {
+                                icon.source: "../icons/file.png"
+                                icon.height: 15
+                                icon.width: 55
+                                icon.color: "#000000"
+                                background: Rectangle{
+                                    width: 50
+                                    height: 20
+                                    radius: 5
+                                    border.color: "#b4b4b4"
+                                    color: "#fcffff"
+                                }
+                                onClicked: {
+                                    loadFileDialog.open()
+                                }
+                            }
+
+                            Button {
+                                icon.source: "../icons/save.png"
+                                icon.height: 15
+                                icon.width: 55
+                                icon.color: "#000000"
+                                background: Rectangle{
+                                    width: 50
+                                    height: 20
+                                    radius: 5
+                                    border.color: "#b4b4b4"
+                                    color: "#fcffff"
+                                }
+                                onClicked: {
+                                    saveFileDialog.open()
                                 }
                             }
                         }
