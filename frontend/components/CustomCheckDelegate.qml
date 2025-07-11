@@ -17,8 +17,8 @@ CheckDelegate {
     }
 
     indicator: Rectangle {
-        implicitWidth: 26
-        implicitHeight: 26
+        implicitWidth: 22
+        implicitHeight: 22
         x: control.width - width - control.rightPadding
         y: control.topPadding + control.availableHeight / 2 - height / 2
         radius: 3
@@ -26,8 +26,8 @@ CheckDelegate {
         border.color: "#17a81a"
 
         Rectangle {
-            width: 14
-            height: 14
+            width: 10
+            height: 10
             x: 6
             y: 6
             radius: 2

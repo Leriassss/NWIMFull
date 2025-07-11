@@ -12,7 +12,7 @@ import "./chartsComponents"
 import io.qml
 Rectangle{
     id: homePage
-    color : "#ebebeb"
+    color : "#ffffff"
     property var parameter_bundle: {
         "pn":production_params.parameters,
         "qb":recession_params.parameters,
@@ -32,12 +32,12 @@ Rectangle{
 
     signal runningClicked
 
-    property string siderbarColor: "#f0f0f0"
-    property string sidebarTextColor: "black"
+    property color siderbarColor: "#dbf3fe"
+    property color sidebarTextColor: "black"
     Row {
         anchors.fill: parent
         id: splitView
-        //spacing: 5
+        spacing: 25
         clip: true
             Rectangle{
                 width: parent.width * 0.2
@@ -45,7 +45,7 @@ Rectangle{
                 anchors.left: parent.left
                 clip: true
                 border.width: 1
-                border.color: "grey"
+                border.color: "transparent"
                 color: siderbarColor
                 Column {
                     id: parameterPane
@@ -60,30 +60,25 @@ Rectangle{
                         anchors.horizontalCenter: parent.horizontalCenter
                         horizontalAlignment: Qt.AlignHCenter
                         text: "PARAMETERS"
-                        font.bold: true
+                        //font.bold: true
                         font.pointSize: 11
+                        //topPadding: 20
                         padding: 5
                         color: "black"
                         width: parent.width
-                        background: Rectangle {
-                            radius : 2
-                            gradient: Gradient {
-                                                 GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
-                                                 GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
-                                             }
-                            layer.enabled: parameters.enabled
-                            layer.effect: MultiEffect {
-                                shadowEnabled: true
-                                shadowHorizontalOffset: 2
-                                shadowVerticalOffset: 2
-                                shadowColor: parameters.visualFocus ? "#330066ff" : "#aaaaaa"
-                            }
-                        }
+
                         /*background: Rectangle{
                             color: "#d2d2d2"
                             width: parent.width
                             height: parent.height
                         }*/
+                    }
+
+                    Rectangle{
+                        width: parent.width*0.75
+                        height: 1
+                        color: "grey"
+                        anchors.horizontalCenter: parent.horizontalCenter
                     }
 
 
@@ -219,7 +214,7 @@ Rectangle{
             Rectangle {
                 color: siderbarColor
                 id: simulationPane
-                width: parent.width * 0.8 - parent.spacing
+                width: parent.width * 0.80 - parent.spacing
                 height: parent.height
                 //border.width: 1
                 anchors.right: parent.right
@@ -236,10 +231,6 @@ Rectangle{
                         id: plotOptions
                         width: parent.width
                         height: parent.height * 0.2
-                        border.width: 1
-                        border.color: "grey"
-                        color : "transparent"
-
                         Column {
                             width: parent.width
                             height: parent.height
@@ -251,52 +242,43 @@ Rectangle{
                                     id : outputLabel
                                     anchors.margins: 5
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    text: "OUTPUT"
+                                    text: "OUTPUT AREA"
                                     horizontalAlignment: Qt.AlignHCenter
-                                    font.bold: true
+                                    //font.bold: true
                                     font.pointSize: 11
                                     padding: 5
                                     color: "black"
                                     width: parent.width
-                                    background: Rectangle {
-                                        radius : 2
-                                        //gradient: Gradient.AboveTheSky
-                                        gradient: Gradient {
-                                                             GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
-                                                             GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
-                                                         }
-                                        layer.enabled: outputLabel.enabled
-                                        layer.effect: MultiEffect {
-                                            shadowEnabled: true
-                                            shadowHorizontalOffset: 2
-                                            shadowVerticalOffset: 2
-                                            shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                                        }
-                                    }
                                 }
                             }
                             Row {
                                 id: parameterGrid
                                 width: parent.width
                                 height: parent.height *0.75
-                                spacing : 0
+                                spacing : 10
                                 Rectangle{
                                     width: parent.width * 0.5
                                     height:  parent.height
                                     border.width: 1
-                                    border.color: "grey"
-                                    color: "transparent"
+                                    color: "#e2f7f4"
+                                    radius : 5
+                                    layer.enabled: outputLabel.enabled
+                                    layer.effect: MultiEffect {
+                                        shadowEnabled: true
+                                        shadowHorizontalOffset: 2
+                                        shadowVerticalOffset: 2
+                                        shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                                    }
                                     Column{
                                         anchors.fill: parent
+                                        spacing: 10
                                         Rectangle{
                                             color: "transparent"
                                             width: parent.width
                                             height:  35
-                                            border.width: 1
-                                            border.color: "grey"
                                             CustomCheckDelegate{
                                                 id : calibrationCheckBox
-                                                text: "CALIBRATION"
+                                                text: "Calibration"
                                                 checked: true
                                                 anchors.centerIn: parent
                                                 font.bold: true
@@ -307,123 +289,77 @@ Rectangle{
 
                                             }
                                         }
-                                        Grid{
+                                        Row{
                                             width: parent.width
                                             height:  parent.height * 0.7
-                                            columns: 2
-                                            leftPadding: 10
-                                            Column{
-                                                width: parent.width*0.15
-                                                height:  parent.height
-                                                Label{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    text: "Bilan"
-                                                    font.bold: true
-                                                    font.pointSize: 10
-                                                    color: "black"
-                                                }
-                                                Label{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    text: "Criteria"
-                                                    font.bold: true
-                                                    font.pointSize: 10
-                                                    color: "black"
-                                                }
-                                            }
-                                            Column{
-                                                width: parent.width*0.85
-                                                height:  parent.height
-                                                Row{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    spacing: 10
-                                                    property real labWidth: 40
-
-                                                    Label{
-                                                        text: "P : "
-                                                    }
-                                                    Label{
-                                                        id : calibration_rainfall_sum
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text: "I : "
-                                                    }
-                                                    Label{
-                                                        id : calibration_infiltration_sum
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "DS : "
-                                                    }
-                                                    Label{
-                                                        id : calibration_stock_sum
-                                                        width: parent.labWidth
-                                                    }
-                                                }
-
-                                                Row{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    property real labWidth: 40
-                                                    spacing: 5
-                                                    Label{
-                                                        text: "NSE : "
-                                                    }
-                                                    Label{
-                                                        text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text: "KGE : "
-                                                    }
-                                                    Label{
-                                                        text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "MAE : "
-                                                    }
-                                                    Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "R2 : "
-                                                    }
-                                                    Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["R2"]
-                                                        width: parent.labWidth
-                                                    }
+                                            spacing: 10
+                                            leftPadding:  10
+                                            Rectangle{
+                                                color: "white"
+                                                width: parent.width * 0.5
+                                                height:  parent.height * 0.7
+                                                radius : 5
+                                                Grid{
+                                                    width: parent.width * 0.5
+                                                    height:  parent.height * 0.7
+                                                    rows: 2
+                                                    leftPadding: 10
+                                                        property real labWidth: 40
+                                                        spacing: 5
+                                                        Label{
+                                                            text: "NSE : "
+                                                        }
+                                                        Label{
+                                                            text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text: "KGE : "
+                                                        }
+                                                        Label{
+                                                            text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "MAE : "
+                                                        }
+                                                        Label{
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
+                                                            width: parent.labWidth
+                                                        }
                                                 }
 
                                             }
 
                                         }
+
                                     }
 
                                 }
 
                                 Rectangle{
-                                    width: parent.width * 0.5
+                                    width: parent.width * 0.5 - parent.spacing * 2
                                     height:  parent.height
                                     border.width: 1
-                                    border.color: "grey"
-                                    color: "transparent"
+                                    color: "#fcf7e0"
+                                    radius : 5
+                                    layer.enabled: outputLabel.enabled
+                                    layer.effect: MultiEffect {
+                                        shadowEnabled: true
+                                        shadowHorizontalOffset: 2
+                                        shadowVerticalOffset: 2
+                                        shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                                    }
                                     Column{
                                         anchors.fill: parent
+                                        spacing: 10
                                         Rectangle{
+                                            color: "transparent"
                                             width: parent.width
                                             height:  35
-                                            border.width: 1
-                                            border.color: "grey"
-                                            color: "transparent"
-
                                             CustomCheckDelegate{
                                                 id : validationCheckBox
-                                                text: "VALIDATION"
+                                                text: "Validation"
                                                 checked: true
                                                 anchors.centerIn: parent
                                                 font.bold: true
@@ -431,104 +367,53 @@ Rectangle{
                                                 onCheckedChanged: {
                                                     homepage.runningClicked()
                                                 }
+
                                             }
                                         }
-                                        Grid{
+                                        Row{
                                             width: parent.width
                                             height:  parent.height * 0.7
-                                            columns: 2
-                                            leftPadding: 10
-                                            Column{
-                                                width: parent.width*0.15
-                                                height:  parent.height
-                                                Label{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    text: "Bilan"
-                                                    font.bold: true
-                                                    font.pointSize: 10
-                                                    color: "black"
-                                                }
-                                                Label{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    text: "Criteria"
-                                                    font.bold: true
-                                                    font.pointSize: 10
-                                                    color: "black"
-                                                }
-                                            }
-                                            Column{
-                                                width: parent.width*0.85
-                                                height:  parent.height
-                                                Row{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    spacing: 10
-                                                    property real labWidth: 40
-
-                                                    Label{
-                                                        text: "P : "
-                                                    }
-                                                    Label{
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text: "I : "
-                                                    }
-                                                    Label{
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "DS : "
-                                                    }
-                                                    Label{
-                                                        width: parent.labWidth
-                                                    }
-                                                }
-
-                                                Row{
-                                                    width: parent.width
-                                                    height:  parent.height *0.5
-                                                    property real labWidth: 40
-                                                    spacing: 5
-                                                    Label{
-                                                        text: "NSE : "
-
-                                                    }
-                                                    Label{
-                                                        text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["NSE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text: "KGE : "
-
-                                                    }
-                                                    Label{
-                                                        text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["KGE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "MAE : "
-
-                                                    }
-                                                    Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
-                                                        width: parent.labWidth
-                                                    }
-                                                    Label{
-                                                        text : "R2 : "
-
-                                                    }
-                                                    Label{
-                                                        text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["R2"]
-                                                        width: parent.labWidth
-                                                    }
+                                            spacing: 10
+                                            leftPadding:  10
+                                            Rectangle{
+                                                color: "white"
+                                                width: parent.width * 0.5
+                                                height:  parent.height * 0.7
+                                                radius : 5
+                                                Grid{
+                                                    width: parent.width * 0.5
+                                                    height:  parent.height * 0.7
+                                                    rows: 2
+                                                    leftPadding: 10
+                                                        property real labWidth: 40
+                                                        spacing: 5
+                                                        Label{
+                                                            text: "NSE : "
+                                                        }
+                                                        Label{
+                                                            text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["NSE"]
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text: "KGE : "
+                                                        }
+                                                        Label{
+                                                            text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["KGE"]
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "MAE : "
+                                                        }
+                                                        Label{
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
+                                                            width: parent.labWidth
+                                                        }
                                                 }
 
                                             }
 
                                         }
+
                                     }
 
                                 }

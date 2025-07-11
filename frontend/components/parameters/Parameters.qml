@@ -20,7 +20,7 @@ Column {
     property bool checkPassed: parameterModel?.desactivated
 
     // Sélecteur de méthode
-    CustomComboBox {
+    ComboBox {
         leftPadding: 10
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
@@ -85,7 +85,7 @@ Column {
                         console.log("----------------- RESULTATS -----------------------")
                         console.log(JSON.stringify(parameterModel.parameters))
                     }
-                    Layout.preferredWidth: 100 // Largeur fixe pour les TextField
+                    Layout.preferredWidth: 75 // Largeur fixe pour les TextField
                     Layout.alignment: Qt.AlignRight
                     validator: DoubleValidator {
                         bottom: 0
@@ -94,14 +94,26 @@ Column {
 
                     // Gestion de l'erreur de validation (bordure rouge en cas d'erreur)
                     background: Rectangle {
-                        color: "transparent"
-                        border.color: {
-                            console.log("----------------- RESULTATS1 -----------------------")
-                            console.log(JSON.stringify(parameterModel.parameterErrors))
-                            param_value.errors !== "" ? "red" : "gray"
+                            // Fond transparent
+                            color: "transparent"
+
+                            // Bordure inférieure seule
+                            Rectangle {
+                                anchors.bottom: parent.bottom
+                                width: parent.width
+                                height: 1  // Épaisseur de la bordure
+                                color: root.activeFocus ? "#21be2b" : "#bdbebf"  // Couleur dynamique
+                                border.color: {
+                                    console.log("----------------- RESULTATS1 -----------------------")
+                                    console.log(JSON.stringify(parameterModel.parameterErrors))
+                                    param_value.errors !== "" ? "red" : "gray"
+                                }
+                                border.width: 1
+                            }
+
+
                         }
-                        border.width: 1
-                    }
+
                 }
 
                 // Affichage de l'erreur pour chaque paramètre si présent
