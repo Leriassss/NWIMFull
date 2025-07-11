@@ -1,17 +1,17 @@
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 from backend.contracts.Bundle import DataBaseFlow
-from backend.baseFlow.models.EckhardtModel import EckhardtModel
+from backend.baseFlow.models.LyneHollickModel import LyneHollickModel
 
 import numpy as np
 
-class Eckhardt(BaseFlowRoutine, BaseFlow):
+
+class LyneHollick(BaseFlowRoutine, BaseFlow):
     """
     Classe pour implémenter la méthode de récession Chapman.
     """
-    def __init__(self, eckhardtModel: EckhardtModel):
-        self.alpha = eckhardtModel.alpha
-        self.bfi_max = eckhardtModel.bfi_max 
+    def __init__(self, lyneHollickModel: LyneHollickModel):
+        self.k = lyneHollickModel.k
 
         self.a,self.b,self.correc_factor = 0, 0, 0
 
@@ -26,10 +26,9 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
         Returns:
             np.array : Série des débits de base (Qk).
         """
-        Q_base = flow_series.copy()
+        Q_base = np.zeros_like(flow_series)
         for k in range(1, len(flow_series)):
-            Q_base[k] = ((1-self.bfi_max) * self.alpha* Q_base[k-1] + 
-                    (1-self.alpha)*self.bfi_max*flow_series[k])/(1-(self.alpha*self.bfi_max))
+            Q_base[k] = self.k*Q_base[k-1] +  (1+self.k)*(flow_series[k]-flow_series[k-1])/2
 
         return np.maximum(0,Q_base)
 
@@ -38,10 +37,9 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
         
         Q_base_rev = np.zeros(len(Q_direct))
         Q_base_rev[0]  = previous_qbase
-        alpha_bfi = (1-self.alpha)/(1-self.bfi_max)
         for k in range(1, len(Q_direct)):
-            Q_base_rev[k] = self.alpha*Q_base_rev[k-1] + alpha_bfi*self.bfi_max*Q_direct[k]
-        return Q_base_rev
+            Q_base_rev[k] = -Q_base_rev[k-1] + (1+self.k)*(Q_direct[k]-Q_direct[k-1])/(1-self.k)
+        return np.maximum(0,Q_base_rev)
 
     def calibration_routine(self,data : DataBaseFlow):
         qbase = self.compute(data["qObs"])
@@ -61,16 +59,4 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
 
     @staticmethod
     def help():
-        """
-        Fournit une description des méthodes disponibles dans la classe Recession.
-        """
-        description = """
-        Implémente le filtre de récession de Furey-Gupta.
-
-
-        Arguments pour `furey_gupta`:
-        - flow_series : Série temporelle des débits [mm/jour] (pd.Series ou np.ndarray).
-        - gamma : Coefficient de récession (par défaut 0.03).
-        - cs_over_c : Ratio des coefficients (par défaut 1.1).
-        """
-        print(description)
+        pass

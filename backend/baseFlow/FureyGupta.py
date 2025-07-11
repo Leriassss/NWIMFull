@@ -1,26 +1,18 @@
 from backend.baseFlow.BaseFlow import BaseFlow
+from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 from backend.contracts.Bundle import DataBaseFlow
 from backend.baseFlow.models.FureyGuptaModel import FureyGuptaModel
-from backend.ptq.PTQ import PTQ
 import numpy as np
-import pandas as pd
 
-from scipy.optimize import curve_fit
-import matplotlib.pyplot as plt
-from permetrics.regression import RegressionMetric
-
-class FureyGupta(BaseFlow):
+class FureyGupta(BaseFlowRoutine, BaseFlow):
     """
     Classe pour implémenter la méthode de récession Furey-Gupta.
     """
-    def __init__(self,ptq : PTQ, fureyGuptaModel : FureyGuptaModel):
-        self.flow_series = ptq.q
+    def __init__(self, fureyGuptaModel : FureyGuptaModel):
         self.gamma = fureyGuptaModel.gamma
         self.cs_over_c = fureyGuptaModel.cs_over_c
-        self.hun_base_flow = []
-        self.q = ptq.q
 
-    def compute(self, datas_base_flow : DataBaseFlow):
+    def compute(self, flow_series):
         """
         Implémente le filtre basé sur les paramètres physiques selon la méthode de Furey-Gupta.
         
@@ -33,39 +25,38 @@ class FureyGupta(BaseFlow):
             np.array : Série des débits de base (Qk).
         """
         
-        pl = datas_base_flow["pl"]
-        Q_base = self.flow_series.copy()
-        for k in range(3, len(self.flow_series)):
+        Q_base = flow_series.copy()
+        for k in range(1, len(flow_series)):
             Q_base[k] =np.maximum(0, 
-                                  (1 - self.gamma) * Q_base[k - 1] + self.gamma * (self.cs_over_c) * (self.flow_series[k - 3] - Q_base[k - 3])
+                                  (1 - self.gamma) * Q_base[k - 1] + self.gamma * (self.cs_over_c) * (flow_series[k - 1] - Q_base[k - 1])
                                   ) 
         return Q_base
     
-    def hunBaseFlow(self, rain_lost : pd.Series, Q_base, Q):
-        self.hun_base_flow = Q_base/rain_lost.sum()
-        time_base = 5
+
+    def reverse_compute(self,previous_qbase, Q_direct):
         
-        seq_hun = np.arange(0,len(rain_lost),time_base)
-        hun_time_base = []        
-        for k in seq_hun:
-            production_seq = rain_lost[k:k+time_base]
-            hun_seq = self.hun_base_flow[k:k+time_base]
-            hun_time_base.append(pd.Series(np.convolve(production_seq,hun_seq))[:time_base])
-        q_base_cal =  pd.concat(hun_time_base).reset_index(drop=True)[:len(rain_lost)]
-
-        print(" NASHEUUU ----------------")
-        print(rain_lost)
-        plt.plot(np.array(Q)) 
-        plt.plot(np.array(q_base_cal))
-
-        evaluator_qbase = RegressionMetric(np.array(Q_base),np.array(q_base_cal))
-        print(evaluator_qbase.NSE(multi_output="raw_values"))
-
-
-    def baseflow_reservoir(Sb, Ib, k):
-        Qb = k * Sb
-        Sb_next = Sb + Ib - Qb
-        return Qb, Sb_next
+        Q_base_rev = np.zeros(len(Q_direct))
+        Q_base_rev[0]  = previous_qbase
+        
+        for k in range(1, len(Q_direct)):
+            Q_base_rev[k] = (1-self.gamma)*Q_base_rev[k-1] + self.gamma*self.cs_over_c*Q_direct[k-1]
+        return Q_base_rev
+    
+    def calibration_routine(self,data : DataBaseFlow):
+        qbase = self.compute(data["qObs"])
+        qbase_previous = self.get_qbase_previous(data,qbase)
+        qbase_rev = self.reverse_compute(qbase_previous, data['qsim'])
+        
+        qbase_rev_corr = self.get_qbase_rev_corr(qbase_rev,qbase)
+        return qbase_rev_corr
+    
+    def validation_routine(self, data : DataBaseFlow):
+        #DETERMINATION DU DEBIT DE BASE PRECEDENT
+        q_base_previous = self.modele_baseflow(data["prevObs"], self.a, self.b)
+        #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
+        qbase_rev = self.reverse_compute(q_base_previous, data['qsim'])
+        return qbase_rev
+    
 
     @staticmethod
     def help():

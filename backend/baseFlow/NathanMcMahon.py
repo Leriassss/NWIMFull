@@ -3,55 +3,30 @@ from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 from backend.contracts.Bundle import DataBaseFlow
 
 import numpy as np
-from backend.baseFlow.models.ChapmanModel import ChapmanModel
+from backend.baseFlow.models.NathanMcMahonModel import NathanMcMahonModel
 
-class Chapman(BaseFlowRoutine, BaseFlow):
+class NathanMcMahon(BaseFlowRoutine, BaseFlow):
     """
     Classe Chapman, héritant de BaseFlowRoutine pour intégrer 
     les fonctions de calibration et validation avec la méthode de Chapman.
     """
-    def __init__(self, chapmanModel: ChapmanModel):
+    def __init__(self, nathanMcMahonModel: NathanMcMahonModel):
         super().__init__()
-        self.alpha = chapmanModel.alpha
+        self.k = nathanMcMahonModel.k
 
     def compute(self, flow_series):
-        Q_base = flow_series.copy()
-        factor1 = (3 * self.alpha - 1) / (3 - self.alpha)
-        factor2 = (1 - self.alpha) / (3 - self.alpha)
-
+        Q_base = np.zeros_like(flow_series)
         for k in range(1, len(flow_series)):
-            Q_base[k] = (
-                factor1 * Q_base[k - 1]
-                + factor2 * (flow_series[k] + flow_series[k - 1])
-            )
-
+            Q_base[k] = self.k*Q_base[k-1] + (1-self.k)*(flow_series[k]-flow_series[k-1])/2
         return Q_base
 
-    def compute2(self, flow_series):
-        Q_base = flow_series.copy()
-        factor1 = (3 * self.alpha - 1) / (3 - self.alpha)
-        factor2 = (1 - self.alpha) / (3 - self.alpha)
-
-        for k in range(1, len(flow_series)):
-            Q_base[k] = (
-                factor1 * Q_base[k - 1]
-                + factor2 * (flow_series[k] + flow_series[k - 1])
-            )
-
-        return Q_base
 
     def reverse_compute(self, previous_qbase, Q_direct):
         Q_base_rev = np.zeros(len(Q_direct))
         Q_base_rev[0] = previous_qbase
 
-        factor1 = ((3 * self.alpha) - 1) / (3 - self.alpha)
-        factor2 = (1 - self.alpha) / (3 - self.alpha)
-
         for k in range(1, len(Q_direct)):
-            Q_base_rev[k] = (1 / (1 - factor2)) * (
-                Q_base_rev[k - 1] * (factor1 + factor2)
-                + factor2 * (Q_direct[k] + Q_direct[k - 1])
-            )
+            Q_base_rev[k] = (1-self.k)*(Q_direct[k-1])/(1+self.k) + Q_base_rev[k-1]
 
         return Q_base_rev
 

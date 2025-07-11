@@ -1,34 +1,31 @@
-class FureyGuptaModel:
+class ChapmanMawxellModel:
     """
     Classe pour valider les arguments nécessaires à la méthode de récession Furey-Gupta.
     """
-    def __init__(self, gamma, cs_over_c):
+    def __init__(self, k):
         """
         Initialise et valide les données pour la méthode Furey-Gupta.
 
         :param gamma: Paramètre gamma (doit être un nombre positif).
         :param cs_over_c: Ratio cs_over_c (doit être un nombre positif).
         """
-        self.gamma = float(gamma)
-        self.cs_over_c = float(cs_over_c)
+        self.k = float(k)
         self.validate()
 
     def validate(self):
         """
         Valide les paramètres gamma et cs_over_c.
         """
-        if not isinstance(self.gamma, (int, float)) or self.gamma < 0:
-            raise ValueError("Le paramètre 'gamma' doit être un nombre positif.")
-        if not isinstance(self.cs_over_c, (int, float)) or self.cs_over_c <= 0:
-            raise ValueError("Le ratio 'cs_over_c' doit être un nombre positif.")
-
+        if not isinstance(self.k, (int, float)) or not (0 <= self.k <= 1):
+            raise ValueError("Le paramètre 'k' doit être compris entre 0 et 1.")
+        
     def to_dict(self):
         """
         Retourne les paramètres du modèle sous forme de dictionnaire.
         """
         return {
-            'gamma': self.gamma,
-            'cs_over_c': self.cs_over_c
+            'k': self.k
+
         }
 
     @staticmethod
@@ -37,22 +34,19 @@ class FureyGuptaModel:
         Retourne les noms des paramètres du modèle Furey-Gupta.
         """
         return {
-            "gamma": "gamma",
-            "cs_over_c": "cs_over_c"
+            "k": "k"
         }
 
     @staticmethod
     def get_default_values():
         return {
-            "gamma": 0.03,
-            "cs_over_c": 1.1
+            "k": 0.9
         }
 
     @staticmethod
     def get_default_ranges():
         return {
-            "gamma": [0.01,1],
-            "cs_over_c": [1,1.1]
+            "k": [0.1,1]
         }
     
     @staticmethod
@@ -66,10 +60,8 @@ class FureyGuptaModel:
         """
         try:
             value = float(value)  # S'assure que la valeur est un nombre
-            if key == "gamma" and value <= 0:
-                raise ValueError("Le paramètre 'gamma' doit être un nombre strictement positif.")
-            elif key == "cs_over_c" and value <= 0:
-                raise ValueError("Le paramètre 'cs_over_c' doit être un nombre strictement positif.")
+            if key == "k" and (value < 0 or value > 1):
+                raise ValueError("Le paramètre 'k' doit être un nombre compris entre 0 et 1.")
             return True
         except Exception as e:
             return str(e)

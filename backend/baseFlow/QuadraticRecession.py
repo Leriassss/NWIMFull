@@ -4,16 +4,14 @@ import pandas as pd
 
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.models.SeparationModel import SeparationModel
-from backend.ptq.PTQ import PTQ
+from backend.contracts.Bundle import DataBaseFlow
 
 class QuadraticRecessionCurve(BaseFlow):
     """
     Classe pour implémenter la méthode de récession quadratique.
     """
-    def __init__(self,ptq : PTQ, separationModel : SeparationModel):
-        self.dates = ptq.dates
-        self.Q_sim = ptq.q
-        self.lambda_ = separationModel.lambda_
+    def __init__(self,separationModel : SeparationModel):
+        self.k = separationModel.k
 
     def compute(self):
         """
@@ -55,3 +53,54 @@ class QuadraticRecessionCurve(BaseFlow):
         - cs_over_c : Ratio des coefficients (par défaut 1.1).
         """
         print(description)
+    def compute(self, data : DataBaseFlow):
+        """
+        Estimation du débit de base par décroissance exponentielle.
+        
+        Paramètres :
+        - a, b : coefficients pour la transformation a * Q^b
+        - k : taux de décroissance
+        - pluie : série de précipitations
+        - debit : série de débits observés
+        - Q0 : valeur initiale du débit de base
+        
+        Retourne :
+        - Serie de débit de base estimé
+        """
+        a = data['factors'][0]
+        b = data['factors'][1]
+        # Étape 1 : considérer les périodes sans pluie
+        debit_modifie = data['qsim'].where(data["p"] != 0)
+        
+        # Étape 2 : appliquer la loi a * Q^b quand c’est défini
+        debit_modifie = debit_modifie.apply(lambda q: a * q**b if pd.notna(q) else np.nan)
+        
+        # Étape 3 : appliquer la décroissance exponentielle aux périodes manquantes
+        debit_base = debit_modifie.copy()
+        debit_base.iloc[0] = data['prevObs']  # initialisation
+        
+        i = 1
+        while i < len(debit_base):
+            if pd.isna(debit_base.iloc[i]):
+                q0 = debit_base.iloc[i - 1] if i == 1 else debit_base.iloc[i - 1] + data['qsim'].iloc[i-1]
+                t = 1
+                j = i
+                while j < len(debit_base) and pd.isna(debit_base.iloc[j]):
+                    debit_base.iloc[j] = q0 /((1+self.k*t)**2)
+
+                    t += 1
+                    j += 1
+                i = j
+            else:
+                i += 1
+        debit_base = debit_base.rolling(window=10, center=True, min_periods=1).mean()
+        return debit_base
+
+    
+    def calibration_routine(self,data : DataBaseFlow):
+        return self.compute(data)
+    
+    def validation_routine(self,data : DataBaseFlow):
+        return self.compute(data)
+        
+

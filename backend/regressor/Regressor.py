@@ -1,5 +1,8 @@
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
 from sklearn import linear_model
+
 from sklearn.model_selection import GridSearchCV
 from backend.ptq.PTQ import PTQ
 from backend.criteria.Criteria import Criteria
@@ -64,15 +67,57 @@ class Regressor:
 
         return SimulationModel(q_sim_lin_calage,q_sim_lin_validation, [linreg.coef_,linreg.intercept_] , nse_lin_calage, nse_lin_validation), [nse_lin_calage, nse_lin_validation]
 
+    def svm(self, models_results):
+        best_calibration_results, best_validation_results = self._prepare_data(models_results)
+
+        svr = SVR()
+        svr.fit(best_calibration_results, self.calage.q)
+
+        q_sim_cal = np.maximum(0, svr.predict(best_calibration_results))
+        q_sim_val = np.maximum(0, svr.predict(best_validation_results))
+
+        metrics_cal = RegressionMetric(np.array(self.calage.q), np.array(q_sim_cal)).get_metrics_by_list_names(self.Metrics)
+        metrics_val = RegressionMetric(np.array(self.validation.q), np.array(q_sim_val)).get_metrics_by_list_names(self.Metrics)
+
+        return SimulationModel(q_sim_cal, q_sim_val, [svr.kernel, svr.C, svr.epsilon], metrics_cal, metrics_val), [metrics_cal, metrics_val]
+
+    def random_forest(self, models_results):
+        best_calibration_results, best_validation_results = self._prepare_data(models_results)
+
+        param_grid = {
+            'n_estimators': [100, 200],
+            'max_depth': [None, 10, 20],
+            'min_samples_split': [2, 5],
+            'min_samples_leaf': [1, 2],
+            'bootstrap': [True, False]
+        }
+
+        grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5)
+        grid_search.fit(best_calibration_results, self.calage.q)
+
+        best_rf = grid_search.best_estimator_
+
+        q_sim_cal = np.maximum(0, best_rf.predict(best_calibration_results))
+        q_sim_val = np.maximum(0, best_rf.predict(best_validation_results))
+
+        metrics_cal = RegressionMetric(np.array(self.calage.q), np.array(q_sim_cal)).get_metrics_by_list_names(self.Metrics)
+        metrics_val = RegressionMetric(np.array(self.validation.q), np.array(q_sim_val)).get_metrics_by_list_names(self.Metrics)
+
+        return SimulationModel(q_sim_cal, q_sim_val, grid_search.best_params_, metrics_cal, metrics_val), [metrics_cal, metrics_val]
+
     def methods(self):
         return {
         "knn" : self.knn,
-        "linreg" : self.linreg
+        "linreg" : self.linreg,
+        "svm": self.svm,
+        "random_forest": self.random_forest
 
     }
     @staticmethod
     def methodsList():
         return [
         "knn",
-        "linreg"
+        "linreg",
+        "svm",
+        "random_forest"
     ]

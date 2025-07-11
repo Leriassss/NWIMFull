@@ -31,6 +31,9 @@ Rectangle{
                            loss_params.checkPassed
 
     signal runningClicked
+
+    property string siderbarColor: "#f0f0f0"
+    property string sidebarTextColor: "black"
     Row {
         anchors.fill: parent
         id: splitView
@@ -43,7 +46,7 @@ Rectangle{
                 clip: true
                 border.width: 1
                 border.color: "grey"
-                color: "transparent"
+                color: siderbarColor
                 Column {
                     id: parameterPane
                     width: parent.width *0.99
@@ -65,9 +68,9 @@ Rectangle{
                         background: Rectangle {
                             radius : 2
                             gradient: Gradient {
-                                                GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
-                                                GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
-                                            }
+                                                 GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
+                                                 GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
+                                             }
                             layer.enabled: parameters.enabled
                             layer.effect: MultiEffect {
                                 shadowEnabled: true
@@ -88,7 +91,7 @@ Rectangle{
                         id: simParameters
                         width: parent.width
                         height: parent.height * 0.8
-                        color : "transparent"
+                        //color : siderbarColor
                         //enabled: fileHandler.activate ? true : false
                         SplitView {
                             anchors.fill: parent
@@ -105,7 +108,7 @@ Rectangle{
                             Rectangle{
                                 SplitView.minimumHeight: 45
                                 SplitView.preferredHeight: 250
-                                color : "#ebebeb"
+                                color : siderbarColor
                                 Column {
                                     anchors.fill: parent
                                     spacing: 5
@@ -117,7 +120,7 @@ Rectangle{
                                         font.bold: true
                                         font.pointSize: 10
                                         padding: 5
-                                        color: "black"
+                                        color: sidebarTextColor
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
@@ -146,7 +149,7 @@ Rectangle{
                             Rectangle{
                                 SplitView.minimumHeight: 45
                                 SplitView.preferredHeight: 150
-                                color : "#ebebeb"
+                                color : siderbarColor
                                 Column {
                                     spacing: 5
                                     padding: 10
@@ -158,7 +161,7 @@ Rectangle{
                                         font.bold: true
                                         font.pointSize: 10
                                         padding: 5
-                                        color: "black"
+                                        color: sidebarTextColor
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
@@ -175,7 +178,7 @@ Rectangle{
                             }
 
                             Rectangle{
-                                color : "#ebebeb"
+                                color : siderbarColor
                                 SplitView.minimumHeight: 100
                                 Column {
                                     anchors.fill: parent
@@ -189,7 +192,7 @@ Rectangle{
                                         font.bold: true
                                         font.pointSize: 10
                                         padding: 5
-                                        color: "black"
+                                        color: sidebarTextColor
                                         horizontalAlignment: Qt.AlignHCenter
                                     }
 
@@ -214,7 +217,7 @@ Rectangle{
 
 
             Rectangle {
-                color: "transparent"
+                color: siderbarColor
                 id: simulationPane
                 width: parent.width * 0.8 - parent.spacing
                 height: parent.height
@@ -259,9 +262,9 @@ Rectangle{
                                         radius : 2
                                         //gradient: Gradient.AboveTheSky
                                         gradient: Gradient {
-                                                            GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
-                                                            GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
-                                                        }
+                                                             GradientStop { position: 0.0; color: "#caf6fc" } // bord haut-gauche
+                                                             GradientStop { position: 1.0; color: "#c2f4c6" } // bord bas-droit
+                                                         }
                                         layer.enabled: outputLabel.enabled
                                         layer.effect: MultiEffect {
                                             shadowEnabled: true

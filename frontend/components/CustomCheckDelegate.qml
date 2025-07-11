@@ -23,7 +23,7 @@ CheckDelegate {
         y: control.topPadding + control.availableHeight / 2 - height / 2
         radius: 3
         color: "transparent"
-        border.color: control.down ? "#17a81a" : "#21be2b"
+        border.color: "#17a81a"
 
         Rectangle {
             width: 14
@@ -31,7 +31,7 @@ CheckDelegate {
             x: 6
             y: 6
             radius: 2
-            color: control.down ? "#17a81a" : "#21be2b"
+            color:"#21be2b"
             visible: control.checked
         }
     }

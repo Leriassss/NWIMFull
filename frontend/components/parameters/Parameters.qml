@@ -94,7 +94,7 @@ Column {
 
                     // Gestion de l'erreur de validation (bordure rouge en cas d'erreur)
                     background: Rectangle {
-                        color: "#ebebeb"
+                        color: "transparent"
                         border.color: {
                             console.log("----------------- RESULTATS1 -----------------------")
                             console.log(JSON.stringify(parameterModel.parameterErrors))

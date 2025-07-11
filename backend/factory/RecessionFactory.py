@@ -4,7 +4,10 @@ from backend.baseFlow.Eckhardt import Eckhardt, EckhardtModel
 from backend.baseFlow.ExponentialRecession import ExponentialRecessionCurve
 from backend.baseFlow.FureyGupta import FureyGupta, FureyGuptaModel
 from backend.baseFlow.QuadraticRecession import QuadraticRecessionCurve, SeparationModel
-from backend.baseFlow.MLBaseFlow import MLBaseFlow
+from backend.baseFlow.Boughton import Boughton, BoughtonModel
+from backend.baseFlow.ChapmanMaxwell import ChapmanMaxwell, ChapmanMawxellModel
+from backend.baseFlow.LyneHollick import LyneHollick, LyneHollickModel
+from backend.baseFlow.NathanMcMahon import  NathanMcMahon, NathanMcMahonModel
 
 class RecessionFactory:
     methods = {
@@ -12,7 +15,11 @@ class RecessionFactory:
         "FureyGupta": [FureyGupta, FureyGuptaModel],
         "Quadratic": [QuadraticRecessionCurve, SeparationModel],
         "Exponential": [ExponentialRecessionCurve, SeparationModel],
-        "Eckhardt" : [Eckhardt, EckhardtModel]
+        "Eckhardt" : [Eckhardt, EckhardtModel],
+        "ChapmanMaxwell" : [ChapmanMaxwell, ChapmanMawxellModel],
+        "Boughton" : [Boughton, BoughtonModel],
+        "LyneHollick" : [LyneHollick, LyneHollickModel],
+        "NathanMcMahon" : [NathanMcMahon, NathanMcMahonModel]
     }
 
     """
