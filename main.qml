@@ -39,6 +39,9 @@ ApplicationWindow {
         onRegressionTriggered: {
             regression.open()
         }
+        onPetTriggered: {
+            etpComputing.open()
+        }
     }
     header: ToolBar {
             id: toolBar

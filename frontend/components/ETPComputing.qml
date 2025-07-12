@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
 import "./parameters"
@@ -8,94 +8,20 @@ import io.qml
 import Qt5Compat.GraphicalEffects
 import Qt.labs.qmlmodels
 Dialog {
-    title: "ETP Computation"
+    title: "PET Computation"
     implicitWidth:  1000
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
     id: dialogOptim
-
-    standardButtons: Dialog.Cancel
+    background: Rectangle{
+        anchors.fill: parent
+        color: "#fcffff"
+    }
     closePolicy : Popup.CloseOnEscape
     //padding: 5
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
-
-    header: ToolBar {
-            id: toolBar
-            height: 30
-            //implicitHeight: 35
-            implicitWidth:  200
-
-            clip: true
-            Rectangle{
-                //gradient: Gradient.AboveTheSky
-                color:"#ebebeb"
-                //border.color: "#6b6b6b"
-                //border.width: 1
-
-                anchors.fill: parent
-                Row{
-                    anchors.fill: parent
-                    spacing: 1
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("📥")
-                        ToolTip.text: qsTr("Load Parameters")
-                        onClicked: {
-                            loadETPparams.open()
-                        }
-                    }
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("⚙️")
-                        ToolTip.text: qsTr("Compute")
-                        onClicked: {
-                             // En-têtes du fichier chargé
-                            let columnMapping = {
-                                    "dates" : datesComboBox.currentText,
-                                    "tmean":tMeanComboBox.currentText,
-                                    "tmin" : tMinComboBox.currentText,
-                                    "tmax" : tMaxComboBox.currentText,
-                                    "rh" : rhComboBox.currentText,
-                                    "rn" : rsComboBox.currentText,
-                                    "wind" : u2ComboBox.currentText,
-                                    "lat" : lat.text,
-                                    "elevation" : elevation.text
-                                }
-                                etoManager.setDictValues(columnMapping)
-
-                                if(etoManager.errors.length !==0){
-
-                                    dataErrorsDialog.open()
-                                }
-                                else{
-                                    try {
-                                        etoManager.computeETo()
-
-                                    } catch (error) {
-                                        errorDialog.text = "Les paramètres requis n'ont pas étét fournis "
-                                        errorDialog.open()
-                                    }
-                                    populateTable(etoManager.etpComputed)
-
-                                }
-
-                        }
-                    }
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("💾")
-                        ToolTip.text: qsTr("Save Data")
-                    }
-                }
-            }
-
-
-       }
 
     Dialog {
         id: dataErrorsDialog
@@ -181,87 +107,119 @@ Dialog {
     }
 
 
-
-    SplitView {
-        id: splitView
+    ColumnLayout{
         anchors.fill: parent
+        spacing: 10
+        SplitView {
+            id: splitView
+            Layout.preferredHeight: parent.height *0.9
+            Layout.preferredWidth: parent.width
+            Layout.alignment: Qt.AlignCenter
+            handle: Rectangle {
+                implicitWidth: 4
+                implicitHeight: 4
+                color: SplitHandle.pressed ? "#81e889"
+                    : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
+                border.width: 1
+                border.color: "grey"
+            }
 
-        handle: Rectangle {
-            implicitWidth: 4
-            implicitHeight: 4
-            color: SplitHandle.pressed ? "#81e889"
-                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
-            border.width: 1
-            border.color: "grey"
-        }
+            Rectangle{
+                id : columnMappingDialog
+                color: "#eaf6f4"
+                border.width: 1
+                border.color: "gray"
+                topLeftRadius: 5
+                topRightRadius : 5
+                SplitView.minimumWidth:  parent.width*0.3
+                SplitView.preferredWidth: parent.width*0.3
 
-        Rectangle{
-            id : columnMappingDialog
-            color: "#ebebeb"
-            border.width: 1
-            border.color: "grey"
-            SplitView.minimumWidth:  parent.width*0.5
-            SplitView.preferredWidth: parent.width*0.5
+                property var headers: etoManager.headers
+                //width: parent.width*0.4
+                //height: parent.height
+                Column{
+                    width: parent.width - 5
+                    height: parent.height - 5
+                    anchors.centerIn: parent
+                    spacing: 2
+                    clip: true
+                    Row{
+                        height: 40
+                        width: parent.width
+                        spacing: 25
+                        Label {
 
-            property var headers: etoManager.headers
-            //width: parent.width*0.4
-            //height: parent.height
-            Column{
-                width: parent.width - 5
-                height: parent.height - 5
-                anchors.centerIn: parent
-                spacing: 2
-                clip: true
-                Label {
-                    id : methodsLabel
-                    anchors.margins: 5
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "DATA MAPPING"
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                    font.pointSize: 10
-                    padding: 5
-                    color: "black"
-                    width: parent.width
-                    background: Rectangle {
-                        border.width: 1
-                        border.color: "#17a81a"
-                        radius : 2
-                        color : "transparent"
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowHorizontalOffset: 2
-                            shadowVerticalOffset: 2
-                            shadowColor: methodsLabel.visualFocus ? "#330066ff" : "#aaaaaa"
+                            id : methodsLabel
+                            anchors.margins: 5
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "DATA MAPPING"
+                            height: parent.height
+                            horizontalAlignment: Qt.AlignHCenter
+                            verticalAlignment: Qt.AlignVCenter
+                            font.bold: true
+                            font.pointSize: 10
+                            padding: 5
+                            color: "#fcffff"
+                            width: parent.width
+                            background: Rectangle {
+                                anchors.fill: parent
+                                topLeftRadius: 5
+                                topRightRadius : 5
+                                color : "#6aa4a1"
+                            }
+
                         }
-                    }
-                }
 
-                RowLayout{
-                    width: parent.width *0.9
-                    height: parent.height *0.9
-                    spacing: 10
+                        Button {
+                            text : "Load"
+                            width: 90
+                            height: parent.height
+                            flat : true
+                            font.bold: true
+                            background: Rectangle{
+                                anchors.fill: parent
+                                radius: 5
+                                border.color: "#b4b4b4"
+                                border.width: 1
+                                color: "#fcffff"
+                            }
+                            onClicked: {
+                                loadETPparams.open()
+                            }
+                        }
+
+                    }
 
 
                     GridLayout {
-                        Layout.preferredHeight:  parent.height
-                        Layout.preferredWidth:  parent.width * 0.5
-                        columns: 2
-                        columnSpacing: 10
+                        height:   parent.height*0.8
+                        width:   parent.width * 0.5
+                        columns: 3
+                        columnSpacing: 5
                         rowSpacing: 10
+                        property real comboBoxWidth: 100
+                        Image{
+                            source: "../icons/dates.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
 
+                        }
                         Label {
                             text: "Dates"
                             Layout.alignment: Qt.AlignLeft
+
                         }
                         ComboBox {
                             id: datesComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
-
+                        Image{
+                            source: "../icons/tmean.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Teméprature Moy. [°C]"
                             Layout.alignment: Qt.AlignLeft
@@ -270,10 +228,14 @@ Dialog {
                             id: tMeanComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
 
-                        // Ligne pour Dates
+                        Image{
+                            source: "../icons/tmin.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Température Min. [°C]"
                             Layout.alignment: Qt.AlignLeft
@@ -282,9 +244,13 @@ Dialog {
                             id: tMinComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
-                        // Ligne pour Dates
+                        Image{
+                            source: "../icons/tmax.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Température Max. [°C]"
                             Layout.alignment: Qt.AlignLeft
@@ -293,7 +259,12 @@ Dialog {
                             id: tMaxComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
+                        }
+                        Image{
+                            source: "../icons/humidity.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
                         }
                         Label {
                             text: "Humidité relative de l'air [%]"
@@ -303,9 +274,13 @@ Dialog {
                             id: rhComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
-
+                        Image{
+                            source: "../icons/rad.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Rad. Solaire/ \nRad. Net/\nNb Heures d'Enso."
                             Layout.alignment: Qt.AlignLeft
@@ -316,9 +291,13 @@ Dialog {
                             id: rsComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
-
+                        Image{
+                            source: "../icons/windSpeed.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Vitesse moy. [m/s]"
                             Layout.alignment: Qt.AlignLeft
@@ -327,10 +306,14 @@ Dialog {
                             id: u2ComboBox
                             model: columnMappingDialog.headers
                             currentIndex: 0
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                         }
 
-                        // Ligne pour ETP
+                        Image{
+                            source: "../icons/latitude.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                        }
                         Label {
                             text: "Latitude [rad]"
                             Layout.alignment: Qt.AlignLeft
@@ -338,11 +321,16 @@ Dialog {
                         TextField {
                             id: lat
                             text : "5"
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                             validator: DoubleValidator {
                                 bottom: 0
                                 notation: DoubleValidator.StandardNotation
                             }
+                        }
+                        Image{
+                            source: "../icons/elevation.png"
+                            sourceSize.height: 20
+                            sourceSize.width: 20
                         }
                         Label {
                             text: "Altitude [m]"
@@ -350,7 +338,7 @@ Dialog {
                         }
                         TextField {
                             id: elevation
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.comboBoxWidth
                             text : "150"
                             validator: DoubleValidator {
                                 bottom: 0
@@ -361,84 +349,203 @@ Dialog {
 
 
 
+
                 }
 
 
             }
 
+            Rectangle{
+                border.width: 1
+                border.color: "gray"
+                SplitView.minimumWidth:  parent.width*0.2
+                SplitView.preferredWidth: parent.width*0.3
+                height: parent.height
+                color: "#eaf6f4"
+                topLeftRadius: 5
+                topRightRadius : 5
+                Column{
+                    width: parent.width - 5
+                    height: parent.height - 5
+                    anchors.centerIn: parent
 
-        }
-
-        Rectangle{
-            border.width: 1
-            border.color: "grey"
-            width: parent.width*0.6
-            height: parent.height
-            color: "#ebebeb"
-            Column{
-                width: parent.width - 5
-                height: parent.height - 5
-                anchors.centerIn: parent
-                spacing: 2
-                clip: true
-                Label {
-                    id : dataLabel
-                    anchors.margins: 5
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "CALCULATION"
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                    font.pointSize: 10
-                    padding: 5
-                    color: "black"
-                    width: parent.width
-                    background: Rectangle {
-                        border.width: 1
-                        border.color: "#17a81a"
-                        radius : 2
-                        color : "transparent"
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowHorizontalOffset: 2
-                            shadowVerticalOffset: 2
-                            shadowColor: dataLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                        }
-                    }
-                }
-                ColumnLayout{
-                    height:   100
-                    width:  parent.width *0.7
-
-                    ComboBox {
-                        leftPadding: 10
-                        Layout.preferredWidth:  150
-                        Layout.preferredHeight: 40
-                        id: methodSelector
-                        model: etoManager.availableMethods
-                        onCurrentTextChanged: {
-                            etoManager.setMethod(methodSelector.currentText)
-                        }
-                        Component.onCompleted: {
-                            etoManager.setMethod(methodSelector.currentText)
-                        }
-                    }
-                    Label{
-                        id : requiredParams
-                        text : "PARAMETRES REQUIS : " + etoManager.methodParameters
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 50
-                        wrapMode: Text.Wrap
+                    spacing: 2
+                    clip: true
+                    Label {
+                        id : dataLabel
+                        anchors.margins: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "CALCULATION"
+                        height: 40
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
                         font.bold: true
-
-
+                        font.pointSize: 10
+                        padding: 5
+                        color: "#fcffff"
+                        width: parent.width
+                        background: Rectangle {
+                            anchors.fill: parent
+                            topLeftRadius: 5
+                            topRightRadius : 5
+                            color : "#6aa4a1"
+                        }
                     }
+
+                    ColumnLayout{
+                        height:   100
+                        width:  parent.width *0.7
+                        Row{
+                            Layout.preferredHeight: 50
+                            spacing: 10
+                            Label{
+                                text: "Methods"
+                                font.bold: true
+                                 anchors.verticalCenter:  parent.verticalCenter
+                            }
+
+                            ComboBox {
+                                anchors.verticalCenter:  parent.verticalCenter
+                                leftPadding: 10
+                                width:  150
+                                height:  30
+                                id: methodSelector
+                                model: etoManager.availableMethods
+                                onCurrentTextChanged: {
+                                    etoManager.setMethod(methodSelector.currentText)
+                                }
+                                Component.onCompleted: {
+                                    etoManager.setMethod(methodSelector.currentText)
+                                }
+                            }
+
+                        }
+
+                        Label{
+                            text : "PARAMETRES REQUIS : "
+                        }
+                        ListView {
+                            width: 180
+                            height: 120
+
+
+                            model: etoManager.methodParameters.split(",")
+                            delegate:Label{
+                                leftPadding: 5
+                                text : "- " + modelData
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 50
+                                wrapMode: Text.Wrap
+                                font.bold: true
+
+                            }
+
+                        }
+
+                        Button{
+                            id : control
+                            Layout.alignment: Qt.AlignRight
+                            text: "Compute PET"
+                            flat : true
+                            font.bold: true
+                            Layout.preferredWidth: 150
+                            contentItem: Text {
+                                text: control.text
+                                font: control.font
+                                opacity: enabled ? 1.0 : 0.3
+                                color: "#fcffff"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+                            background: Rectangle{
+                                anchors.fill : parent
+                                color : "#3b7772"
+                                radius: 5
+
+                                height: 40
+                            }
+                            onClicked: {
+                                 // En-têtes du fichier chargé
+                                let columnMapping = {
+                                        "dates" : datesComboBox.currentText,
+                                        "tmean":tMeanComboBox.currentText,
+                                        "tmin" : tMinComboBox.currentText,
+                                        "tmax" : tMaxComboBox.currentText,
+                                        "rh" : rhComboBox.currentText,
+                                        "rn" : rsComboBox.currentText,
+                                        "wind" : u2ComboBox.currentText,
+                                        "lat" : lat.text,
+                                        "elevation" : elevation.text
+                                    }
+                                    etoManager.setDictValues(columnMapping)
+
+                                    if(etoManager.errors.length !==0){
+
+                                        dataErrorsDialog.open()
+                                    }
+                                    else{
+                                        try {
+                                            etoManager.computeETo()
+
+                                        } catch (error) {
+                                            errorDialog.text = "Les paramètres requis n'ont pas étét fournis "
+                                            errorDialog.open()
+                                        }
+                                        populateTable(etoManager.etpComputed)
+
+                                    }
+
+                            }
+
+                        }
+                    }
+
+
+
                 }
 
-                Rectangle {
+
+            }
+            Rectangle{
+                width: parent.width*0.4
+                height: parent.height
+                color: "#eaf6f4"
+                border.width: 1
+                border.color: "gray"
+                topLeftRadius: 5
+                topRightRadius : 5
+                Column{
+                    width: parent.width - 5
+                    height: parent.height - 5
+                    anchors.centerIn: parent
+                    spacing: 2
+                    clip: true
+                    leftPadding: 10
+                    Label {
+                        anchors.margins: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "RESULTS"
+                        height: 40
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        font.bold: true
+                        font.pointSize: 10
+                        padding: 5
+                        color: "#fcffff"
+                        width: parent.width
+                        background: Rectangle {
+                            anchors.fill: parent
+                            topLeftRadius: 5
+                            topRightRadius : 5
+                            color : "#6aa4a1"
+                        }
+                    }
+                    Rectangle {
+                    height:  parent.height * 0.9
+                    width: parent.width *0.9
                     id: simParameters
-                    width: parent.width
-                    height: parent.height * 0.8
+
                     color : "transparent"
 
                     HorizontalHeaderView {
@@ -446,8 +553,23 @@ Dialog {
                         anchors.left: tableView.left
                         anchors.top: parent.top
                         syncView: tableView
+                        width: parent.width
                         model: [ "Dates", "ETP"]
                         clip: true
+                        delegate: Label {
+                            color: "white"
+                            width: 50
+                            leftPadding: 5
+                            font.bold: true
+                            text: modelData
+                            background: Rectangle{
+                                color: "#3b7772"
+                                anchors.fill: parent
+                                border.color: "grey"
+                                border.width: 1
+                            }
+                        }
+
                     }
 
                     VerticalHeaderView {
@@ -456,6 +578,19 @@ Dialog {
                         anchors.left: parent.left
                         syncView: tableView
                         clip: true
+                        delegate: Label {
+                            color: "white"
+                            width: 50
+                            leftPadding: 5
+                            font.bold: true
+                            text: modelData
+                            background: Rectangle{
+                                color: "#3b7772"
+                                anchors.fill: parent
+                                border.color: "grey"
+                                border.width: 1
+                            }
+                        }
                     }
 
                     TableView {
@@ -482,29 +617,35 @@ Dialog {
                                 ]
                         }
 
-                        delegate: Item {
-                            implicitWidth: 70
+                        delegate: TextField {
+                            implicitWidth: simParameters.height * 0.2
                             implicitHeight: 20
+                            text: model.display
+                            font.pixelSize: 10
+                            wrapMode: Text.WordWrap
+                            horizontalAlignment: Text.AlignHCenter
+                            background: Rectangle {
+                                    // Fond transparent
+                                    color: "#fafafa"
 
-                            Rectangle {
-                                anchors.fill: parent
-                                border.width: 0.5
-                                color: "#fafafa"
+                                    // Bordure inférieure seule
+                                    Rectangle {
+                                        anchors.bottom: parent.bottom
+                                        width: parent.width
+                                        height: 1  // Épaisseur de la bordure
+                                        border.color: "gray"
+                                        border.width: 1
+                                    }
 
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: model.display
-                                    font.pixelSize: 10
-                                    wrapMode: Text.WordWrap
-                                    horizontalAlignment: Text.AlignHCenter
                                 }
-                            }
+
+
                         }
                     }
 
 
                 }
-
+                }
 
             }
 
@@ -513,6 +654,8 @@ Dialog {
 
 
     }
+
+
     function cleanFilePath(filePath) {
         if (filePath.startsWith("file:///")) {
             return filePath.substring(8);

@@ -9,6 +9,7 @@ MenuBar {
     signal gapTriggered
     signal gridTriggered
     signal regressionTriggered
+    signal petTriggered
     Menu {
         title: qsTr("File")
         Action {
@@ -19,32 +20,42 @@ MenuBar {
         Action { text: qsTr("Quit") }
     }
     Menu {
-        title: qsTr("&Data")
+        title: qsTr("Data")
         Action {
-            text: qsTr("&Edit")
+            text: qsTr("Edit")
             onTriggered: loadDataTriggred()
         }
     }
     Menu {
-        title: qsTr("&Optimization")
+        title: qsTr("Optimization")
         Action {
             text: qsTr("Algorithms")
             onTriggered: gapTriggered()
         }
         Action {
-            text: qsTr("&Grid Optimization")
+            text: qsTr("Grid Optimization")
             onTriggered: gridTriggered()
         }
     }
     Menu {
-        title: qsTr("&Regression")
+        title: qsTr("Regression")
         Action {
-            text: qsTr("&Edit")
+            text: qsTr("Edit")
             onTriggered: regressionTriggered()
         }
     }
     Menu {
+        title: qsTr("Tools")
+        Action {
+            text: qsTr("PET Computing")
+            onTriggered: petTriggered()
+        }
+        Action {
+            text: qsTr("Baseflow Computing")
+        }
+    }
+    Menu {
         title: qsTr("&Help")
-        Action { text: qsTr("&About") }
+        Action { text: qsTr("About") }
     }
 }
