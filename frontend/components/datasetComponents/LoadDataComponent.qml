@@ -209,11 +209,14 @@ Rectangle{
         Rectangle{
             width: parent.width * 0.3
             height: parent.height - parent.padding - parent.spacing
-            color: "#eaf6f4"
+            color: "#bae7fe"
             layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: "#ebebeb"
+            layer.effect: DropShadow {
+                horizontalOffset: 1
+                verticalOffset: 1
+                radius: 4
+                samples: 10
+                color: "#888888"
             }
             Column {
                 width: parent.width

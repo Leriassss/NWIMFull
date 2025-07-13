@@ -20,7 +20,7 @@ Dialog{
     closePolicy : Popup.CloseOnEscape
     background:Rectangle{
         anchors.fill: parent
-        color: "#29888b"
+        color: "#bae7fe"
     }
 
     header:TabBar {
@@ -39,7 +39,7 @@ Dialog{
 
                 Rectangle{
                     anchors.fill: parent
-                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
                         text: qsTr("    Load")
                         icon.source: "../icons/load.png"
@@ -68,7 +68,7 @@ Dialog{
 
                 Rectangle{
                     anchors.fill: parent
-                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
                         text: qsTr("    P")
                         icon.source: "../icons/rainfall.png"
@@ -96,7 +96,7 @@ Dialog{
 
                 Rectangle{
                     anchors.fill: parent
-                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
                         text: qsTr("    T")
                         icon.source: "../icons/tmin.png"
@@ -124,7 +124,7 @@ Dialog{
 
                 Rectangle{
                     anchors.fill: parent
-                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
                         text: qsTr("    Q")
                         icon.source: "../icons/streamflow.png"
@@ -151,7 +151,7 @@ Dialog{
 
                 Rectangle{
                     anchors.fill: parent
-                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
                         text: qsTr("  PET")
                         icon.source: "../icons/pet.png"

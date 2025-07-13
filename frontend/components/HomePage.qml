@@ -35,7 +35,7 @@ Rectangle{
 
     signal runningClicked
 
-    property color siderbarColor: "#dbf3fe"
+    property color siderbarColor: "#bae7fe"
     property color sidebarTextColor: "black"
     Row {
         anchors.fill: parent
@@ -51,9 +51,12 @@ Rectangle{
                 border.color: "transparent"
                 color: siderbarColor
                 layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: "#ebebeb"
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    radius: 4
+                    samples: 10
+                    color: "#888888"
                 }
                 Column {
                     id: parameterPane
@@ -268,10 +271,18 @@ Rectangle{
                                 Rectangle{
                                     width: parent.width * 0.5
                                     height:  parent.height
-                                    color: "#e2f7f4"
+                                    color: "#dbf3fe"
                                     radius : 5
                                     border.color: "#ebebeb"
                                     border.width: 1
+                                    //layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 1
+                                        radius: 4
+                                        samples: 10
+                                        color: "#888888"
+                                    }
                                     /*layer.enabled: true
                                     layer.effect: MultiEffect {
                                         shadowEnabled: true
@@ -303,7 +314,7 @@ Rectangle{
                                             spacing: 10
                                             leftPadding:  10
                                             Rectangle{
-                                                color: "white"
+                                                color: "#ffffff"
                                                 width: (parent.width -parent.spacing-parent.leftPadding) * 0.5
                                                 height:  parent.height * 0.7
                                                 radius : 5
@@ -314,14 +325,15 @@ Rectangle{
                                                     leftPadding: 10
                                                         property real labWidth: 40
                                                         spacing: 5
-                                                        Label{
+                                                        Text{
                                                             text: "NSE : "
+
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
                                                             width: parent.labWidth
                                                         }
-                                                        Label{
+                                                        Text{
                                                             text: "KGE : "
                                                         }
                                                         Label{
@@ -391,10 +403,18 @@ Rectangle{
                                 Rectangle{
                                     width: parent.width * 0.5 - parent.spacing * 2
                                     height:  parent.height
-                                    color: "#ffffb5"
+                                    color: "#e2f7f4"
                                     border.color: "#ebebeb"
                                     border.width: 1
                                     radius : 5
+                                    //layer.enabled: true
+                                    layer.effect: DropShadow {
+                                        horizontalOffset: 0
+                                        verticalOffset: 1
+                                        radius: 4
+                                        samples: 10
+                                        color: "#888888"
+                                    }
                                     Column{
                                         anchors.fill: parent
                                         spacing: 10
@@ -556,6 +576,10 @@ Rectangle{
                             spacing: 10
                             rightPadding: 10
                             Button{
+                                hoverEnabled: true
+                                enabled: true
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Run")
                                 icon.source: "../icons/run.png"
                                 icon.height: 15
                                 icon.width: 55
@@ -584,15 +608,19 @@ Rectangle{
                             }
 
                             Button {
-                                icon.source: "../icons/file.png"
+                                icon.source: "../icons/loadFile.png"
                                 icon.height: 15
                                 icon.width: 55
-                                icon.color: "#000000"
+                                icon.color: "#0b7878"
+                                hoverEnabled: true
+                                enabled: true
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Load Parameters File")
                                 background: Rectangle{
                                     width: 50
                                     height: 20
                                     radius: 5
-                                    border.color: "#b4b4b4"
+                                    border.color: "#000000"
                                     color: "#fcffff"
                                 }
                                 onClicked: {
@@ -604,12 +632,16 @@ Rectangle{
                                 icon.source: "../icons/save.png"
                                 icon.height: 15
                                 icon.width: 55
-                                icon.color: "#000000"
+                                icon.color: "#0b7878"
+                                hoverEnabled: true
+                                enabled: true
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Save")
                                 background: Rectangle{
                                     width: 50
                                     height: 20
                                     radius: 5
-                                    border.color: "#b4b4b4"
+                                    border.color: "#000000"
                                     color: "#fcffff"
                                 }
                                 onClicked: {

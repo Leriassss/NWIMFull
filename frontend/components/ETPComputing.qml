@@ -159,13 +159,13 @@ Dialog {
                             font.bold: true
                             font.pointSize: 10
                             padding: 5
-                            color: "#fcffff"
+                            color: "#000000"
                             width: parent.width
                             background: Rectangle {
                                 anchors.fill: parent
                                 topLeftRadius: 5
                                 topRightRadius : 5
-                                color : "#6aa4a1"
+                                color : "#bae7fe"
                             }
 
                         }
@@ -382,13 +382,13 @@ Dialog {
                         font.bold: true
                         font.pointSize: 10
                         padding: 5
-                        color: "#fcffff"
+                        color: "#000000"
                         width: parent.width
                         background: Rectangle {
                             anchors.fill: parent
                             topLeftRadius: 5
                             topRightRadius : 5
-                            color : "#6aa4a1"
+                            color : "#bae7fe"
                         }
                     }
 
@@ -521,26 +521,48 @@ Dialog {
                     anchors.centerIn: parent
                     spacing: 2
                     clip: true
-                    leftPadding: 10
-                    Label {
-                        anchors.margins: 5
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: "RESULTS"
+                    Row{
                         height: 40
-                        horizontalAlignment: Qt.AlignHCenter
-                        verticalAlignment: Qt.AlignVCenter
-                        font.bold: true
-                        font.pointSize: 10
-                        padding: 5
-                        color: "#fcffff"
                         width: parent.width
-                        background: Rectangle {
-                            anchors.fill: parent
-                            topLeftRadius: 5
-                            topRightRadius : 5
-                            color : "#6aa4a1"
+                        spacing: 25
+                        Label {
+                            anchors.margins: 5
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "RESULTS"
+                            height: 40
+                            horizontalAlignment: Qt.AlignHCenter
+                            verticalAlignment: Qt.AlignVCenter
+                            font.bold: true
+                            font.pointSize: 10
+                            padding: 5
+                            color: "#000000"
+                            width: parent.width
+                            background: Rectangle {
+                                anchors.fill: parent
+                                topLeftRadius: 5
+                                topRightRadius : 5
+                                color : "#bae7fe"
+                            }
+                        }
+
+                        Button {
+                            text : "Save"
+                            width: 90
+                            height: parent.height
+                            flat : true
+                            font.bold: true
+                            background: Rectangle{
+                                anchors.fill: parent
+                                radius: 5
+                                border.color: "#b4b4b4"
+                                border.width: 1
+                                color: "#fcffff"
+                            }
+
                         }
                     }
+
+
                     Rectangle {
                     height:  parent.height * 0.9
                     width: parent.width *0.9
@@ -557,13 +579,13 @@ Dialog {
                         model: [ "Dates", "ETP"]
                         clip: true
                         delegate: Label {
-                            color: "white"
+                            color: "#000000"
                             width: 50
                             leftPadding: 5
                             font.bold: true
                             text: modelData
                             background: Rectangle{
-                                color: "#3b7772"
+                                color: "#c6f3fe"
                                 anchors.fill: parent
                                 border.color: "grey"
                                 border.width: 1
@@ -579,13 +601,13 @@ Dialog {
                         syncView: tableView
                         clip: true
                         delegate: Label {
-                            color: "white"
+                            color: "#000000"
                             width: 50
                             leftPadding: 5
                             font.bold: true
                             text: modelData
                             background: Rectangle{
-                                color: "#3b7772"
+                                color: "#c6f3fe"
                                 anchors.fill: parent
                                 border.color: "grey"
                                 border.width: 1
