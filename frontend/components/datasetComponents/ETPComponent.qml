@@ -52,7 +52,7 @@ Column{
         padding: 5
 
         Column {
-            width: parent.width * 0.3 - parent.spacing
+            width: parent.width * 0.4
             height: parent.height
             spacing: 5
 
@@ -69,6 +69,20 @@ Column{
                     syncView: tableView
                     model: [ "Dates","ETP Calibration","Dates","ETP Validation"]
                     clip: true
+                    delegate: Label {
+                        color: "#000000"
+                        width: 70
+                        leftPadding: 5
+                        font.bold: true
+                        text: modelData
+                        background: Rectangle{
+                            color: "#c6f3fe"
+                            anchors.fill: parent
+                            border.color: "#000000"
+                            border.width: 1
+                        }
+                    }
+
                 }
 
                 VerticalHeaderView {
@@ -77,6 +91,20 @@ Column{
                     anchors.left: parent.left
                     syncView: tableView
                     clip: true
+                    delegate: Label {
+                        color: "#000000"
+                        width: 70
+                        leftPadding: 5
+                        font.bold: true
+                        text: modelData
+                        background: Rectangle{
+                            color: "#c6f3fe"
+                            anchors.fill: parent
+                            border.color: "#000000"
+                            border.width: 1
+                        }
+                    }
+
                 }
 
                 TableView {
@@ -107,7 +135,7 @@ Column{
                     }
 
                     delegate: Item {
-                        implicitWidth: 70
+                        implicitWidth: 100
                         implicitHeight: 20
 
                         Rectangle {
@@ -132,13 +160,13 @@ Column{
         }
 
         Column {
-            width: parent.width * 0.7 - parent.spacing
+            width: parent.width * 0.6 - parent.spacing -parent.padding
             height: parent.height
             spacing: 5
 
             Rectangle {
                 id: simulationPane
-                width: parent.width
+                width: parent.width *0.9
                 height: parent.height
                 border.width: 1
 

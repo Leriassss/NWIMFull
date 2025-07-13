@@ -246,7 +246,7 @@ Rectangle{
                             Rectangle {
                                 width: parent.width
                                 height: parent.height *0.25
-                                color : "transparent"
+                                color : "#fcffff"
                                 Label {
                                     id : outputLabel
                                     anchors.margins: 5
@@ -391,7 +391,7 @@ Rectangle{
                                 Rectangle{
                                     width: parent.width * 0.5 - parent.spacing * 2
                                     height:  parent.height
-                                    color: "#ffffcf"
+                                    color: "#ffffb5"
                                     border.color: "#ebebeb"
                                     border.width: 1
                                     radius : 5

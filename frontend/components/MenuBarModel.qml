@@ -22,7 +22,7 @@ MenuBar {
     Menu {
         title: qsTr("Data")
         Action {
-            text: qsTr("Edit")
+            text: qsTr("Import")
             onTriggered: loadDataTriggred()
         }
     }
@@ -38,13 +38,6 @@ MenuBar {
         }
     }
     Menu {
-        title: qsTr("Regression")
-        Action {
-            text: qsTr("Edit")
-            onTriggered: regressionTriggered()
-        }
-    }
-    Menu {
         title: qsTr("Tools")
         Action {
             text: qsTr("PET Computing")
@@ -52,6 +45,13 @@ MenuBar {
         }
         Action {
             text: qsTr("Baseflow Computing")
+        }
+        Action {
+            text: qsTr("Machine Learning")
+            onTriggered: regressionTriggered()
+        }
+        Action {
+            text: qsTr("Smoothness")
         }
     }
     Menu {

@@ -5,9 +5,12 @@ import Qt.labs.qmlmodels
 import ".."
 import "../chartsComponents"
 import io.qml
-
-Column{
+import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
+Rectangle{
     clip: true
+    border.width: 1
+    border.color: "#ebebeb"
 
     property var fileData: null
     property var columnMapping: ({})
@@ -114,6 +117,7 @@ Column{
                     columnMappingDialog.close()
                 }
 
+
             }
 
             Rectangle{
@@ -198,156 +202,108 @@ Column{
 
     Row {
         anchors.fill: parent
-        spacing: 5
+        spacing: 10
         padding: 5
         clip: true
 
-        Column {
+        Rectangle{
             width: parent.width * 0.3
-            height: parent.height - parent.padding
-            spacing: 5
-
-            Row {
+            height: parent.height - parent.padding - parent.spacing
+            color: "#eaf6f4"
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: "#ebebeb"
+            }
+            Column {
                 width: parent.width
-                height: parent.height * 0.1
-                spacing: 0
+                anchors.centerIn: parent
+                height: parent.height
+                spacing: 10
+                padding: 10
 
                 Label {
-                    text: "Location : "
-                    anchors.verticalCenter: fileLocation.verticalCenter
-                    padding: 5
-                    anchors.rightMargin: 5
+                    id : chooseText
+                    text: qsTr("Choose file")
+
+                    font.bold: true
                 }
 
-                TextField {
-                    id: fileLocation
-                    width: parent.width * 0.6
-                    height: 30
-                    text: fileChooseComponent.fileName
-                    anchors.verticalCenter: fileLocation.verticalCenter
-                }
 
-                Button {
-                    width: parent.width * 0.2
-                    text: "Browse"
-                    height: 30
+                Rectangle{
+                    width: parent.width - parent.spacing-parent.padding
+                    height: parent.height * 0.1
+                    color : "#fcffff"
+                    radius : 5
+                    Row {
+                        anchors.fill: parent
+                        spacing: 0
+                        leftPadding: 10
 
-                    onClicked: {
-                        fileChooseComponent.open()
-                    }
-                }
-            }
+                        TextField {
+                            id: fileLocation
+                            width: parent.width * 0.6
+                            height: 30
+                            text: fileChooseComponent.fileName
+                            anchors.verticalCenter: parent.verticalCenter
+                            placeholderText: "Location"
+                            background: Rectangle{
+                                anchors.fill: parent
+                                topLeftRadius: 5
+                                bottomLeftRadius: 5
+                                border.color: "#2e2f30"
+                                border.width: 1
+                            }
+                        }
 
-            Rectangle{
-                width: parent.width
-                height: parent.height * 0.9 - 5
-                color: "transparent"
+                        Button {
+                            width: 50
+                            text: "Browse..."
+                            height: 30
+                            anchors.verticalCenter: parent.verticalCenter
+                            background: Rectangle{
+                                anchors.fill: parent
+                                color: "#29888b"
+                                topRightRadius: 5
+                                bottomRightRadius: 5
+                            }
 
-                HorizontalHeaderView {
-                    id: horizontalHeader
-                    anchors.left: tableView.left
-                    anchors.top: parent.top
-                    syncView: tableView
-                    model: [ "Dates","P","T", "Q", "ETP"]
-                    clip: true
-
-
-                }
-
-                VerticalHeaderView {
-                    id: verticalHeader
-                    anchors.top: tableView.top
-                    anchors.left: parent.left
-                    syncView: tableView
-                    clip: true
-                }
-
-                TableView {
-                    id: tableView
-                    width: parent.width
-                    height: parent.height
-                    anchors.left: verticalHeader.right
-                    anchors.top: horizontalHeader.bottom
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    clip: true
-
-                    columnSpacing: 0
-                    rowSpacing: 0
-
-                    model: TableModel {
-                        id: tableModel
-                        TableModelColumn { display: "Dates" }
-                        TableModelColumn { display: "P" }
-                        TableModelColumn { display: "T" }
-                        TableModelColumn { display: "Q" }
-                        TableModelColumn { display: "ETP" }
-                        rows: [
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                            ]
-                        //rows : fileHandler.displayData
-                    }
-                    //model: dataTableModel
-
-                    delegate: Item {
-                        implicitWidth: 70
-                        implicitHeight: 20
-
-                        Rectangle {
-                            anchors.fill: parent
-                            border.width: 0.5
-                            color: "#fafafa"
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: model.display
-                                font.pixelSize: 10
-                                wrapMode: Text.WordWrap
-                                horizontalAlignment: Text.AlignHCenter
+                            onClicked: {
+                                fileChooseComponent.open()
                             }
                         }
                     }
+
                 }
 
-            }
 
+                Label {
+                    id : periodLength
+                    text: qsTr("Periods length")
 
-        }
-
-        Rectangle {
-            id: simulationPane
-            width: parent.width * 0.7 -parent.spacing-parent.padding
-            height: parent.height -parent.padding
-            border.width: 2
-            border.color: "red"
-            clip : true
-
-            Column {
-                width: parent.width
-                height: parent.height
-
-                Rectangle {
-                    width: parent.width
-                    height: parent.height * 0.15
-                    border.width: 1
-                    border.color: "grey"
-                    ColumnLayout{
+                    font.bold: true
+                }
+                Rectangle{
+                    width: parent.width - parent.spacing-parent.padding
+                    height: parent.height * 0.1
+                    color : "#fcffff"
+                    radius : 5
+                    RowLayout{
                         width: parent.width
                         height: parent.height
-                        Row{
-                            padding: 5
-                            spacing: 5
+
+                        Grid{
+                            Layout.preferredWidth:  parent.width * 0.7
+                            Layout.preferredHeight:  parent.height
+                            columns: 2
+                            rowSpacing: 10
+                            columnSpacing: 20
+                            padding: 10
                             id : calibrationRow
-                            Layout.preferredWidth:  parent.width * 0.5
-                            Layout.preferredHeight:  parent.height *0.1
+
 
                             Label{
-                                text: " CALIBRATION : "
+                                text: "CALIBRATION : "
                                 font.bold: true
                                 width: 100
                             }
@@ -372,17 +328,21 @@ Column{
 
                         }
 
+
+
                         Rectangle{
-                            border.width: 1
-                            border.color: "grey"
-                            Layout.preferredWidth:  parent.width * 0.5
-                            Layout.preferredHeight:  50
+                            Layout.preferredWidth:  parent.width * 0.2
+                            Layout.preferredHeight:  parent.height
                             Button{
-                                leftPadding: 5
                                 text: qsTr("Define")
                                 font.bold: true
-                                width: 100
+                                width: parent.width
                                 anchors.centerIn: parent
+                                background: Rectangle{
+                                    anchors.fill: parent
+                                    color: "#29888b"
+                                    radius: 5
+                                }
                                 onClicked: {
                                     chooseDatePopup.open()
                                 }
@@ -416,50 +376,136 @@ Column{
 
 
                     }
+
                 }
 
-                Rectangle {
-                    id: plot
-                    width: parent.width
-                    height: parent.height * 0.85
-                    //anchors.centerIn: parent
-                    border.width: 2
+                Label {
+                    text: qsTr("Datas")
+
+                    font.bold: true
+                }
+                Rectangle{
+                    width: 350 //parent.width - parent.spacing-parent.padding
+                    height: parent.height * 0.6 - parent.padding - parent.spacing*6
+                    color : "#fcffff"
+
+                    HorizontalHeaderView {
+                        id: horizontalHeader
+                        anchors.left: tableView.left
+                        anchors.top: parent.top
+                        syncView: tableView
+                        model: [ "Dates","P","T", "Q", "ETP"]
+                        clip: true
+                        delegate: Label {
+                            color: "#000000"
+                            width: 50
+                            leftPadding: 5
+                            font.bold: true
+                            text: modelData
+                            background: Rectangle{
+                                color: "#c6f3fe"
+                                anchors.fill: parent
+                                border.color: "#000000"
+                                border.width: 1
+                            }
+                        }
 
 
-                    Grid {
-                        id: grid
-                        width: parent.width -padding
-                        height: parent.height - padding
-                        columns: 2
-                        rowSpacing: 0
+                    }
+
+                    TableView {
+                        id: tableView
+                        width: parent.width
+                        height: parent.height
+                        anchors.left: parent.left
+                        anchors.top: horizontalHeader.bottom
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        clip: true
+
                         columnSpacing: 0
-                        padding: 10
-                        clip : true
-                        QobsChart{
-                            id : qchart
-                            width: parent.width / 2
-                            height: parent.height / 2
+                        rowSpacing: 0
+
+                        model: TableModel {
+                            id: tableModel
+                            TableModelColumn { display: "Dates" }
+                            TableModelColumn { display: "P" }
+                            TableModelColumn { display: "T" }
+                            TableModelColumn { display: "Q" }
+                            TableModelColumn { display: "ETP" }
+                            rows: [
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                ]
+                            //rows : fileHandler.displayData
                         }
-                        TempChart{
-                            id : tempChart
-                            width: parent.width / 2
-                            height: parent.height / 2
-                        }
-                        ETPChart{
-                            id : etpChart
-                            width: parent.width / 2
-                            height: parent.height / 2
-                        }
-                        RainChart{
-                            id : rainChart
-                            width: parent.width / 2
-                            height: parent.height / 2
+                        //model: dataTableModel
+
+                        delegate: Item {
+                            implicitWidth: 70
+                            implicitHeight: 20
+
+                            Rectangle {
+                                anchors.fill: parent
+                                border.width: 0.5
+                                color: "#ffffff"
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: model.display
+                                    font.pixelSize: 10
+                                    wrapMode: Text.WordWrap
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                            }
                         }
                     }
 
+                }
 
+
+            }
+
+        }
+
+
+        Rectangle {
+            id: simulationPane
+            width: parent.width * 0.7 -parent.spacing-2*parent.padding
+            height: parent.height -2*parent.padding
+            Grid {
+                id: grid
+                anchors.centerIn: parent
+                width: parent.width
+                height: parent.height
+                columns: 2
+                QobsChart{
+                    id : qchart
+                    width: parent.width / 2
+                    height: parent.height / 2
+                }
+                TempChart{
+                    id : tempChart
+                    width: parent.width / 2
+                    height: parent.height / 2
+                }
+                ETPChart{
+                    id : etpChart
+                    width: parent.width / 2
+                    height: parent.height / 2
+                }
+                RainChart{
+                    id : rainChart
+                    width: parent.width / 2
+                    height: parent.height / 2
                 }
             }
+
+
         }
 
     }

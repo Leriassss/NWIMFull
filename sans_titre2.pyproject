@@ -41,6 +41,7 @@
         "frontend/components/ETPComputing.qml",
         "frontend/components/Regression.qml",
         "frontend/components/ModelRegression.qml",
-        "api/load_data/RegressionFile.py"
+        "api/load_data/RegressionFile.py",
+        "frontend/components/CustomTabBarButton.qml"
     ]
 }

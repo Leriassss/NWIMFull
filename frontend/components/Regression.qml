@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
@@ -21,6 +21,10 @@ Dialog {
     //padding: 5
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
+    background: Rectangle{
+        anchors.fill: parent
+        color: "#fcffff"
+    }
 
 
     header: ToolBar {
@@ -28,62 +32,68 @@ Dialog {
             height: 30
             //implicitHeight: 35
             implicitWidth:  200
+            background: Rectangle{
+                anchors.fill: parent
+                color: "#fcffff"
+            }
 
             clip: true
-            Rectangle{
-                //gradient: Gradient.AboveTheSky
-                color:"#ebebeb"
-                //border.color: "#6b6b6b"
-                //border.width: 1
-
+            Row{
                 anchors.fill: parent
-                Row{
-                    anchors.fill: parent
-                    spacing: 1
-                    CustomToolButton {
-                        width: 50
-                        height:parent.height
-                        text: qsTr("📥")
-                        ToolTip.text: qsTr("Load Regression")
-                        onClicked: {
-                            loadRegressionDialog.open()
-                        }
+                spacing: 1
+                CustomToolButton {
+                    width: 50
+                    height:parent.height
+                    text: qsTr("📥")
+                    ToolTip.text: qsTr("Load Regression")
+                    onClicked: {
+                        loadRegressionDialog.open()
                     }
-                    CustomToolButton {
-                        width: 50
-                        height:parent.height
-                        text: qsTr("➕")
-                        ToolTip.text: qsTr("Add Model")
-                        onClicked: {
-                            loadFileDialog.open()
-                        }
+                }
+                ToolSeparator{
+                    height:  parent.height * 0.9
+                }
+                CustomToolButton {
+                    width: 50
+                    height:parent.height
+                    text: qsTr("➕")
+                    ToolTip.text: qsTr("Add Model")
+                    onClicked: {
+                        loadFileDialog.open()
                     }
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("🟢")
-                        ToolTip.text: qsTr("Compute")
-                        onClicked: {
+                }
+                ToolSeparator{
+                    height:  parent.height * 0.9
+                }
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    text: qsTr("🟢")
+                    ToolTip.text: qsTr("Compute")
+                    onClicked: {
 
-                            regressionFile.singleCalibration(fileHandler.ptq, regComboBox.currentText)
+                        regressionFile.singleCalibration(fileHandler.ptq, regComboBox.currentText)
 
-                            regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
-                                        [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
-                                        [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
+                        regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
+                                    [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
+                                    [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
 
-                        }
                     }
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("💾")
-                        ToolTip.text: qsTr("Save Regression")
-                        onClicked: {
-                            saveRegressionDialog.open()
-                        }
+                }
+                ToolSeparator{
+                    height:  parent.height * 0.9
+                }
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    text: qsTr("💾")
+                    ToolTip.text: qsTr("Save Regression")
+                    onClicked: {
+                        saveRegressionDialog.open()
                     }
                 }
             }
+
 
 
        }
@@ -175,12 +185,13 @@ Dialog {
 
         Rectangle{
             id : columnMappingDialog
-            color: "#ebebeb"
+            color: "#e6f6f6"
             border.width: 1
             border.color: "grey"
             SplitView.minimumWidth:  parent.width*0.2
             SplitView.preferredWidth: parent.width*0.2
-
+            topLeftRadius: 5
+            topRightRadius : 5
             Column{
                 width: parent.width - 5
                 height: parent.height - 5
@@ -188,29 +199,15 @@ Dialog {
                 spacing: 2
                 clip: true
                 Label {
-                    id : methodsLabel
                     anchors.margins: 5
-                    anchors.horizontalCenter: parent.horizontalCenter
                     text: "MODELS"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
                     font.pointSize: 10
                     padding: 5
-                    color: "black"
+                    color: "#000000"
                     width: parent.width
-                    background: Rectangle {
-                        border.width: 1
-                        border.color: "#17a81a"
-                        radius : 2
-                        color : "transparent"
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowHorizontalOffset: 2
-                            shadowVerticalOffset: 2
-                            shadowColor: methodsLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                        }
-                    }
+
                 }
 
                 Rectangle{
@@ -317,7 +314,9 @@ Dialog {
             border.color: "grey"
             width: parent.width*0.6
             height: parent.height
-            color: "#ebebeb"
+            color: "#e6f6f6"
+            topLeftRadius: 5
+            topRightRadius : 5
             Column{
                 width: parent.width - 5
                 height: parent.height - 5
@@ -325,30 +324,18 @@ Dialog {
                 spacing: 2
                 clip: true
                 Label {
-                    id : dataLabel
                     anchors.margins: 5
-                    anchors.horizontalCenter: parent.horizontalCenter
                     text: "PLOT"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
                     font.pointSize: 10
                     padding: 5
-                    color: "black"
+                    color: "#000000"
                     width: parent.width
-                    background: Rectangle {
-                        border.width: 1
-                        border.color: "#17a81a"
-                        radius : 2
-                        color : "transparent"
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowHorizontalOffset: 2
-                            shadowVerticalOffset: 2
-                            shadowColor: dataLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                        }
-                    }
+
+
                 }
+
                 Row{
                     spacing: 5
                     width: parent.width
@@ -367,7 +354,8 @@ Dialog {
                             spacing : 10
                             ComboBox {
                                 leftPadding: 10
-                                Layout.preferredWidth: parent.width
+                                Layout.preferredWidth: parent.width * 0.6
+                                Layout.alignment: Qt.AlignHCenter
                                 Layout.preferredHeight: 20
                                 id: regComboBox
                                 model:regressionFile?.regressors

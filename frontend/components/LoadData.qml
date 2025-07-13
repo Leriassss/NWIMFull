@@ -16,29 +16,160 @@ Dialog{
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
-    topInset : 5
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
+    background:Rectangle{
+        anchors.fill: parent
+        color: "#29888b"
+    }
 
     header:TabBar {
         id: bar
         width: parent.width
+        height: 35
+        TabButton {
+            id : loadTabButton
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
 
-        TabButton {
-            text: qsTr("Load")
+            background: Rectangle{
+                height: parent.height
+                width: parent.width - 1
+                color: "#fcffff"
+
+                Rectangle{
+                    anchors.fill: parent
+                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    Button{
+                        text: qsTr("    Load")
+                        icon.source: "../icons/load.png"
+                        icon.height: 15
+                        icon.width: 50
+                        icon.color: "#000000"
+                        anchors.centerIn: parent
+                        width: 75
+
+                        background: Rectangle{
+                            anchors.fill: parent
+                            radius: 5
+                            color: "#fcffff"
+                        }
+                    }
+                }
+            }
         }
         TabButton {
-            text: qsTr("P")
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            background: Rectangle{
+                height: parent.height
+                width: parent.width - 1
+                color: "#fcffff"
+
+                Rectangle{
+                    anchors.fill: parent
+                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    Button{
+                        text: qsTr("    P")
+                        icon.source: "../icons/rainfall.png"
+                        icon.height: 15
+                        icon.width: 50
+                        icon.color: "#000000"
+                        anchors.centerIn: parent
+                        width: 75
+                        background: Rectangle{
+                            anchors.fill: parent
+                            radius: 5
+                            color: "#fcffff"
+                        }
+                    }
+                }
+            }
         }
         TabButton {
-            text: qsTr("T")
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            background: Rectangle{
+                height: parent.height
+                width: parent.width - 1
+                color: "#fcffff"
+
+                Rectangle{
+                    anchors.fill: parent
+                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    Button{
+                        text: qsTr("    T")
+                        icon.source: "../icons/tmin.png"
+                        icon.height: 15
+                        icon.width: 50
+                        icon.color: "#000000"
+                        anchors.centerIn: parent
+                        width: 75
+                        background: Rectangle{
+                            anchors.fill: parent
+                            radius: 5
+                            color: "#fcffff"
+                        }
+                    }
+                }
+            }
         }
         TabButton {
-            text: qsTr("Q")
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            background: Rectangle{
+                height: parent.height
+                width: parent.width - 1
+                color: "#fcffff"
+
+                Rectangle{
+                    anchors.fill: parent
+                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    Button{
+                        text: qsTr("    Q")
+                        icon.source: "../icons/streamflow.png"
+                        icon.height: 15
+                        icon.width: 50
+                        icon.color: "#000000"
+                        anchors.centerIn: parent
+                        width: 75
+                        background: Rectangle{
+                            anchors.fill: parent
+                            radius: 5
+                            color: "#fcffff"
+                        }
+                    }
+                }
+            }
         }
         TabButton {
-            text: qsTr("ETP")
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            background: Rectangle{
+                height: parent.height
+                color: "#fcffff"
+
+                Rectangle{
+                    anchors.fill: parent
+                    color: parent.parent.focus ? "#29888b" : "#fcffff"
+                    Button{
+                        text: qsTr("  PET")
+                        icon.source: "../icons/pet.png"
+                        icon.height: 15
+                        icon.width: 50
+                        icon.color: "#000000"
+                        anchors.centerIn: parent
+                        width: 75
+                        background: Rectangle{
+                            anchors.fill: parent
+                            radius: 5
+                            color: "#fcffff"
+                        }
+                    }
+                }
+            }
         }
+
     }
 
     StackLayout {
@@ -51,10 +182,8 @@ Dialog{
             color: "white"
             border.width: 1
             LoadDataComponent{
-                anchors.centerIn: parent
                 width: parent.width
-                height: parent.height *0.9
-                padding: 10
+                height: parent.height
             }
 
         }

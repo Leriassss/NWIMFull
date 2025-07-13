@@ -37,7 +37,16 @@ class DataManager:
                 parsed_dates = np.vectorize(self.check_and_convert_date)(data_dict_values["Dates"])
                 data_dict_values["Dates"] = np.array([d.strftime(date_format) for d in parsed_dates]).tolist()
             except Exception :
-                errors.append("Format de dates non reconnues")
+                 self.errors.append("Format de dates non reconnues")
+            try :
+                 ptq = np.round(np.array([data_dict_values["P"], data_dict_values["T"],
+                 data_dict_values["Q"],data_dict_values["ETP"]],dtype='float'), 3).tolist()
+                 data_dict_values["P"] = ptq[0]
+                 data_dict_values["T"] = ptq[1]
+                 data_dict_values["Q"] = ptq[2]
+                 data_dict_values["ETP"] = ptq[3]
+            except Exception :
+                 self._errors.append("Données non-numériques détectées")
 
             if len(self._errors) != 0:
                 raise Exception(";".join(self._errors))

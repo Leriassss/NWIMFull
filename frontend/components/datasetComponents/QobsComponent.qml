@@ -55,45 +55,12 @@ Column{
         padding: 5
 
         Column {
-            width: parent.width * 0.3 - parent.spacing
+            width: parent.width * 0.4
             height: parent.height
             spacing: 5
-            ColumnLayout {
-                width: parent.width
-                height : parent.height * 0.2
-                spacing: 10
-                GroupBox {
-                    title: "Options d'unité"
-                    Layout.fillWidth: true
-
-                    ColumnLayout {
-                        anchors.fill: parent
-                        spacing: 10
-
-                        TextField {
-                            id: textField
-                            Layout.fillWidth: true
-                            placeholderText: "Superficie du bassin "
-                        }
-
-                        ComboBox {
-                            id: comboBox
-                            Layout.fillWidth: true
-                            model: ["mm/j","l/s", "m3/h", "m3/s"]
-                        }
-
-                        Button{
-                            text: "Convertir"
-                            Layout.alignment: Qt.AlignRight
-
-                        }
-                    }
-                }
-            }
-
             Rectangle{
                 width: parent.width
-                height: parent.height * 0.6
+                height: parent.height * 0.8
                 //border.width: 1
                 color : "transparent"
 
@@ -105,16 +72,20 @@ Column{
                     model: [ "Dates","Q Calibration","Dates","Q Validation"]
                     clip: true
 
-                    /*delegate: Rectangle {
-                         width: 70
-                         height: 20
-                         color: "#fafafa"
-                         Label {
-                             text: modelData
-                             anchors.centerIn: parent
-                             font.bold: true
-                         }
-                     }*/
+                    delegate: Label {
+                        color: "#000000"
+                        width: 70
+                        leftPadding: 5
+                        font.bold: true
+                        text: modelData
+                        background: Rectangle{
+                            color: "#c6f3fe"
+                            anchors.fill: parent
+                            border.color: "#000000"
+                            border.width: 1
+                        }
+                    }
+
                 }
 
                 VerticalHeaderView {
@@ -123,6 +94,20 @@ Column{
                     anchors.left: parent.left
                     syncView: tableView
                     clip: true
+                    delegate: Label {
+                        color: "#000000"
+                        width: 50
+                        leftPadding: 5
+                        font.bold: true
+                        text: modelData
+                        background: Rectangle{
+                            color: "#c6f3fe"
+                            anchors.fill: parent
+                            border.color: "#000000"
+                            border.width: 1
+                        }
+                    }
+
                 }
 
                 TableView {
@@ -153,7 +138,7 @@ Column{
                     }
 
                     delegate: Item {
-                        implicitWidth: 70
+                        implicitWidth: 100
                         implicitHeight: 20
 
                         Rectangle {
@@ -178,13 +163,13 @@ Column{
         }
 
         Column {
-            width: parent.width * 0.7 - parent.spacing
+            width: parent.width * 0.6 - parent.spacing -parent.padding
             height: parent.height
             spacing: 5
 
             Rectangle {
                 id: simulationPane
-                width: parent.width
+                width: parent.width *0.9
                 height: parent.height
                 border.width: 1
 
