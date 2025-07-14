@@ -58,6 +58,14 @@ class ManualCalibration(QObject):
         self._ptq = ptq
 
         if self.check_keys_match(params_dict, self.parameters_type):
+            if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+                self._errors.append("Calibration and validation datas not found")
+                return
+
+            if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
+                self._errors.append("Calibration and validation datas not not provided")
+                return
+
             for key in self.parameters_type :
                 obj = params_dict[key]
 
@@ -86,7 +94,6 @@ class ManualCalibration(QObject):
         if any(item is None for values in self._parameter_bundle.values() for item in values):
             self._errors.append("Provided parameters are non-correct")
             return
-
 
         calibration_df = pd.DataFrame(self._ptq["CALIBRATION"])
         validation_df = pd.DataFrame(self._ptq["VALIDATION"])

@@ -45,7 +45,7 @@ class EToLossModel:
     @staticmethod
     def get_default_ranges():
         return {
-            "alpha": [-1,1]
+            "alpha": [0,1]
         }
     
     @staticmethod

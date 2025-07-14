@@ -37,6 +37,15 @@ Rectangle{
 
     property color siderbarColor: "#bae7fe"
     property color sidebarTextColor: "black"
+
+    DataErrorsDialog {
+        id: runningErrors
+        title: "❌ ERRORS FOUNDS !!!"
+        standardButtons: Dialog.Ok
+        width: 400
+        height: 300
+    }
+
     Row {
         anchors.fill: parent
         id: splitView
@@ -68,7 +77,6 @@ Rectangle{
                     clip: true
                     Label {
                         id: parameters
-                        anchors.horizontalCenter: parent.horizontalCenter
                         horizontalAlignment: Qt.AlignHCenter
                         text: "PARAMETERS"
                         //font.bold: true
@@ -84,6 +92,9 @@ Rectangle{
                             height: parent.height
                         }*/
                     }
+
+
+
 
                     Rectangle{
                         width: parent.width*0.9
@@ -218,6 +229,56 @@ Rectangle{
                         }
                     }
 
+                    Rectangle{
+                        height: 50
+                        width: parent.width - 20
+                        radius: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        //anchors.bottom: parent.bottom
+                        color: "#fcffff"
+                        Button{
+                            id : run
+                            anchors.centerIn: parent
+                            enabled: true
+                            icon.source: "../icons/run.png"
+                            icon.height: 15
+                            icon.width: 55
+                            icon.color: "#ffffff"
+                            text: "     Run"
+                            font.bold: true
+                            property color defaultColor: "#0b7878"
+                            property color pressedColor: "#a9e0c2"
+                            property color borderColor: "#1fa869"
+
+                            background: Rectangle {
+                                width: 100
+                                height: 50
+                                radius: 5
+                                color: run.pressed ? run.pressedColor :run.defaultColor
+                                border.width: run.pressed  ? 1 : 0
+                                border.color: run.pressed ? run.borderColor : "transparent"
+                            }
+
+
+                            onClicked: {
+
+                                console.log("------------ HOME PAGE ---------------")
+                                console.log(JSON.stringify(homepage.parameter_bundle))
+                                //console.log(JSON.stringify(homepage.parameter_bundle2))
+                                manualCalibration.setParameters(homepage.parameter_bundle2, fileHandler.ptq)
+                                if(manualCalibration.errors.length !==0){
+                                    console.log(JSON.stringify(manualCalibration.errors))
+                                    runningErrors.errors = manualCalibration.errors
+                                    runningErrors.open()
+                                }
+                                else{
+                                    runningClicked()
+                                }
+                            }
+                        }
+
+
+                    }
                 }
             }
 
@@ -321,7 +382,7 @@ Rectangle{
                                                 Grid{
                                                     width: parent.width * 0.5
                                                     height:  parent.height * 0.7
-                                                    rows: 2
+                                                    columns: 4
                                                     leftPadding: 10
                                                         property real labWidth: 40
                                                         spacing: 5
@@ -358,7 +419,7 @@ Rectangle{
                                                 Grid{
                                                     width: parent.width * 0.5
                                                     height:  parent.height * 0.7
-                                                    rows: 2
+                                                    columns : 4
                                                     leftPadding: 10
                                                         property real labWidth: 40
                                                         spacing: 5
@@ -541,7 +602,7 @@ Rectangle{
                         SimChart{
                             id: simChart
                             width: parent.width
-                            height: parent.height * 0.9
+                            height: parent.height
 
                             Connections {
                                 target: homePage
@@ -569,86 +630,7 @@ Rectangle{
                                 }
                             }
                         }
-                        Row{
-                            anchors.right: parent.right
-                            //width: parent.width
-                            height: parent.height * 0.1
-                            spacing: 10
-                            rightPadding: 10
-                            Button{
-                                hoverEnabled: true
-                                enabled: true
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Run")
-                                icon.source: "../icons/run.png"
-                                icon.height: 15
-                                icon.width: 55
-                                icon.color: "#ffffff"
-                                background: Rectangle{
-                                    width: 50
-                                    height: 20
-                                    radius: 5
-                                    color: "#0b7878"
-                                }
 
-                                onClicked: {
-
-                                    console.log("------------ HOME PAGE ---------------")
-                                    console.log(JSON.stringify(homepage.parameter_bundle))
-                                    //console.log(JSON.stringify(homepage.parameter_bundle2))
-                                    manualCalibration.setParameters(homepage.parameter_bundle2, fileHandler.ptq)
-                                    if(manualCalibration.errors.length !==0){
-                                        console.log(JSON.stringify(manualCalibration.errors))
-                                        runningErrors.open()
-                                    }
-                                    else{
-                                        homepage.runningClicked()
-                                    }
-                                }
-                            }
-
-                            Button {
-                                icon.source: "../icons/loadFile.png"
-                                icon.height: 15
-                                icon.width: 55
-                                icon.color: "#0b7878"
-                                hoverEnabled: true
-                                enabled: true
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Load Parameters File")
-                                background: Rectangle{
-                                    width: 50
-                                    height: 20
-                                    radius: 5
-                                    border.color: "#000000"
-                                    color: "#fcffff"
-                                }
-                                onClicked: {
-                                    loadFileDialog.open()
-                                }
-                            }
-
-                            Button {
-                                icon.source: "../icons/save.png"
-                                icon.height: 15
-                                icon.width: 55
-                                icon.color: "#0b7878"
-                                hoverEnabled: true
-                                enabled: true
-                                ToolTip.visible: hovered
-                                ToolTip.text: qsTr("Save")
-                                background: Rectangle{
-                                    width: 50
-                                    height: 20
-                                    radius: 5
-                                    border.color: "#000000"
-                                    color: "#fcffff"
-                                }
-                                onClicked: {
-                                    saveFileDialog.open()
-                                }
-                            }
-                        }
                     }
                 }
             }

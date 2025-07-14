@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
 import "./parameters"
@@ -14,60 +14,65 @@ Dialog {
     popupType: Popup.Window
     id: dialogOptim
 
-    standardButtons: Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
     //padding: 5
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
 
+    background: Rectangle{
+        anchors.fill: parent
+        color : "#fcffff"
+    }
+
     header: ToolBar {
             id: toolBar
             height: 30
-            //implicitHeight: 35
-            implicitWidth:  200
+            background: Rectangle{
+                anchors.fill : parent
+                color:"#fcffff"
+            }
 
             clip: true
-            Rectangle{
-                //gradient: Gradient.AboveTheSky
-                color:"#ebebeb"
-                //border.color: "#6b6b6b"
-                //border.width: 1
-
+            Row{
                 anchors.fill: parent
-                Row{
-                    anchors.fill: parent
-                    spacing: 1
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("📥")
-                        ToolTip.text: qsTr("Load Parameters")
-                        onClicked: {
-                            loadRangeParams.open()
-                        }
+                spacing: 1
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    text: qsTr("📥")
+                    ToolTip.text: qsTr("Load Parameters")
+                    onClicked: {
+                        loadRangeParams.open()
                     }
+                }
 
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("💾")
-                        ToolTip.text: qsTr("Save Parameters")
-                        onClicked: {
-                            saveResultsDialog.open()
-                        }
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    text: qsTr("💾")
+                    ToolTip.text: qsTr("Save Parameters")
+                    onClicked: {
+                        saveResultsDialog.open()
                     }
-                    CustomToolButton {
-                        width: 50
-                        height: parent.height
-                        text: qsTr("▶️")
-                        ToolTip.text: qsTr("Optimize")
-                        onClicked: {
-                            console.log("------------ HOME PAGE ---------------")
-                            console.log(JSON.stringify(homepage.parameter_bundle))
+                }
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    text: qsTr("▶️")
+                    ToolTip.text: qsTr("Optimize")
+                    onClicked: {
+                        if(!fileHandler.activate){
+                            errorDialog.text = "No data load for optimization. See Data Import"
+                            errorDialog.open()
+                            return
                         }
+
+                        console.log("--------- OPTIMIZE -----------------")
+                        automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
                     }
                 }
             }
+
 
 
        }
@@ -153,9 +158,11 @@ Dialog {
         }
 
         Rectangle{
-            color: "#ebebeb"
+            color: "#eaf6f4"
             border.width: 1
-            border.color: "grey"
+            border.color: "gray"
+            topLeftRadius: 5
+            topRightRadius : 5
             SplitView.minimumWidth:  parent.width*0.5
             SplitView.preferredWidth: parent.width*0.5
             //width: parent.width*0.4
@@ -164,103 +171,89 @@ Dialog {
                 width: parent.width - 5
                 height: parent.height - 5
                 anchors.centerIn: parent
-                spacing : 20
-                Rectangle {
+                spacing : 10
+                Label {
+                    id : outputLabel
+                    anchors.margins: 5
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "OPTIMIZATION OPTIONS"
+                    horizontalAlignment: Qt.AlignHCenter
+                    font.bold: true
+                    font.pointSize: 10
+                    padding: 5
+                    color: "black"
                     width: parent.width
-                    height: 15
-                    color : "transparent"
-                    Label {
-                        id : outputLabel
-                        anchors.margins: 5
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: "OPTIMIZATION OPTIONS"
-                        horizontalAlignment: Qt.AlignHCenter
-                        font.bold: true
-                        font.pointSize: 10
-                        padding: 5
-                        color: "black"
-                        width: parent.width
-                        background: Rectangle {
-                            border.width: 1
-                            border.color: "#17a81a"
-                            radius : 2
-                            color : "transparent"
-                            layer.enabled: true
-                            layer.effect: MultiEffect {
-                                shadowEnabled: true
-                                shadowHorizontalOffset: 2
-                                shadowVerticalOffset: 2
-                                shadowColor: outputLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                            }
-                        }
-                    }
-                }
-
-                GroupBox{
-                    height: parent.height *0.2
-                    width: parent.width
-                    title: "Objective"
-                    bottomInset: 10
-
-                    ColumnLayout{
+                    background: Rectangle {
                         anchors.fill: parent
-                        //border.width: 1
-                        spacing : 10
-                        CustomCheckDelegate{
-                            checked: true
-                            text: "Set"
-                        }
+                        topLeftRadius: 5
+                        topRightRadius : 5
+                        color : "#bae7fe"
+                    }
+                }
 
-                        Row{
-                            Layout.preferredHeight: parent.height *0.9
-                            Layout.preferredWidth: parent.width
-                            spacing : 5
-                            Row{
-                                height: parent.height
-                                width: parent.width *0.5
-                                spacing : 5
-                                Label{
-                                    text: "Nb iterations "
-                                }
-                                TextField{
-                                    width : 75
-                                }
-                            }
-                            Row{
-                                height: parent.height
-                                width: parent.width *0.5 - 5
-                                spacing : 5
-                                Label{
-                                    text: "Target "
-                                }
-                                TextField{
-                                    width : 75
-                                }
-                            }
+                CustomCheckDelegate{
+                    id : setGoal
+                    checked: true
+                    text: "Set Goal"
+                    font.bold: true
+                }
+
+                Rectangle{
+                    enabled: setGoal.checked ? true : false
+                    height: 70
+                    width: parent.width *0.5
+                    radius: 5
+                    anchors.left:  parent.left
+                    color: "#fcffff"
+                    Grid{
+                        leftPadding:10
+                        columns: 2
+                        rowSpacing: 10
+                        columnSpacing: 10
+                        Label{
+                            text: "Nb iterations "
+                        }
+                        CustomTextField{
+                            width : 75
+                        }
+                        Label{
+                            text: "Target "
+                        }
+                        CustomTextField{
+                            width : 75
                         }
 
                     }
-
                 }
+
 
                 Row{
                     spacing: 5
                     width: parent.width
                     height: parent.height * 0.2
-                    GroupBox{
+                    leftPadding: 10
+                    Column{
                         height: parent.height
-                        width: parent.width * 0.5
-                        title: "Criteria"
+                        width: parent.width*0.5
+                        spacing : 10
 
-                        ColumnLayout{
-                            height: parent.height
-                            width: parent.width
+                        Label{
+                            text : "Criteria"
+                            font.bold: true
+                        }
+
+                        Rectangle{
+                            height: 100
+                            width: parent.width *0.8
+                            radius: 5
+                            color: "#fcffff"
                             ComboBox {
                                 leftPadding: 10
-                                Layout.preferredWidth: parent.width
-                                Layout.preferredHeight: 40
+                                width: parent.width * 0.8
+                                height:  25
                                 id: metricsComboBox
                                 model: automaticCalibration.metrics
+                                anchors.centerIn: parent
                                 onCurrentTextChanged: {
                                     //console.log("-----------------------------")
                                     automaticCalibration?.setMetric(metricsComboBox.currentText)
@@ -270,73 +263,60 @@ Dialog {
                                 }*/
                             }
 
-
                         }
+
+
 
                     }
 
-                    GroupBox{
+
+                    Column{
                         height: parent.height
-                        width: parent.width * 0.5 - parent.spacing
-                        title: "Optimizator"
-
-
-                        ColumnLayout{
-                            anchors.fill: parent
-                            //border.width: 1
-                            spacing : 10
-                            Parameters{
-                                id : optimizationParameter
-                                Layout.preferredHeight: childrenRect.height
-                                Layout.preferredWidth: parent.width
+                        width: parent.width*0.5
+                        //border.width: 1
+                        spacing : 10
+                        Label{
+                            text : "Optimizer"
+                            font.bold: true
+                        }
+                        Rectangle{
+                            height: 100
+                            width: parent.width *0.8
+                            radius: 5
+                            color: "#fcffff"
+                            Rectangle{
+                                width: parent.width*0.8
                                 height: childrenRect.height
-                                spacing: 10
-                                parameterModel : TestQML{}
-                                factoryName : "Optimization"
+                                anchors.centerIn: parent
+                                Parameters{
+                                    id : optimizationParameter
+                                    width: parent.width*0.8
+                                    height: childrenRect.height
+                                    spacing: 10
+                                    parameterModel : TestQML{}
+                                    factoryName : "Optimization"
+                                }
                             }
-                        }
 
 
                         }
+                    }
+
 
                 }
 
-
-                Button {
-                    id: control
-                    text: qsTr("Optimize")
+                Label{
+                    text : "Results"
                     font.bold: true
-                    font.pointSize: 10
-                    anchors.right: parent.right
-                    //enabled: fileHandler.activate
-                    onClicked: {
-                        if(!fileHandler.activate){
-                            errorDialog.text = "No data load for optimization. See Option Load"
-                            errorDialog.open()
-                            return
-                        }
+                    leftPadding: 10
+                }
 
-                        console.log("--------- OPTIMIZE -----------------")
-                        automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
-                    }
-                    contentItem: Text {
-                        text: control.text
-                        font: control.font
-                        opacity: enabled ? 1.0 : 0.3
-                        //color: control.down ? "#17a81a" : "#21be2b"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-
-                    background: Rectangle {
-                        implicitWidth: 100
-                        implicitHeight: 40
-                        opacity: enabled ? 1 : 0.3
-                        border.color: control.down ? "#17a81a" : "#21be2b"
-                        border.width: 1
-                        radius: 2
-                    }
+                Rectangle{
+                    height: parent.height*0.4
+                    width: parent.width *0.9
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    radius: 5
+                    color: "#fcffff"
                 }
 
             }
@@ -344,11 +324,13 @@ Dialog {
         }
 
         Rectangle{
+            color: "#eaf6f4"
             border.width: 1
-            border.color: "grey"
+            border.color: "gray"
+            topLeftRadius: 5
+            topRightRadius : 5
             width: parent.width*0.6
             height: parent.height
-            color: "#ebebeb"
             Column{
                 width: parent.width - 5
                 height: parent.height - 5
@@ -367,17 +349,10 @@ Dialog {
                     color: "black"
                     width: parent.width
                     background: Rectangle {
-                        border.width: 1
-                        border.color: "#17a81a"
-                        radius : 2
-                        color : "transparent"
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowHorizontalOffset: 2
-                            shadowVerticalOffset: 2
-                            shadowColor: methodsLabel.visualFocus ? "#330066ff" : "#aaaaaa"
-                        }
+                        anchors.fill: parent
+                        topLeftRadius: 5
+                        topRightRadius : 5
+                        color : "#bae7fe"
                     }
                 }
 
@@ -400,7 +375,7 @@ Dialog {
                         Rectangle{
                             SplitView.minimumHeight: 45
                             SplitView.preferredHeight: 250
-                            color : "#ebebeb"
+                            color : "#eaf6f4"
                             Column {
                                 width: parent.width
                                 height: parent.height
@@ -415,11 +390,6 @@ Dialog {
                                     padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
-                                    background: Rectangle{
-                                        anchors.fill: parent
-                                        color: Qt.lighter("#c2f4c6", 1.1)
-                                        opacity: 0.7
-                                    }
                                 }
 
                                 RangeParameters{
@@ -445,7 +415,7 @@ Dialog {
                         Rectangle{
                             SplitView.minimumHeight: 45
                             SplitView.preferredHeight: 150
-                            color : "#ebebeb"
+                            color : "#eaf6f4"
                             Column {
                                 spacing: 2
                                 padding: 5
@@ -459,11 +429,6 @@ Dialog {
                                     padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
-                                    background: Rectangle{
-                                        anchors.fill: parent
-                                        color: Qt.lighter("#c2f4c6", 1.1)
-                                        opacity: 0.7
-                                    }
                                 }
 
                                 RangeParameters{
@@ -480,7 +445,7 @@ Dialog {
                         }
 
                         Rectangle{
-                            color : "#ebebeb"
+                            color : "#eaf6f4"
                             SplitView.minimumHeight: 100
                             Column {
                                 anchors.fill: parent
@@ -496,11 +461,6 @@ Dialog {
                                     padding: 1
                                     color: "black"
                                     horizontalAlignment: Qt.AlignHCenter
-                                    background: Rectangle{
-                                        anchors.fill: parent
-                                        color: Qt.lighter("#c2f4c6", 1.1)
-                                        opacity: 0.7
-                                    }
                                 }
                                 RangeParameters{
                                     id : recessionRange

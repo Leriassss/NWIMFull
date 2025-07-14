@@ -58,7 +58,7 @@ Column{
 
             Rectangle{
                 width: parent.width
-                height: parent.height * 0.6 -parent.spacing
+                height: parent.height * 0.9
                 //border.width: 1
                 color : "transparent"
 

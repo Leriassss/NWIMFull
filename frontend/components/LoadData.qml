@@ -41,6 +41,7 @@ Dialog{
                     anchors.fill: parent
                     color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
+                        hoverEnabled: false
                         text: qsTr("    Load")
                         icon.source: "../icons/load.png"
                         icon.height: 15
@@ -70,6 +71,7 @@ Dialog{
                     anchors.fill: parent
                     color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
+                        hoverEnabled: false
                         text: qsTr("    P")
                         icon.source: "../icons/rainfall.png"
                         icon.height: 15
@@ -98,6 +100,7 @@ Dialog{
                     anchors.fill: parent
                     color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
+                        hoverEnabled: false
                         text: qsTr("    T")
                         icon.source: "../icons/tmin.png"
                         icon.height: 15
@@ -126,6 +129,7 @@ Dialog{
                     anchors.fill: parent
                     color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
+                        hoverEnabled: false
                         text: qsTr("    Q")
                         icon.source: "../icons/streamflow.png"
                         icon.height: 15
@@ -153,6 +157,7 @@ Dialog{
                     anchors.fill: parent
                     color: parent.parent.focus ? "#bae7fe" : "#fcffff"
                     Button{
+                        hoverEnabled: false
                         text: qsTr("  PET")
                         icon.source: "../icons/pet.png"
                         icon.height: 15

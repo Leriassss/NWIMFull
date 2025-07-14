@@ -367,6 +367,7 @@ Rectangle{
 
                                 onAccepted: {
                                     console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
+                                    console.log(JSON.stringify(chooseDatePopup.user_calibration))
                                     fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
 
                                     if(fileHandler.errors.length !==0){

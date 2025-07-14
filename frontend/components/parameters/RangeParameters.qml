@@ -17,10 +17,11 @@ Column {
     }
     anchors.margins: 10
 
-    CustomComboBox {
+    ComboBox {
         leftPadding: 10
-        width: parent.width
-        height: 40
+        width: parent.width * 0.8
+        anchors.horizontalCenter: parent.horizontalCenter
+        height: 25
         id: methodSelector
         model: parameterModel?.availableMethods
         onCurrentIndexChanged: {
@@ -34,7 +35,7 @@ Column {
         id: parameterGrid
         width: parent.width
         columns: 3 // Trois colonnes : label, min et max
-        columnSpacing: 20
+        columnSpacing: 10
         rowSpacing: 5
 
         // Répétiteur pour afficher les paramètres sous forme de plage (min, max)
@@ -44,7 +45,7 @@ Column {
             delegate: RowLayout {
                 Layout.column: 0
                 Layout.row: index
-                Layout.preferredWidth: parent.width * 0.3
+                Layout.preferredWidth: 75
 
                 // Label pour chaque paramètre
                 Label {
@@ -57,7 +58,7 @@ Column {
         Repeater {
             model: Object.keys(parameterModel.parameters)
 
-            delegate:TextField {
+            delegate:CustomTextField {
                 Layout.column: 1
                 Layout.row: index
                 Layout.preferredWidth: 100
@@ -70,14 +71,25 @@ Column {
                     notation: DoubleValidator.StandardNotation
                 }
 
-                background: Rectangle {
-                    color: "#ebebeb"
-                    border.color: {
-                        let errors = parameterModel.parameterErrors[modelData];
-                        return (errors && errors.min) ? "red" : "gray";
+                background : Rectangle {
+                    // Fond transparent
+                    color: "transparent"
+
+                    // Bordure inférieure seule
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1
+                        color:  "#bdbebf"
+                        border.color: {
+                            let errors = parameterModel.parameterErrors[modelData];
+                            return (errors && errors.min) ? "red" : "gray";
+                        }
+                        border.width: 1
                     }
-                    border.width: 1
-                }
+
+
+                 }
             }
         }
 
@@ -85,7 +97,7 @@ Column {
         Repeater {
             model: Object.keys(parameterModel.parameters)
 
-            delegate: TextField {
+            delegate: CustomTextField {
                 Layout.column: 2
                 Layout.row: index
                 Layout.preferredWidth: 100
@@ -97,15 +109,25 @@ Column {
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
                 }
+                background : Rectangle {
+                    // Fond transparent
+                    color: "transparent"
 
-                background: Rectangle {
-                    color: "#ebebeb"
-                    border.color: {
-                        let errors = parameterModel.parameterErrors[modelData];
-                        return (errors && errors.max) ? "red" : "gray";
+                    // Bordure inférieure seule
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1
+                        color:  "#bdbebf"
+                        border.color: {
+                            let errors = parameterModel.parameterErrors[modelData];
+                            return (errors && errors.max) ? "red" : "gray";
+                        }
+                        border.width: 1
                     }
-                    border.width: 1
-                }
+
+
+                 }
             }
 
         }

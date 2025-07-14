@@ -42,6 +42,8 @@
         "frontend/components/Regression.qml",
         "frontend/components/ModelRegression.qml",
         "api/load_data/RegressionFile.py",
-        "frontend/components/CustomTabBarButton.qml"
+        "frontend/components/CustomTabBarButton.qml",
+        "frontend/components/CustomRadioButton.qml",
+        "frontend/components/CustomTextField.qml"
     ]
 }

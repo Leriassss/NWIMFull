@@ -63,7 +63,6 @@ Dialog{
                             id : calibrationEnd
                             width: 100
                             placeholderText: "Ex : 1999-01-01"
-                            text: "2000-12-31"
                             onTextChanged: {
                                 calendarDialog.user_calibration["calibration"][1] = text
                                 if(!checkDates(calendarDialog.user_calibration)){
@@ -98,7 +97,6 @@ Dialog{
                             id : validationStart
                             width: 100
                             placeholderText: "Ex : 1999-01-01"
-                            text: "2001-01-01"
                             onTextChanged: {
                                 calendarDialog.user_calibration["validation"][0] = text
                                 if(!checkDates(calendarDialog.user_calibration)){
@@ -116,7 +114,6 @@ Dialog{
                             id : validationEnd
                             width: 100
                             placeholderText: "Ex : 1999-01-01"
-                            text: "2003-12-31"
                             onTextChanged: {
                                 calendarDialog.user_calibration["validation"][1] = text
                                 if(!checkDates(calendarDialog.user_calibration)){
@@ -135,15 +132,10 @@ Dialog{
 
     }
     function checkDates(user_dates){
-        console.log(JSON.stringify(user_dates))
         let c_start = new Date(user_dates["calibration"][0])
         let c_end = new Date(user_dates["calibration"][1])
         let v_start = new Date(user_dates["validation"][0])
         let v_end = new Date(user_dates["validation"][1])
-        console.log(c_start >= c_end)
-        console.log(v_start >= v_end)
-        console.log(c_start == v_start)
-        console.log(c_end == v_end)
         if (c_start >= c_end || v_start >= v_end || c_start == v_start || c_end == v_end || c_start == v_end){
             return false
         }

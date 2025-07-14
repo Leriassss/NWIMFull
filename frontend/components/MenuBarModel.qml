@@ -10,11 +10,16 @@ MenuBar {
     signal gridTriggered
     signal regressionTriggered
     signal petTriggered
+    signal saveTriggered
     Menu {
         title: qsTr("File")
         Action {
-            text: qsTr("Open...")
+            text: qsTr("Load Parameters File")
             onTriggered: openFileTriggered()
+        }
+        Action {
+            text: qsTr("Save")
+            onTriggered: saveTriggered()
         }
         MenuSeparator { }
         Action { text: qsTr("Quit") }

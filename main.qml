@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Material
+//import QtQuick.Controls.Material
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
@@ -17,15 +17,20 @@ ApplicationWindow {
     maximumWidth: 1350
     maximumHeight: 750
     title: qsTr("NWIM")
-    Material.theme: Material.Light
-    Material.accent: Material.Blue
+    //Material.theme: Material.Light
+    //Material.accent: Material.Blue
 
     menuBar:MenuBarModel{
         width: parent.width
         id: nwimMenuBar
         onOpenFileTriggered: {
-            fileChooseComponent.openDialog()
+            loadFileDialog.open()
         }
+        onSaveTriggered: {
+            //saveFileDialog.open()
+            saveOptions.open()
+        }
+
         onLoadDataTriggred: {
             //loadDataDialog.show()
             loadDataDialog.open()
@@ -85,6 +90,60 @@ ApplicationWindow {
             console.log("Canceled")
          }
      }
+    Dialog {
+        id: saveOptions
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: 300
+        height: 200
+        title: "Save options"
+        Rectangle{
+            anchors.fill: parent
+            /*border.color: "grey"
+            border.width: 1*/
+            Column{
+                anchors.fill: parent
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Parameters"
+                    onClicked: {
+                        saveFileDialog.open()
+                        saveOptions.close()
+                    }
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Plot"
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Data"
+
+                }
+
+            }
+
+        }
+
+
+    }
 
     FileChoose {
          id: saveFileDialog
