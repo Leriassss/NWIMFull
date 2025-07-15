@@ -25,6 +25,7 @@ class ManualCalibration(QObject):
                     "DATES" : {"CALIBRATION":[], "VALIDATION":[]},
                     "CRITERIA" : {"CALIBRATION":[], "VALIDATION":[]}
                     }
+        self._sim_finished = False
 
 
     parameters_type = ["pn","qb","sim","loss"]
@@ -54,6 +55,13 @@ class ManualCalibration(QObject):
         self._parameters_methods = {
         "pn":None,"qb":None,"sim": None,"loss" : None
         }
+        self._sim = {
+                    "SIM" : {"CALIBRATION":[], "VALIDATION":[]},
+                     "OBS" : {"CALIBRATION":[], "VALIDATION":[]},
+                    "DATES" : {"CALIBRATION":[], "VALIDATION":[]},
+                    "CRITERIA" : {"CALIBRATION":[], "VALIDATION":[]}
+                    }
+        self._sim_finished = False
 
         self._ptq = ptq
 
@@ -121,12 +129,20 @@ class ManualCalibration(QObject):
 
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  sim.calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  hun_sim_val[0].items()}
+        self._sim_finished = True
         print("------------------------- SIM (MC)---------------")
-
-
-
         self.simChanged.emit()
 
+    @Slot(str)
+    def saveQSim(self, path):
+        if self._sim_finished :
+            print("MC ------saveQSim")
+            df = pd.DataFrame({
+                "Dates":np.concatenate([self._sim["DATES"]["CALIBRATION"],self._sim["DATES"]["VALIDATION"]]),
+                "Obs" : np.concatenate([self._sim["OBS"]["CALIBRATION"],self._sim["OBS"]["VALIDATION"]]),
+                "Sim" : np.concatenate([self._sim["SIM"]["CALIBRATION"],self._sim["SIM"]["VALIDATION"]])
+                })
+            ResultsFileManager.saveData(df, path)
 
     @Slot(dict, str)
     def saveParameters(self, params_dict, path):
@@ -150,6 +166,10 @@ class ManualCalibration(QObject):
             raise("Required parameters not provided")
 
         ResultsFileManager.save_calibration_results(parameter_bundle, path)
+
+
+
+
 
     @Slot(str, dict)
     def loadParameters(self, path,params_dict):

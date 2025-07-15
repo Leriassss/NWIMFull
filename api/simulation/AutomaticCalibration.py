@@ -20,10 +20,13 @@ class AutomaticCalibration(QObject):
         self._metrics = Simulation.Metrics
         self._optim_metric = "NSE"
         self._optim_result = None
+        self._best_metrics = ["",""]
 
     metricsChanged = Signal()
     errorsChanged = Signal()
     paramsBundleChanged = Signal()
+    optimParamsChanged = Signal()
+    bestMetricsChanged = Signal()
     parameters_type = ["pn","qb","sim","loss"]
 
     @Property(list, notify=errorsChanged)
@@ -33,6 +36,10 @@ class AutomaticCalibration(QObject):
     @Property(list, constant=True)
     def metrics(self):
         return self._metrics
+
+    @Property(list, notify=bestMetricsChanged)
+    def bestMetrics(self):
+        return self._best_metrics
 
     @Slot(str)
     def setMetric(self, metric):
@@ -48,9 +55,14 @@ class AutomaticCalibration(QObject):
     def paramsBundle(self):
         return self._parameter_bundle
 
+    @Property(dict, notify=optimParamsChanged)
+    def optimParams(self):
+        return self._optim_result
+
     @Slot(dict, list, dict)
     def setParameters(self, params_dict, optim_list, ptq):
         self._errors = []
+        self._best_metrics = ["",""]
 
         self._parameter_bundle =  {
         "pn":None,"qb":None,"sim": None,"loss" : None
@@ -62,6 +74,14 @@ class AutomaticCalibration(QObject):
         self._optim_result = None
 
         self._ptq = ptq
+
+        if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+            self._errors.append("Calibration and validation datas not found")
+            return
+
+        if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
+            self._errors.append("Calibration and validation datas not not provided")
+            return
 
         if self.check_keys_match(params_dict, self.parameters_type):
             for key in self.parameters_type :
@@ -119,8 +139,16 @@ class AutomaticCalibration(QObject):
             original_dict[section] = {model: param_dict}
 
         self._optim_result = original_dict
+        self._best_metrics = [float(np.round(sim_r_hun.calibration_metric,3)),
+                                float(np.round(sim_r_hun.validation_metric,3))]
+
+        self.optimParamsChanged.emit()
+        self.bestMetricsChanged.emit()
 
         print("-------- saving ----------")
+        print(self._optim_result)
+        print(self._best_metrics)
+
 
 
     @Slot(str)

@@ -27,6 +27,13 @@ class ResultsFileManager:
             return None
         
     @staticmethod
+    def saveData(datas : pd.DataFrame, file_path)-> None:
+        try:
+            datas.to_csv(file_path, sep= '\t', index=False)
+        except IOError as e:
+            raise RuntimeError(f"Failed to save results: {str(e)}")
+
+    @staticmethod
     def save_optim_range_params(params, file_path) -> None:
         file_path = file_path +".json"
         try:

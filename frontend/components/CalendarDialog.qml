@@ -62,7 +62,7 @@ Dialog{
                         TextField{
                             id : calibrationEnd
                             width: 100
-                            placeholderText: "Ex : 1999-01-01"
+                            placeholderText: "Ex : 2000-12-31"
                             onTextChanged: {
                                 calendarDialog.user_calibration["calibration"][1] = text
                                 if(!checkDates(calendarDialog.user_calibration)){
@@ -113,7 +113,7 @@ Dialog{
                         TextField{
                             id : validationEnd
                             width: 100
-                            placeholderText: "Ex : 1999-01-01"
+                            placeholderText: "Ex : 2000-12-31"
                             onTextChanged: {
                                 calendarDialog.user_calibration["validation"][1] = text
                                 if(!checkDates(calendarDialog.user_calibration)){

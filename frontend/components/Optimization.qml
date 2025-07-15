@@ -49,20 +49,11 @@ Dialog {
                 CustomToolButton {
                     width: 50
                     height: parent.height
-                    text: qsTr("💾")
-                    ToolTip.text: qsTr("Save Parameters")
-                    onClicked: {
-                        saveResultsDialog.open()
-                    }
-                }
-                CustomToolButton {
-                    width: 50
-                    height: parent.height
                     text: qsTr("▶️")
                     ToolTip.text: qsTr("Optimize")
                     onClicked: {
                         if(!fileHandler.activate){
-                            errorDialog.text = "No data load for optimization. See Data Import"
+                            errorDialog.errorText = "No data load for optimization. See Data Import"
                             errorDialog.open()
                             return
                         }
@@ -98,7 +89,7 @@ Dialog {
                     console.log("------ OPTIM NAME------")
                     console.log(fileName)
                 } catch (error) {
-                    errorDialog.text = "Erreur lors du chargement du fichier : " + error
+                    errorDialog.errorText = "Erreur lors du chargement du fichier : " + error
                     errorDialog.open()
                 }
             }
@@ -129,9 +120,9 @@ Dialog {
         id: errorDialog
         title: "Errors"
         standardButtons: Dialog.Ok
-        property string text: ""
+        property string errorText: ""
         Label {
-            text: errorDialog.text
+            text: errorDialog.errorText
         }
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
@@ -205,6 +196,8 @@ Dialog {
                     radius: 5
                     anchors.left:  parent.left
                     color: "#fcffff"
+                    border.color: "#ebebeb"
+                    border.width: 1
                     Grid{
                         leftPadding:10
                         columns: 2
@@ -215,6 +208,7 @@ Dialog {
                         }
                         CustomTextField{
                             width : 75
+                            bottomPadding: 5
                         }
                         Label{
                             text: "Target "
@@ -247,6 +241,8 @@ Dialog {
                             width: parent.width *0.8
                             radius: 5
                             color: "#fcffff"
+                            border.color: "#ebebeb"
+                            border.width: 1
                             ComboBox {
                                 leftPadding: 10
                                 width: parent.width * 0.8
@@ -284,6 +280,8 @@ Dialog {
                             width: parent.width *0.8
                             radius: 5
                             color: "#fcffff"
+                            border.color: "#ebebeb"
+                            border.width: 1
                             Rectangle{
                                 width: parent.width*0.8
                                 height: childrenRect.height
@@ -306,9 +304,14 @@ Dialog {
                 }
 
                 Label{
-                    text : "Results"
+                    id : test
+                    text : "Optimization results"
                     font.bold: true
                     leftPadding: 10
+                    /*property var model_opt:  [{"loss":{"eto_loss":{"alpha":"0.2671801616179113"}},
+                        "pn":{"SCS":{"curve_number":"94.97770026982717","i_a":"0.6771343264440949"}},
+                        "qb":{"Chapman":{"alpha":"0.3131980868925507"}},
+                        "sim":{"HUN":{"time_base":"20.129501239494967"}}}]*/
                 }
 
                 Rectangle{
@@ -317,6 +320,148 @@ Dialog {
                     anchors.horizontalCenter: parent.horizontalCenter
                     radius: 5
                     color: "#fcffff"
+                    border.color: "grey"
+                    border.width: 1
+                    Column{
+                        width: parent.width
+                        height: parent.height
+                        spacing: 5
+
+                        ListView {
+                            width: parent.width
+                            height: 125
+                            model : [automaticCalibration.optimParams]
+                            delegate:Rectangle {
+                                width: parent.width
+                                height: parent.height
+                                color: "#fcffff"
+                                border.color: "grey"
+                                border.width: 1
+                                required property var loss
+                                required property var pn
+                                required property var sim
+                                required property var qb
+                                Row{
+                                    anchors.fill: parent
+                                    Column {
+                                        spacing: 6
+                                        width: parent.width
+                                        padding: 10
+                                        Text {
+                                            text: {
+                                                console.log("*Myoptimoptions")
+                                                console.log(Object.keys(loss)[0])
+                                                let index = Object.keys(loss)[0]
+                                                let value = JSON.stringify(loss[index]).replace(/"/g, " ");
+                                                index + " : " + value
+                                            }
+                                            font.bold: true
+                                        }
+
+
+                                        Text {
+                                            text: {
+                                                let index = Object.keys(pn)[0]
+                                                let value = JSON.stringify(pn[index]).replace(/"/g, " ");
+                                                index + " : " + value
+                                            }
+                                            font.bold: true
+                                        }
+
+                                        Text {
+                                            text: {
+                                                let index = Object.keys(sim)[0]
+                                                let value = JSON.stringify(sim[index]).replace(/"/g, " ");
+                                                index + " : " + value
+                                            }
+                                            font.bold: true
+                                        }
+
+
+                                        Text {
+                                            text: {
+                                                let index = Object.keys(qb)[0]
+                                                let value = JSON.stringify(qb[index]).replace(/"/g, " ");
+                                                index + " : " + value
+                                            }
+                                            font.bold: true
+                                        }
+                                    }
+
+                                    }
+
+                            }
+
+                        }
+
+
+
+                        Grid{
+                            leftPadding: 10
+                            width: parent.width
+                            height: 75
+                            columns: 2
+                            rowSpacing:  10
+                            Text{
+                                text: "Calibration : "
+                                font.bold: true
+                            }
+                            Text{
+                                width: 50
+                                text : automaticCalibration.bestMetrics[0]
+                            }
+                            Text{
+                                text: "Validation : "
+                                font.bold: true
+                            }
+                            Text{
+                                width: 50
+                                text : automaticCalibration.bestMetrics[1]
+                            }
+                        }
+
+
+
+                        Button{
+                            id : runOptim
+                            anchors.horizontalCenter:  parent.horizontalCenter
+                            enabled: true
+                            /*icon.source: "../icons/save.png"
+                            icon.height: 15
+                            icon.width: 55
+                            icon.color: "#ffffff"*/
+                            text: "💾   Save"
+                            width: 100
+                            height: 30
+                            font.bold: true
+                            property color defaultColor: "#0b7878"
+                            property color pressedColor: "#a9e0c2"
+                            property color borderColor: "#1fa869"
+
+                            background: Rectangle {
+                                anchors.fill: parent
+                                radius: 5
+                                color: parent.pressed ? parent.pressedColor :parent.defaultColor
+                                border.width: parent.pressed  ? 1 : 0
+                                border.color: parent.pressed ? parent.borderColor : "transparent"
+                            }
+                            hoverEnabled: false
+                            onClicked: {
+                                if(!fileHandler.activate){
+                                    errorDialog.errorText = "No data load for optimization. See Data Import"
+                                    errorDialog.open()
+                                    return
+                                }
+                                saveResultsDialog.open()
+                            }
+
+
+                        }
+
+
+                    }
+
+
                 }
 
             }

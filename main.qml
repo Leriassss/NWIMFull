@@ -135,6 +135,10 @@ ApplicationWindow {
                     height: 50
                     width: parent.width
                     text: "Save Data"
+                    onClicked: {
+                        saveQSimDialog.open()
+                        saveOptions.close()
+                    }
 
                 }
 
@@ -161,6 +165,20 @@ ApplicationWindow {
          }
      }
 
+    FileChoose {
+         id: saveQSimDialog
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["txt (*.txt)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveQSimDialog.file.toString());
+             manualCalibration.saveQSim(fileName)
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
 
 
     LoadData {

@@ -408,6 +408,13 @@ Rectangle{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
                                                             width: parent.labWidth
                                                         }
+                                                        Label{
+                                                            text : "RMSE : "
+                                                        }
+                                                        Label{
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["RMSE"]
+                                                            width: parent.labWidth
+                                                        }
                                                 }
 
                                             }
@@ -509,7 +516,7 @@ Rectangle{
                                                 Grid{
                                                     width: parent.width * 0.5
                                                     height:  parent.height * 0.7
-                                                    rows: 2
+                                                    columns: 4
                                                     leftPadding: 10
                                                         property real labWidth: 40
                                                         spacing: 5
@@ -532,6 +539,13 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
+                                                            width: parent.labWidth
+                                                        }
+                                                        Label{
+                                                            text : "RMSE : "
+                                                        }
+                                                        Label{
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["RMSE"]
                                                             width: parent.labWidth
                                                         }
                                                 }
