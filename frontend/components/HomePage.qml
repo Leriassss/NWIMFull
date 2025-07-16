@@ -265,7 +265,9 @@ Rectangle{
                                 console.log("------------ HOME PAGE ---------------")
                                 console.log(JSON.stringify(homepage.parameter_bundle))
                                 //console.log(JSON.stringify(homepage.parameter_bundle2))
+                                console.log("STEP 0-0 FRONT ", Date(Date.now()))
                                 manualCalibration.setParameters(homepage.parameter_bundle2, fileHandler.ptq)
+                                console.log("STEP 0-1 FRONT ", Date(Date.now()))
                                 if(manualCalibration.errors.length !==0){
                                     console.log(JSON.stringify(manualCalibration.errors))
                                     runningErrors.errors = manualCalibration.errors
@@ -274,6 +276,7 @@ Rectangle{
                                 else{
                                     runningClicked()
                                 }
+                                console.log("STEP F FRONT ", Date(Date.now()))
                             }
                         }
 
@@ -607,10 +610,63 @@ Rectangle{
                         }
                     }
 
+                    RowLayout{
+                        id : smoothness
+                        width: parent.width
+                        height: 5
+                        spacing : 50
+                        CustomCheckDelegate{
+                            id: smoothChecked
+                            checked: false
+                            anchors.verticalCenter:  parent.verticalCenter
+                        }
+
+                        CustomSlider{
+                            id :slideSmoothing
+                            enabled: smoothChecked.checked
+                            width: 300
+                            height: parent.height
+                            step: 0.5
+                            from: 0
+                            to: 100
+                            text: "Smoothing"
+                            anchors.verticalCenter:  parent.verticalCenter
+                            onReleasedAfterPressed: {
+                                console.log("**********")
+                                console.log(value)
+                                chartMapping()
+                            }
+
+                        }
+                        CustomCheckDelegate{
+                            id: slideChecked
+                            checked: false
+                            anchors.verticalCenter:  parent.verticalCenter
+                        }
+                        CustomSlider{
+                            id :slideRolling
+                            enabled: slideChecked.checked
+                            width: 300
+                            height: parent.height
+                            step: 1
+                            from: 1
+                            to: 100
+                            //value: 25
+                            text: "Rolling"
+                            anchors.verticalCenter:  parent.verticalCenter
+                            onReleasedAfterPressed: {
+                                console.log("**********")
+                                console.log(value)
+                                chartMapping()
+                            }
+
+                        }
+                    }
+
                     Column {
                         id: plot
                         width: parent.width
-                        height: parent.height * 0.8 - parent.spacing
+                        height: parent.height * 0.8 - parent.spacing - smoothness.height
                         clip : true
 
                         SimChart{
@@ -621,28 +677,10 @@ Rectangle{
                             Connections {
                                 target: homePage
                                 function onRunningClicked(){
-                                    //console.log("------------- SIMCHART RUNNIG---------------")
-                                    //console.log(JSON.stringify(manualCalibration.simulationValues))
-                                    let dates = manualCalibration.simulationValues["DATES"]
-                                    let q_obs = manualCalibration.simulationValues["OBS"]
-                                    let q_sim = manualCalibration.simulationValues["SIM"]
-                                    if (calibrationCheckBox.checked && validationCheckBox.checked){
-                                        simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
-                                                    [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
-                                                    [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
-                                    }
-                                    else if(calibrationCheckBox.checked && !validationCheckBox.checked){
-                                        simChart.updateChart([...dates["CALIBRATION"]],
-                                                    [...q_obs["CALIBRATION"]],
-                                                    [...q_sim["CALIBRATION"]])
-                                    }
-                                    else if(!calibrationCheckBox.checked && validationCheckBox.checked){
-                                        simChart.updateChart([...dates["VALIDATION"]],
-                                                    [...q_obs["VALIDATION"]],
-                                                    [...q_sim["VALIDATION"]])
-                                    }
+                                    chartMapping()
                                 }
                             }
+
                         }
 
                     }
@@ -650,5 +688,35 @@ Rectangle{
             }
         }
 
+
+    function chartMapping(){
+        //console.log("------------- SIMCHART RUNNIG---------------")
+        //console.log(JSON.stringify(manualCalibration.simulationValues))
+        let rolling = slideRolling.enabled ? parseInt(slideRolling.value) : 0
+        let smoothing = slideSmoothing.enabled ? parseFloat(slideSmoothing.value) : 0
+        manualCalibration.smoothness(manualCalibration.simulationValues, smoothing, rolling)
+        let dates = manualCalibration.simulationValues["DATES"]
+        let q_obs = manualCalibration.simulationValues["OBS"]
+        let q_sim = manualCalibration.smoothnessValues
+
+        console.log("STEP 2 FRONT ", Date(Date.now()))
+        if (calibrationCheckBox.checked && validationCheckBox.checked){
+            console.log("STEP 3 FRONT ", Date(Date.now()))
+            simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
+                        [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
+                        [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
+            console.log("STEP 4 FRONT ", Date(Date.now()))
+        }
+        else if(calibrationCheckBox.checked && !validationCheckBox.checked){
+            simChart.updateChart([...dates["CALIBRATION"]],
+                        [...q_obs["CALIBRATION"]],
+                        [...q_sim["CALIBRATION"]])
+        }
+        else if(!calibrationCheckBox.checked && validationCheckBox.checked){
+            simChart.updateChart([...dates["VALIDATION"]],
+                        [...q_obs["VALIDATION"]],
+                        [...q_sim["VALIDATION"]])
+        }
+    }
 }
 

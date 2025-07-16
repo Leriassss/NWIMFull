@@ -64,8 +64,8 @@ Rectangle{
     Dialog {
             id: columnMappingDialog
             title: "MAPPING"
-            implicitWidth:  600
-            implicitHeight: 400
+            implicitWidth:  500
+            implicitHeight: 300
             modal: true
             popupType: Popup.Window
             //topInset : 5
@@ -115,6 +115,8 @@ Rectangle{
                     rainChart.updateChart(data_dates,fileHandler.dataDict["P"])
                     etpChart.updateChart(data_dates,fileHandler.dataDict["ETP"])
                     columnMappingDialog.close()
+                    chooseDatePopup.open()
+
                 }
 
 
@@ -355,7 +357,7 @@ Rectangle{
 
                             CalendarDialog{
                                 id : chooseDatePopup
-                                width: 500
+                                width: 350
                                 height: 250
                                 standardButtons: Dialog.Ok | Dialog.Cancel
                                 title: qsTr("CHOOSE PERIODS BEGININS")

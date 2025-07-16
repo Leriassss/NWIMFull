@@ -5,7 +5,7 @@ from dateutil import parser
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
 from itertools import zip_longest
-
+from backend.results.ResultsFileManager import ResultsFileManager
 from backend.pte.models.EToMethods import EToMethods
 from backend.pte.models.EToModel import EToModel
 from backend.pte.Eto import ETo
@@ -122,5 +122,13 @@ class EToManager(QObject):
         return self._etp_computation
 
 
+    @Slot(str)
+    def savePet(self, path):
+        if len(self._etp_computation["Dates"]) == 0:
+            self._errors.append("No data found. Please compute a PET method before")
+            self.errorsChanged.emit()
+            return
+        df = pd.DataFrame(self._etp_computation)
+        ResultsFileManager.saveData(df, path)
 
 

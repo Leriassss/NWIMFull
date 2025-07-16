@@ -72,8 +72,7 @@ Dialog {
                     ToolTip.text: qsTr("Compute")
                     onClicked: {
 
-                        regressionFile.singleCalibration(fileHandler.ptq, regComboBox.currentText)
-
+                        regressionFile.singleCalibration(fileHandler.ptq,regComboBox.currentText)
                         regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
                                     [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
                                     [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
@@ -89,7 +88,7 @@ Dialog {
                     text: qsTr("💾")
                     ToolTip.text: qsTr("Save Regression")
                     onClicked: {
-                        saveRegressionDialog.open()
+                        saveRegressionOptions.open()
                     }
                 }
             }
@@ -132,15 +131,87 @@ Dialog {
             console.log("Canceled")
          }
      }
+    Dialog {
+        id: saveRegressionOptions
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: 300
+        height: 200
+        title: "Save options"
+        Rectangle{
+            anchors.fill: parent
+            /*border.color: "grey"
+            border.width: 1*/
+            Column{
+                anchors.fill: parent
 
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Parameters"
+                    onClicked: {
+                        saveRegressionParameters.open()
+                        saveRegressionOptions.close()
+                    }
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Plot"
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Data"
+                    onClicked: {
+                        if(Object.keys(fileHandler.ptq).length ===0){
+                            regressiondataErrorsDialog.errors = ["No data found... See Data Import"]
+                            regressiondataErrorsDialog.open()
+                            saveRegressionOptions.close()
+                            return
+                        }
+                        saveRegressionQSim.open()
+                        saveRegressionOptions.close()
+                    }
+
+                }
+
+            }
+
+        }
+
+
+    }
+    DataErrorsDialog {
+        id: regressiondataErrorsDialog
+        title: "❌ ERREURS DETECTEES !!!"
+        standardButtons: Dialog.Ok
+        width: 400
+        height: 300
+        errors: regressionFile.errors
+
+    }
     FileChoose {
-         id: saveRegressionDialog
+         id: saveRegressionParameters
          title: "Please choose a folder"
          fileMode: FileChoose.SaveFile
          nameFilters: ["JSON (*.json)"]
          property string fileName: ""
          onAccepted: {
-            fileName = cleanFilePath(saveRegressionDialog.file.toString());
+            fileName = cleanFilePath(saveRegressionParameters.file.toString());
             regressionFile.saveParameters(regComboBox.currentText, fileName)
 
          }
@@ -149,6 +220,21 @@ Dialog {
          }
      }
 
+    FileChoose {
+         id: saveRegressionQSim
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["txt (*.txt)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveRegressionQSim.file.toString());
+            regressionFile.saveQSim(fileName)
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
     Dialog {
         id: errorDialog
         title: "Errors"

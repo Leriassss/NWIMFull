@@ -3,8 +3,7 @@ import QtQuick.Controls.Basic
 
 CheckDelegate {
     id: control
-    text: qsTr("CheckDelegate")
-    checked: true
+
 
     contentItem: Text {
         rightPadding: control.indicator.width + control.spacing

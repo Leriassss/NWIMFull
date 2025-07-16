@@ -207,6 +207,7 @@ Dialog {
                             text: "Nb iterations "
                         }
                         CustomTextField{
+                            id : nbIter
                             width : 75
                             bottomPadding: 5
                         }
@@ -214,6 +215,7 @@ Dialog {
                             text: "Target "
                         }
                         CustomTextField{
+                            id : target
                             width : 75
                         }
 
@@ -228,7 +230,7 @@ Dialog {
                     leftPadding: 10
                     Column{
                         height: parent.height
-                        width: parent.width*0.5
+                        width: parent.width*0.3
                         spacing : 10
 
                         Label{
@@ -267,8 +269,9 @@ Dialog {
 
 
                     Column{
+
                         height: parent.height
-                        width: parent.width*0.5
+                        width: parent.width*0.7 - parent.spacing -2*parent.leftPadding
                         //border.width: 1
                         spacing : 10
                         Label{
@@ -277,24 +280,33 @@ Dialog {
                         }
                         Rectangle{
                             height: 100
-                            width: parent.width *0.8
+                            width: parent.width
                             radius: 5
                             color: "#fcffff"
                             border.color: "#ebebeb"
                             border.width: 1
-                            Rectangle{
-                                width: parent.width*0.8
-                                height: childrenRect.height
-                                anchors.centerIn: parent
-                                Parameters{
-                                    id : optimizationParameter
-                                    width: parent.width*0.8
-                                    height: childrenRect.height
-                                    spacing: 10
-                                    parameterModel : TestQML{}
-                                    factoryName : "Optimization"
+                            ScrollView{
+                                leftPadding: 10
+                                width: parent.width
+                                height: 100
+                                contentHeight : 200
+                                Rectangle{
+                                    height: parent.height * 0.9
+                                    width: parent.width  * 0.8
+                                    anchors.centerIn: parent
+                                    Parameters{
+                                        id : optimizationParameter
+                                        width: parent.width
+                                        height: childrenRect.height
+                                        spacing: 10
+                                        parameterModel : TestQML{}
+                                        factoryName : "Optimization"
+                                    }
+
                                 }
                             }
+
+
 
 
                         }

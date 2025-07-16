@@ -102,11 +102,6 @@ class Simulation:
 
         qsim_total = qsim+qbase_rev_corr
         
-        smooth_operation = Smooth(np.maximum(0,qsim_total))
-
-        qsim_total = smooth_operation.compute("rolling",self.output_lim)
-        qsim_total = smooth_operation.compute("smoothing",self.window)
-
         evaluator = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
@@ -144,12 +139,6 @@ class Simulation:
 
         qbase_rev_corr = pd.Series(self.qbase_model.validation_routine(baseflow_bundle))
         qsim_total = qsim + qbase_rev_corr
-
-        smooth_operation = Smooth(np.maximum(0,qsim_total))
-
-        qsim_total = smooth_operation.compute("rolling",self.output_lim)
-        qsim_total = smooth_operation.compute("smoothing",self.window)
-
 
         evaluator = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
         results = evaluator.get_metrics_by_list_names(self.Metrics)

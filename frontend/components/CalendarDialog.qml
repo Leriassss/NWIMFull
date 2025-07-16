@@ -6,8 +6,8 @@ Dialog{
     id : calendarDialog
     property var calibration_dates
     property var user_calibration: {
-        "calibration": ["", ""],
-        "validation": ["", ""]
+        "calibration": ["1999-01-01", "2000-12-31"],
+        "validation": ["2001-01-01", "2003-12-31"]
     }
 
 

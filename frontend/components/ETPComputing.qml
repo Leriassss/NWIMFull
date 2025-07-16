@@ -23,44 +23,13 @@ Dialog {
     x: Math.round((parent.width - width) / 2)
     y: Math.round((parent.height - height) / 2)
 
-    Dialog {
-        id: dataErrorsDialog
+    DataErrorsDialog{
+        id: petErrorsDialog
         title: "❌ ERREURS DETECTEES !!!"
         standardButtons: Dialog.Ok
         width: 400
         height: 300
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
-
-        property var errors: etoManager.errors
-
-        Rectangle{
-            anchors.fill: parent
-            border.width: 1
-            ListView {
-                id: errorListView
-                model: dataErrorsDialog.errors
-                anchors.fill: parent
-                delegate: Item {
-                    width: errorListView.width
-                    height: 20
-                    Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        //color: "lightgray"
-                        border.color: "gray"
-                        Text {
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            padding: 5
-                            text: modelData
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                }
-            }
-
-            }
+        errors: etoManager.errors
     }
 
     FileChoose {
@@ -86,7 +55,20 @@ Dialog {
         }
 
     }
-
+    FileChoose {
+         id: savePET
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["txt (*.txt)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(savePET.file.toString());
+             etoManager.savePet(fileName)
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
     Dialog {
         id: errorDialog
         title: "Errors"
@@ -482,15 +464,15 @@ Dialog {
 
                                     if(etoManager.errors.length !==0){
 
-                                        dataErrorsDialog.open()
+                                        petErrorsDialog.open()
                                     }
                                     else{
                                         try {
                                             etoManager.computeETo()
 
                                         } catch (error) {
-                                            errorDialog.text = "Les paramètres requis n'ont pas étét fournis "
-                                            errorDialog.open()
+                                            petErrorsDialog.errors = ["Required parameters not supplied "]
+                                            petErrorsDialog.open()
                                         }
                                         populateTable(etoManager.etpComputed)
 
@@ -549,7 +531,7 @@ Dialog {
                             text : "Save"
                             width: 90
                             height: parent.height
-                            flat : true
+
                             font.bold: true
                             background: Rectangle{
                                 anchors.fill: parent
@@ -558,7 +540,14 @@ Dialog {
                                 border.width: 1
                                 color: "#fcffff"
                             }
-
+                            onClicked:{
+                                if(etoManager.etpComputed["Dates"].length ===0){
+                                    petErrorsDialog.errors = ["No data found. Please compute a PET method before"]
+                                    petErrorsDialog.open()
+                                    return
+                                }
+                                savePET.open()
+                            }
                         }
                     }
 

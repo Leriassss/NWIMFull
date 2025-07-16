@@ -57,10 +57,10 @@ class DEModel:
         """
         try:
             if key == "maxiter":
-                if not isinstance(value, int) or value <= 0:
+                if int(value) <= 0:
                     raise ValueError("maxiter doit être un entier positif.")
             elif key == "popsize":
-                if not isinstance(value, int) or value <= 0:
+                if int(value) <= 0:
                     raise ValueError("popsize doit être un entier positif.")
             elif key == "tol":
                 value = float(value)

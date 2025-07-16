@@ -2,9 +2,6 @@ import pandas as pd
 import numpy as np
 
 class Smooth:
-    def __init__(self,qsim):
-        self._qsim = qsim
-
     def laminage(self, o_l, a, index):
         c = a.copy()
         excess = a[index] - o_l
@@ -17,9 +14,9 @@ class Smooth:
             i += 1
         return c
     
-    def compute_laminage(self, output_limit):
+    def compute_laminage(self, qsim, output_limit):
         limit_reach = True
-        c = self._qsim.copy()
+        c = np.array(qsim)
         while limit_reach :
             indexes = np.where(c > output_limit)[0]
             if len(indexes) > 0 :
@@ -29,8 +26,8 @@ class Smooth:
                 limit_reach = False
         return c
     
-    def compute_lissage(self, window):
-        return pd.Series(self._qsim).rolling(window=window, center=True, min_periods=1).mean() 
+    def compute_lissage(self, qsim, window):
+        return pd.Series(qsim).rolling(window=window, center=True, min_periods=1).mean()
     
     def compute(self, method, args):
         return self.methods()[method](args)

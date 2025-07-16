@@ -8,7 +8,7 @@ from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
 
 from backend.ptq.PTQ import PTQ
-from backend.results.ResultsFileManager import ResultsFileManager
+
 from backend.simulation.Simulation import Simulation
 from backend.simulation.models.SimulationModel import SimulationModel
 from backend.regressor.Regressor import Regressor
@@ -24,12 +24,19 @@ class RegressionFile(QObject):
                     "VALIDATION" : None}
         self._metrics_summary = { }
         self._regressor = "NSE"
+        self._sim_finished = False
+        self._ptq = {}
 
     parameters_type = ["pn","qb","sim","loss"]
     dataParametersListChanged = Signal()
     simvaluesChanged = Signal()
     metricsSummaryChanged = Signal()
     currentRegressorChanged = Signal()
+    errorsChanged = Signal()
+
+    @Property(list, notify=errorsChanged)
+    def errors(self):
+        return self._errors
 
     @Property(list, constant = True)
     def regressors(self):
@@ -68,11 +75,28 @@ class RegressionFile(QObject):
 
     @Slot(dict, str)
     def singleCalibration(self, ptq, regressor):
+        self._sim_finished = False
+        self._errors = []
+        self._ptq = ptq
+        print("-------- SC RF -------")
+        print(self._ptq.keys())
+        if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+            self._errors.append("Calibration and validation datas not found")
+            self.errorsChanged.emit()
+            return
+
+        if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
+            self._errors.append("Calibration and validation datas not not provided")
+            self.errorsChanged.emit()
+            return
+
         if not regressor in Regressor.methodsList():
             self._errors.append("Provided regressor or metric are non-correct")
+            self.errorsChanged.emit()
             return
         calibration_df = pd.DataFrame(ptq["CALIBRATION"])
         validation_df = pd.DataFrame(ptq["VALIDATION"])
+
 
         ptq_calibration = PTQ(calibration_df["P"], calibration_df["ETP"],
         calibration_df["Q"], calibration_df["Dates"])
@@ -100,9 +124,11 @@ class RegressionFile(QObject):
 
             else:
                 self._errors.append("Required methods not provided")
+                self.errorsChanged.emit()
 
             if any(item is None for values in dict_params.values() for item in values):
                 self._errors.append("Provided parameters are non-correct")
+                self.errorsChanged.emit()
                 return
 
             sim = Simulation(dict_methods["pn"],dict_methods["qb"],
@@ -123,15 +149,33 @@ class RegressionFile(QObject):
         self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
         self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
 
+        self._sim_finished = True
         metrics_calibration = reg_method[1][0]
         metrics_validation = reg_method[1][1]
-
-
 
         self._metrics_summary = merged = {k: [float(metrics_calibration[k]), float(metrics_validation[k])] for k in metrics_calibration}
 
         self.simvaluesChanged.emit()
         self.metricsSummaryChanged.emit()
+
+    @Slot(str)
+    def saveQSim(self, path):
+        self._errors = []
+        if self._sim_finished :
+            print("**- SQS/**")
+            print(len(np.concatenate([self._ptq["CALIBRATION"]["Dates"],self._ptq["VALIDATION"]["Dates"]])))
+            print(len(np.concatenate([self._ptq["CALIBRATION"]["Q"],self._ptq["VALIDATION"]["Q"]])))
+            print(len(np.concatenate([self._sim["CALIBRATION"],self._sim["VALIDATION"]])))
+            df = pd.DataFrame({
+                    "Dates":np.concatenate([self._ptq["CALIBRATION"]["Dates"],self._ptq["VALIDATION"]["Dates"]]),
+                    "Obs" : np.concatenate([self._ptq["CALIBRATION"]["Q"],self._ptq["VALIDATION"]["Q"]]),
+                    "Sim" : np.concatenate([self._sim["CALIBRATION"],self._sim["VALIDATION"]])
+                    })
+            ResultsFileManager.saveData(df, path)
+        else :
+            self._errors.append("No data found... Please run a model before")
+            self.errorsChanged.emit()
+
 
     @Slot(str, str)
     def saveParameters(self,regressor,path):

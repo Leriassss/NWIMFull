@@ -69,10 +69,10 @@ class GAModel:
         """
         try:
             if key == "max_num_iteration":
-                if not isinstance(value, int) or value <= 0:
+                if int(value) <= 0:
                     raise ValueError("max_num_iteration doit être un entier positif.")
             elif key == "population_size":
-                if not isinstance(value, int) or value <= 0:
+                if  int(value) <= 0:
                     raise ValueError("population_size doit être un entier positif.")
             elif key == "mutation_probability":
                 value = float(value)
