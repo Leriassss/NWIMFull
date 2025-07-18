@@ -12,7 +12,7 @@ import "frontend/components"
 
 ApplicationWindow {
     visible: true
-    minimumWidth: 1350
+    //minimumWidth: 1350
     minimumHeight: 750
     maximumWidth: 1350
     maximumHeight: 750
@@ -46,6 +46,9 @@ ApplicationWindow {
         }
         onPetTriggered: {
             etpComputing.open()
+        }
+        onBaseFlowTriggered: {
+            baseflow.open()
         }
     }
     header: ToolBar {
@@ -199,6 +202,9 @@ ApplicationWindow {
 
     Regression{
         id: regression
+    }
+    BaseFlow{
+        id: baseflow
     }
 
     function cleanFilePath(filePath) {

@@ -19,16 +19,18 @@ class RegressionFile(QObject):
         self._errors = []
         self._data_parameters = {}
         self._data_parameters_list = []
+        self._data_qsim_list = []
         self._metrics = Simulation.Metrics
         self._sim = {"CALIBRATION":None,
                     "VALIDATION" : None}
         self._metrics_summary = { }
-        self._regressor = "NSE"
+        self._regressor = {"model" : None, "hyperparameters" : None}
         self._sim_finished = False
-        self._ptq = {}
+
 
     parameters_type = ["pn","qb","sim","loss"]
     dataParametersListChanged = Signal()
+    dataQSimListChanged = Signal()
     simvaluesChanged = Signal()
     metricsSummaryChanged = Signal()
     currentRegressorChanged = Signal()
@@ -42,7 +44,15 @@ class RegressionFile(QObject):
     def regressors(self):
         return Regressor.methodsList()
 
-    @Property(str, notify = currentRegressorChanged)
+    @Property(list, notify = dataQSimListChanged)
+    def qSimList(self):
+        return self._data_qsim_list
+
+    @Property(list, notify = dataParametersListChanged)
+    def parametersList(self):
+        return self._data_parameters_list
+
+    @Property(dict, notify = currentRegressorChanged)
     def currentRegressor(self):
         return self._regressor
 
@@ -73,10 +83,20 @@ class RegressionFile(QObject):
             self._data_parameters_list.append(model_data)
         self.dataParametersListChanged.emit()
 
+    @Slot(list)
+    def getQSim(self, paths):
+        for path in paths :
+            path = path.toString()[8:]
+            self._data_qsim_list.append({"id" : path,"data" : pd.read_table(path, sep= '\t', header = 0)})
+        self.dataQSimListChanged.emit()
+
     @Slot(dict, str)
     def singleCalibration(self, ptq, regressor):
         self._sim_finished = False
         self._errors = []
+        self._sim = {"CALIBRATION":None,
+                    "VALIDATION" : None,
+                    "HYPERPARAMETERS" : None}
         self._ptq = ptq
         print("-------- SC RF -------")
         print(self._ptq.keys())
@@ -149,6 +169,9 @@ class RegressionFile(QObject):
         self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
         self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
 
+        self._regressor = {"model" : regressor, "hyperparameters" : reg_method[0].params}
+
+
         self._sim_finished = True
         metrics_calibration = reg_method[1][0]
         metrics_validation = reg_method[1][1]
@@ -157,6 +180,77 @@ class RegressionFile(QObject):
 
         self.simvaluesChanged.emit()
         self.metricsSummaryChanged.emit()
+        self.currentRegressorChanged.emit()
+
+
+    @Slot(dict, str)
+    def qSimRegression(self, ptq, regressor):
+            self._sim_finished = False
+            self._errors = []
+            self._ptq = ptq
+            print("-------- QSR RF -------")
+            print(self._ptq.keys())
+            if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+                self._errors.append("Calibration and validation datas not found")
+                self.errorsChanged.emit()
+                return
+
+            if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
+                self._errors.append("Calibration and validation datas not not provided")
+                self.errorsChanged.emit()
+                return
+
+            if not regressor in Regressor.methodsList():
+                self._errors.append("Provided regressor or metric are non-correct")
+                self.errorsChanged.emit()
+                return
+            calibration_df = pd.DataFrame(ptq["CALIBRATION"])
+            validation_df = pd.DataFrame(ptq["VALIDATION"])
+
+
+            ptq_calibration = PTQ(calibration_df["P"], calibration_df["ETP"],
+            calibration_df["Q"], calibration_df["Dates"])
+
+            ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
+            validation_df["Q"], validation_df["Dates"])
+
+            sm_list = []
+            reg = None
+            calibration_dates = pd.to_datetime(calibration_df["Dates"])
+            validation_dates = pd.to_datetime(validation_df["Dates"])
+            print("RF SC; self._data_qsim_list : ", self._data_qsim_list)
+            for json_data_dict in self._data_qsim_list.copy() :
+                if set(json_data_dict["data"].columns.tolist()) != set(['Dates', 'Obs', 'Sim']) :
+                    self._errors.append("Wrong data format")
+                    self.errorsChanged.emit()
+                    return
+
+                df = dict(json_data_dict)["data"]
+                df["Dates"] = pd.to_datetime(df["Dates"])
+                df.index = df["Dates"]
+
+                sm = SimulationModel(df["Sim"].loc[calibration_dates].tolist(),
+                                    df["Sim"].loc[validation_dates].tolist(), None, None, None)
+
+                reg = Regressor(ptq_calibration,ptq_validation)
+                sm_list.append(sm)
+
+
+            reg_method = reg.methods()[regressor](sm_list)
+
+            self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
+            self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
+
+            self._sim_finished = True
+            metrics_calibration = reg_method[1][0]
+            metrics_validation = reg_method[1][1]
+
+            self._metrics_summary = merged = {k: [float(metrics_calibration[k]), float(metrics_validation[k])] for k in metrics_calibration}
+
+            self.simvaluesChanged.emit()
+            self.metricsSummaryChanged.emit()
+            self.currentRegressorChanged.emit()
+
 
     @Slot(str)
     def saveQSim(self, path):
@@ -181,7 +275,7 @@ class RegressionFile(QObject):
     def saveParameters(self,regressor,path):
         parameter_bundle = {
             "datalist" : self._data_parameters_list,
-            "regressor" : regressor
+            "regressor" : self._regressor
         }
         ResultsFileManager.save_regression_results(parameter_bundle, path)
 
@@ -194,18 +288,20 @@ class RegressionFile(QObject):
             self.dataParametersListChanged.emit()
 
     @Slot(str)
+    def deleteQSim(self,id):
+        ids = [ model["id"] for model in self._data_qsim_list]
+        index = ids.index(id)
+        if(index != -1):
+            self._data_qsim_list.pop(index)
+            self.dataQSimListChanged.emit()
+
+    @Slot(str)
     def loadParameters(self,path):
         parameter_bundle = ResultsFileManager.load_regression_results(path)
         self._data_parameters_list = parameter_bundle["datalist"]
         self._regressor = parameter_bundle["regressor"]
         self.dataParametersListChanged.emit()
         self.currentRegressorChanged.emit()
-
-
-
-    @Property(list, notify = dataParametersListChanged)
-    def parametersList(self):
-        return self._data_parameters_list
 
 
     def check_keys_match(self, d, keys_list):

@@ -119,6 +119,7 @@ class FileHandler(QObject):
     @Slot(dict)
     def updateCalibrationAndValibationDates(self, dates):
         self._errors = []
+        self._activate = False
 
         try : 
             dates_list = self.setPeriodsDates(dates)

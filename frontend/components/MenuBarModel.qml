@@ -11,6 +11,7 @@ MenuBar {
     signal regressionTriggered
     signal petTriggered
     signal saveTriggered
+    signal baseFlowTriggered
     Menu {
         title: qsTr("File")
         Action {
@@ -50,14 +51,17 @@ MenuBar {
         }
         Action {
             text: qsTr("Baseflow Computing")
+            onTriggered: baseFlowTriggered()
         }
         Action {
             text: qsTr("Machine Learning")
             onTriggered: regressionTriggered()
         }
-        Action {
-            text: qsTr("Smoothness")
-        }
+
+    }
+    Menu {
+        title: qsTr("Forecasting")
+        Action { text: qsTr("Sim") }
     }
     Menu {
         title: qsTr("&Help")

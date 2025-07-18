@@ -67,8 +67,6 @@ Rectangle{
             implicitWidth:  500
             implicitHeight: 300
             modal: true
-            popupType: Popup.Window
-            //topInset : 5
             standardButtons: Dialog.Ok | Dialog.Cancel
             closePolicy : Popup.CloseOnEscape
             x: Math.round((parent.width - width) / 2)
@@ -125,6 +123,9 @@ Rectangle{
             Rectangle{
                 anchors.fill: parent
                 border.width: 1
+                border.color: "grey"
+                color : "#fcffff"
+
 
                 GridLayout {
                     height: parent.height

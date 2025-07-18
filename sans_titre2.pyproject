@@ -45,6 +45,7 @@
         "frontend/components/CustomTabBarButton.qml",
         "frontend/components/CustomRadioButton.qml",
         "frontend/components/CustomTextField.qml",
-        "frontend/components/CustomSlider.qml"
+        "frontend/components/CustomSlider.qml",
+        "frontend/components/BaseFlow.qml"
     ]
 }

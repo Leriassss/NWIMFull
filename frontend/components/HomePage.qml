@@ -52,7 +52,7 @@ Rectangle{
         spacing: 20
         clip: true
             Rectangle{
-                width: parent.width * 0.2
+                width: parent.width * 0.17
                 height: parent.height
                 anchors.left: parent.left
                 clip: true
@@ -289,7 +289,7 @@ Rectangle{
             Rectangle {
                 color: "#fcffff"
                 id: simulationPane
-                width: parent.width * 0.80 - parent.spacing
+                width: parent.width * 0.83 - parent.spacing
                 height: parent.height
                 //border.width: 1
                 anchors.right: parent.right
@@ -298,15 +298,15 @@ Rectangle{
                     GradientStop { position: 0.0; color: "#cecece" } // bord haut-gauche
                     GradientStop { position: 1.0; color: "#f0f0f0" } // bord bas-droit
                 }*/
-                Column {
+                ColumnLayout {
                     width: parent.width
                     height: parent.height
                     spacing: 25
 
                     Rectangle {
                         id: plotOptions
-                        width: parent.width
-                        height: parent.height * 0.2
+                        Layout.preferredWidth:  parent.width
+                        Layout.preferredHeight:  parent.height*0.2
                         Column {
                             width: parent.width
                             height: parent.height
@@ -385,10 +385,11 @@ Rectangle{
                                                 Grid{
                                                     width: parent.width * 0.5
                                                     height:  parent.height * 0.7
+                                                    rowSpacing: 10
                                                     columns: 4
                                                     leftPadding: 10
-                                                        property real labWidth: 40
-                                                        spacing: 5
+                                                    property real labWidth: 40
+                                                        //spacing: 5
                                                         Text{
                                                             text: "NSE : "
 
@@ -431,8 +432,8 @@ Rectangle{
                                                     height:  parent.height * 0.7
                                                     columns : 4
                                                     leftPadding: 10
-                                                        property real labWidth: 40
-                                                        spacing: 5
+                                                    property real labWidth: 40
+                                                    rowSpacing: 10
                                                         Label{
                                                             text: "P : "
                                                         }
@@ -521,8 +522,8 @@ Rectangle{
                                                     height:  parent.height * 0.7
                                                     columns: 4
                                                     leftPadding: 10
-                                                        property real labWidth: 40
-                                                        spacing: 5
+                                                    property real labWidth: 40
+                                                    rowSpacing: 10
                                                         Label{
                                                             text: "NSE : "
                                                         }
@@ -564,8 +565,8 @@ Rectangle{
                                                     height:  parent.height * 0.7
                                                     rows: 2
                                                     leftPadding: 10
-                                                        property real labWidth: 40
-                                                        spacing: 5
+                                                    property real labWidth: 40
+                                                    rowSpacing: 10
                                                         Label{
                                                             text: "P : "
                                                         }
@@ -612,8 +613,8 @@ Rectangle{
 
                     RowLayout{
                         id : smoothness
-                        width: parent.width
-                        height: 5
+                        Layout.preferredWidth:  parent.width
+                        Layout.preferredHeight:  5
                         spacing : 50
                         CustomCheckDelegate{
                             id: smoothChecked
@@ -624,8 +625,8 @@ Rectangle{
                         CustomSlider{
                             id :slideSmoothing
                             enabled: smoothChecked.checked
-                            width: 300
-                            height: parent.height
+                            Layout.preferredWidth: 300
+                            Layout.preferredHeight: parent.height
                             step: 0.5
                             from: 0
                             to: 100
@@ -646,8 +647,8 @@ Rectangle{
                         CustomSlider{
                             id :slideRolling
                             enabled: slideChecked.checked
-                            width: 300
-                            height: parent.height
+                            Layout.preferredWidth: 300
+                            Layout.preferredHeight: parent.height
                             step: 1
                             from: 1
                             to: 100
@@ -665,8 +666,8 @@ Rectangle{
 
                     Column {
                         id: plot
-                        width: parent.width
-                        height: parent.height * 0.8 - parent.spacing - smoothness.height
+                        Layout.preferredWidth:  parent.width
+                        Layout.preferredHeight:  parent.height * 0.8 - parent.spacing - smoothness.height
                         clip : true
 
                         SimChart{

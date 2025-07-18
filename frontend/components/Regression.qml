@@ -26,6 +26,8 @@ Dialog {
         color: "#fcffff"
     }
 
+    property bool modelRegression: true
+    property bool qSimRegression: false
 
     header: ToolBar {
             id: toolBar
@@ -48,6 +50,7 @@ Dialog {
                     ToolTip.text: qsTr("Load Regression")
                     onClicked: {
                         loadRegressionDialog.open()
+                        modelRegression = true
                     }
                 }
                 ToolSeparator{
@@ -59,7 +62,7 @@ Dialog {
                     text: qsTr("➕")
                     ToolTip.text: qsTr("Add Model")
                     onClicked: {
-                        loadFileDialog.open()
+                        loadOptions.open()
                     }
                 }
                 ToolSeparator{
@@ -70,12 +73,25 @@ Dialog {
                     height: parent.height
                     text: qsTr("🟢")
                     ToolTip.text: qsTr("Compute")
+                    enabled: fileHandler.activate
                     onClicked: {
+                        console.log("modelRegression ", modelRegression)
+                        console.log("qSimRegression ", qSimRegression)
+                        console.log("filehandler.activate ", fileHandler.activate)
+                        if(modelRegression){
+                            regressionFile.singleCalibration(fileHandler.ptq,regComboBox.currentText)
+                            regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
+                                        [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
+                                        [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
+                        }
+                        if(qSimRegression){
+                            regressionFile.qSimRegression(fileHandler.ptq,regComboBox.currentText)
+                            regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
+                                        [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
+                                        [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
+                        }
 
-                        regressionFile.singleCalibration(fileHandler.ptq,regComboBox.currentText)
-                        regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
-                                    [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
-                                    [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
+
 
                     }
                 }
@@ -97,6 +113,59 @@ Dialog {
 
        }
 
+    Dialog {
+        id: loadOptions
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: 300
+        height: 150
+        title: "Load options"
+        Rectangle{
+            anchors.fill: parent
+            /*border.color: "grey"
+            border.width: 1*/
+            Column{
+                anchors.fill: parent
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Load Parameters"
+                    onClicked: {
+                        loadModelDialog.open()
+                        loadOptions.close()
+                        modelRegression = true
+                        qSimRegression = false
+                    }
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Load QSim"
+                    onClicked: {
+                        loadQSimDialog.open()
+                        loadOptions.close()
+                        modelRegression = false
+                        qSimRegression = true
+                    }
+
+                }
+
+
+            }
+
+        }
+
+
+    }
+
     FileChoose {
          id: loadRegressionDialog
          title: "Please choose a folder"
@@ -106,7 +175,7 @@ Dialog {
             let fileName = cleanFilePath(loadRegressionDialog.file.toString());
             regressionFile.loadParameters(fileName)
 
-            let index = regComboBox.model.indexOf(regressionFile?.currentRegressor)
+            let index = regComboBox.model.indexOf(regressionFile?.currentRegressor["model"])
                  console.log(index)
                  if (index >= 0)
                     regComboBox.currentIndex = index;
@@ -119,16 +188,24 @@ Dialog {
      }
 
     FileChoose {
-         id: loadFileDialog
+         id: loadModelDialog
          title: "Please choose a folder"
          nameFilters: ["JSON (*.json)"]
          fileMode: FileChoose.OpenFiles
          onAccepted: {
-            regressionFile.getParameters(loadFileDialog.files)
+            regressionFile.getParameters(loadModelDialog.files)
 
          }
-         onRejected: {
-            console.log("Canceled")
+     }
+
+    FileChoose {
+         id: loadQSimDialog
+         title: "Please choose a folder"
+         nameFilters: ["txt (*.txt)"]
+         fileMode: FileChoose.OpenFiles
+         onAccepted: {
+            regressionFile.getQSim(loadQSimDialog.files)
+
          }
      }
     Dialog {
@@ -299,6 +376,7 @@ Dialog {
                 Rectangle{
                     width: parent.width
                     height: parent.height
+                    visible: modelRegression
                     Component {
                         id : paramsComponent
                         Rectangle {
@@ -389,6 +467,53 @@ Dialog {
 
                 }
 
+                Rectangle{
+                    width: parent.width
+                    height: parent.height
+                    visible: qSimRegression
+                    ListView {
+                        anchors.fill: parent
+                        model: regressionFile.qSimList
+                        delegate:Rectangle {
+                            width: parent.width
+                            height: 100
+                            color: "white"
+                            border.color: "gray"
+                            border.width: 1
+                            required property string id
+
+
+                            Row{
+                                anchors.fill: parent
+                                Column {
+                                    spacing: 6
+                                    width: parent.width
+                                    padding: 10
+                                    Button{
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        text: "🗑️"
+                                        width: 100
+                                        //color : "red"
+                                        onClicked: {
+                                           regressionFile.deleteQSim(id)
+                                        }
+                                    }
+                                    Text {
+                                        anchors.left: parent.left
+                                        text: "File : " + id
+                                        font.bold: true
+                                    }
+
+                                }
+
+                                }
+
+                        }
+
+                    }
+
+
+                }
 
             }
 
@@ -425,27 +550,51 @@ Dialog {
                 Row{
                     spacing: 5
                     width: parent.width
-                    height: parent.height * 0.1
+                    height: parent.height * 0.15
 
                     GroupBox{
                         height: parent.height
-                        width: parent.width * 0.3
+                        width: parent.width * 0.6
                         title: "Regressor"
 
 
-                        ColumnLayout{
+                        RowLayout{
                             anchors.fill: parent
-                            //border.width: 1
-
-                            spacing : 10
                             ComboBox {
                                 leftPadding: 10
-                                Layout.preferredWidth: parent.width * 0.6
+                                Layout.preferredWidth: 150
                                 Layout.alignment: Qt.AlignHCenter
                                 Layout.preferredHeight: 20
                                 id: regComboBox
                                 model:regressionFile?.regressors
                             }
+                            Rectangle{
+                                Layout.preferredWidth: parent.width - regComboBox.width - parent.spacing
+                                Layout.preferredHeight: parent.height
+                                radius : 5
+                                ColumnLayout{
+                                    anchors.fill: parent
+                                    spacing: 5
+                                    Label{
+                                        text: "Hyperparameters"
+                                        Layout.alignment: Qt.AlignHCenter
+                                        font.bold: true
+
+                                    }
+
+                                    Label{
+                                        visible: modelRegression
+                                        text : JSON.stringify(regressionFile?.currentRegressor["hyperparameters"])
+                                        leftPadding: 5
+                                        wrapMode: Text.Wrap
+                                        //Layout.preferredWidth: parent.width
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+                                }
+
+                            }
+
+
                         }
 
 
@@ -453,7 +602,7 @@ Dialog {
 
                     GroupBox{
                         height: parent.height
-                        width: parent.width * 0.7 - parent.spacing
+                        width: parent.width * 0.4 - parent.spacing
                         title: "Criteria"
 
 
@@ -500,7 +649,7 @@ Dialog {
                 Rectangle {
                     id: simParameters
                     width: parent.width
-                    height: parent.height * 0.8
+                    height: parent.height * 0.8 - parent.spacing
                     color : "transparent"
 
                     SimChart{

@@ -27,7 +27,7 @@ class Regressor:
         return best_calibration_results, best_validation_results
 
     def knn(self, models_results : SimulationModel):
-        n = 35
+        n = 100
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
 
         
@@ -42,6 +42,7 @@ class Regressor:
         grid_search.fit(best_calibration_results, self.calage.q)
 
         best_knn = grid_search.best_estimator_
+        print("Regressor knn : ", grid_search.best_params_)
 
         q_sim_knn_calage = np.maximum(0, best_knn.predict(best_calibration_results))
         q_sim_knn_validation = np.maximum(0, best_knn.predict(best_validation_results))
