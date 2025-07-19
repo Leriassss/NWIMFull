@@ -85,7 +85,6 @@ class BaseFlowSimulation(QObject):
         self._errors = []
         self._activated = False
         data_dict_values = { key: self._data[value] for key, value in columnMapping.items() }
-        print("self._data : ", data_dict_values)
         if not self.check_keys_match(data_dict_values, ["Dates","Q"]):
             self._errors.append("Des Colonnes de données sont manquantes!")
             self.errorsChanged.emit()

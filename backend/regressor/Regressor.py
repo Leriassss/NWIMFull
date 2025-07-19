@@ -9,6 +9,7 @@ from backend.ptq.PTQ import PTQ
 from backend.criteria.Criteria import Criteria
 import pandas as pd
 import numpy as np
+import xgboost as xgb
 
 from backend.simulation.models.SimulationModel import SimulationModel
 from permetrics.regression import RegressionMetric
@@ -141,15 +142,45 @@ class Regressor:
 
         return SimulationModel(q_sim_cal, q_sim_val, grid_search.best_params_, metrics_cal, metrics_val), [metrics_cal, metrics_val]
 
+    def xgboost_model(self, models_results):
+        best_calibration_results, best_validation_results = self._prepare_data(models_results)
+        parameters_grid = {
+            'max_depth': [4, 5, 6],
+            'learning_rate': [0.1, 0.2, 0.3],
+            'n_estimators': [50, 100, 150],
+            'gamma': range(0, 20),
+            'subsample': [0.8, 1],
+            'colsample_bytree': [0.8, 1],
+            'lambda': [0, 0.1, 1],
+            'tree_method': ['auto','exact','hist'],
+            'eval_metric': ["mae"]
+        }
+
+        xgboost = xgb.XGBRegressor()
+
+        grid_search = GridSearchCV(xgboost, parameters_grid, cv=5, scoring="neg_mean_absolute_error")
+        grid_search.fit(best_calibration_results, self.calage.q)
+        best_xgb = grid_search.best_estimator_
+
+        q_sim_cal = np.maximum(0, best_xgb.predict(best_calibration_results))
+        q_sim_val = np.maximum(0, best_xgb.predict(best_validation_results))
+
+        metrics_cal = RegressionMetric(np.array(self.calage.q), np.array(q_sim_cal)).get_metrics_by_list_names(self.Metrics)
+        metrics_val = RegressionMetric(np.array(self.validation.q), np.array(q_sim_val)).get_metrics_by_list_names(self.Metrics)
+
+        return SimulationModel(q_sim_cal, q_sim_val, grid_search.best_params_, metrics_cal, metrics_val), [metrics_cal, metrics_val]
+
+
     def methods(self):
         return {
-        "knn" : self.knn,
-        "linreg" : self.linreg,
-        "ridge": self.ridgereg,
-        "svm": self.svm,
-        "random_forest": self.random_forest
+            "knn" : self.knn,
+            "linreg" : self.linreg,
+            "ridge": self.ridgereg,
+            "svm": self.svm,
+            "random_forest": self.random_forest,
+            "xgboost" : self.xgboost_model
+        }
 
-    }
     @staticmethod
     def methodsList():
         return [
@@ -157,5 +188,6 @@ class Regressor:
         "linreg",
         "ridge",
         "svm",
-        "random_forest"
+        "random_forest",
+        "xgboost"
     ]
