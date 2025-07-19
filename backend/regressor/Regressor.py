@@ -2,8 +2,9 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import linear_model
-
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import make_scorer
+
 from backend.ptq.PTQ import PTQ
 from backend.criteria.Criteria import Criteria
 import pandas as pd
@@ -26,6 +27,11 @@ class Regressor:
 
         return best_calibration_results, best_validation_results
 
+    @staticmethod
+    def custom_scoring(y_true, y_pred):
+        metric = RegressionMetric(np.array(y_true), np.array(y_pred)).get_metrics_by_list_names(["NSE"])["NSE"]
+        return float(metric)
+
     def knn(self, models_results : SimulationModel):
         n = 100
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
@@ -38,12 +44,11 @@ class Regressor:
         }
 
         knn = KNeighborsRegressor()
-        grid_search = GridSearchCV(knn, param_grid, cv=5, scoring='neg_mean_squared_error', n_jobs=-1)
+        grid_search = GridSearchCV(knn, param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
+        #grid_search = GridSearchCV(knn, param_grid, cv=5, scoring=make_scorer(Regressor.custom_scoring, greater_is_better = False), n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
 
         best_knn = grid_search.best_estimator_
-        print("Regressor knn : ", grid_search.best_params_)
-
         q_sim_knn_calage = np.maximum(0, best_knn.predict(best_calibration_results))
         q_sim_knn_validation = np.maximum(0, best_knn.predict(best_validation_results))
 
@@ -68,19 +73,49 @@ class Regressor:
 
         return SimulationModel(q_sim_lin_calage,q_sim_lin_validation, [linreg.coef_,linreg.intercept_] , nse_lin_calage, nse_lin_validation), [nse_lin_calage, nse_lin_validation]
 
+    def ridgereg(self, models_results):
+        best_calibration_results, best_validation_results = self._prepare_data(models_results)
+
+        ridge_reg = linear_model.Ridge()
+        param_grid = {
+            "alpha" : [0.1, 1.0, 10.0, 100.0]
+        }
+        grid_search = GridSearchCV(ridge_reg, param_grid, cv=5,  scoring="neg_root_mean_squared_error")
+        grid_search.fit(best_calibration_results, self.calage.q)
+
+        ridge_reg = grid_search.best_estimator_
+
+        q_sim_lin_calage = np.maximum(0, ridge_reg.predict(best_calibration_results))
+        q_sim_lin_validation = np.maximum(0, ridge_reg.predict(best_validation_results))
+
+        nse_lin_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_lin_calage)).get_metrics_by_list_names(self.Metrics)
+
+        nse_lin_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_lin_validation)).get_metrics_by_list_names(self.Metrics)
+
+        return SimulationModel(q_sim_lin_calage,q_sim_lin_validation, grid_search.best_params_ , nse_lin_calage, nse_lin_validation), [nse_lin_calage, nse_lin_validation]
+
     def svm(self, models_results):
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
 
         svr = SVR()
-        svr.fit(best_calibration_results, self.calage.q)
+        param_grid = {
+            'kernel' : ('linear', 'rbf'),
+            'C': [0.1, 1, 10, 100],
+            'gamma': [0.01, 0.1, 1, 'scale'],
+            'epsilon': [0.01, 0.1, 0.5]
+        }
+        grid_search = GridSearchCV(svr, param_grid, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1)
+        grid_search.fit(best_calibration_results, self.calage.q)
 
-        q_sim_cal = np.maximum(0, svr.predict(best_calibration_results))
-        q_sim_val = np.maximum(0, svr.predict(best_validation_results))
+        best_svr = grid_search.best_estimator_
+
+        q_sim_cal = np.maximum(0, best_svr.predict(best_calibration_results))
+        q_sim_val = np.maximum(0, best_svr.predict(best_validation_results))
 
         metrics_cal = RegressionMetric(np.array(self.calage.q), np.array(q_sim_cal)).get_metrics_by_list_names(self.Metrics)
         metrics_val = RegressionMetric(np.array(self.validation.q), np.array(q_sim_val)).get_metrics_by_list_names(self.Metrics)
 
-        return SimulationModel(q_sim_cal, q_sim_val, [svr.kernel, svr.C, svr.epsilon], metrics_cal, metrics_val), [metrics_cal, metrics_val]
+        return SimulationModel(q_sim_cal, q_sim_val, grid_search.best_params_, metrics_cal, metrics_val), [metrics_cal, metrics_val]
 
     def random_forest(self, models_results):
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
@@ -93,7 +128,7 @@ class Regressor:
             'bootstrap': [True, False]
         }
 
-        grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5)
+        grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, scoring="neg_root_mean_squared_error")
         grid_search.fit(best_calibration_results, self.calage.q)
 
         best_rf = grid_search.best_estimator_
@@ -110,6 +145,7 @@ class Regressor:
         return {
         "knn" : self.knn,
         "linreg" : self.linreg,
+        "ridge": self.ridgereg,
         "svm": self.svm,
         "random_forest": self.random_forest
 
@@ -119,6 +155,7 @@ class Regressor:
         return [
         "knn",
         "linreg",
+        "ridge",
         "svm",
         "random_forest"
     ]

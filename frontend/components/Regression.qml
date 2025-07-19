@@ -584,10 +584,10 @@ Dialog {
 
                                     Label{
                                         visible: modelRegression
-                                        text : JSON.stringify(regressionFile?.currentRegressor["hyperparameters"])
+                                        text : JSON.stringify(regressionFile?.currentRegressor["hyperparameters"]).replace(/["{}}]/g, " ")
                                         leftPadding: 5
                                         wrapMode: Text.Wrap
-                                        //Layout.preferredWidth: parent.width
+                                        Layout.preferredWidth: parent.width
                                         Layout.alignment: Qt.AlignHCenter
                                     }
                                 }
@@ -609,7 +609,7 @@ Dialog {
                         RowLayout{
                             anchors.fill: parent
                             //border.width: 1
-                            spacing : 10
+                            spacing : 5
                             ComboBox {
                                 leftPadding: 10
                                 Layout.preferredWidth: 90
@@ -619,7 +619,7 @@ Dialog {
                             }
 
                             Label{
-                                Layout.preferredWidth: 100
+                                Layout.preferredWidth: 50
                                 text: "Calibration : "
                                 font.bold: true
                             }
@@ -628,7 +628,7 @@ Dialog {
                                 text: (regressionFile?.metricsSummary[criteriaComboBox.currentText][0])?.toFixed(3)
                             }
                             Label{
-                                Layout.preferredWidth: 100
+                                Layout.preferredWidth: 50
                                 text: "Validation : "
                                 font.bold: true
                             }

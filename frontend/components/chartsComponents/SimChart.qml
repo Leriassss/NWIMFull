@@ -48,7 +48,7 @@ Rectangle {
 
         LineSeries {
             id: seriesQModel
-            name: "Predicted"
+            name: "Simulated"
             axisX: daxisX
             axisY: vaxisY
             color: "red"

@@ -23,15 +23,181 @@ Dialog{
         anchors.fill: parent
         color: "#fcffff"
     }
-    signal runningClicked
 
     property color siderbarColor: "#bae7fe"
     property color sidebarTextColor: "black"
 
+    Dialog {
+        id: saveBaseFlowOptions
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        width: 300
+        height: 150
+        title: "Save options"
+        Rectangle{
+            anchors.fill: parent
+            /*border.color: "grey"
+            border.width: 1*/
+            Column{
+                anchors.fill: parent
+
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Plot"
+
+                }
+                Rectangle{
+                    width: parent.width
+                    height: 1
+                    color: "#ebebeb"
+                }
+                CustomRadioButton{
+                    height: 50
+                    width: parent.width
+                    text: "Save Data"
+                    onClicked: {
+                        saveQBase.open()
+                        saveBaseFlowOptions.close()
+                    }
+
+                }
+
+            }
+
+        }
+
+
+    }
+
+    FileChoose {
+        id: fileChooseComponent
+        nameFilters: ["Excel (*.xlsx)","Texte (*.txt)"]
+        property string fileName: ""
+
+        onAccepted: {
+            fileName = cleanFilePath(fileChooseComponent.file.toString());
+            if (fileName) {
+                try {
+                    baseFlowSimulation.readFile(fileName)
+                    var headers = baseFlowSimulation.headers
+                    columnMappingDialog.headers = headers
+                    columnMappingDialog.open()
+                } catch (error) {
+                    baseflowErrors.errors = ["Erreur lors du chargement du fichier : " + error]
+                    baseflowErrors.open()
+                }
+            }
+        }
+
+    }
+
+    FileChoose {
+         id: saveQBase
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["txt (*.txt)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveQBase.file.toString());
+            baseFlowSimulation.saveBaseFlow(fileName)
+
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
+
+    Dialog {
+            id: columnMappingDialog
+            title: "MAPPING"
+            implicitWidth:  300
+            implicitHeight: 200
+            modal: true
+            standardButtons: Dialog.Ok | Dialog.Cancel
+            closePolicy : Popup.CloseOnEscape
+            x: Math.round((parent.width - width) / 2)
+            y: Math.round((parent.height - height) / 2)
+
+
+            property var headers: baseFlowSimulation.headers // En-têtes du fichier chargé
+
+            onAccepted: {
+                let columnMapping = {
+                    "Dates":datesComboBox.currentText ,
+                    "Q": qComboBox.currentText,
+                }
+                console.log("---------------- COLUMN MAPPING ------------------")
+                console.log(JSON.stringify(columnMapping))
+
+                baseFlowSimulation.setDictValues(columnMapping)
+
+
+                if(baseFlowSimulation.errors.length !==0){
+                    baseflowErrors.errors = baseFlowSimulation.errors
+                    baseflowErrors.open()
+                    console.log(JSON.stringify(baseFlowSimulation.errors))
+                }
+                else{
+
+                    columnMappingDialog.close()
+
+                }
+
+
+            }
+
+            Rectangle{
+                anchors.fill: parent
+                border.width: 1
+                border.color: "grey"
+                color : "#fcffff"
+
+
+                GridLayout {
+                    height: parent.height
+                    width: parent.width * 0.5
+                    columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
+                    columnSpacing: 10
+                    rowSpacing: 10
+
+
+                    // Ligne pour Dates
+                    Label {
+                        text: "Dates"
+                        Layout.alignment: Qt.AlignRight
+                        leftPadding: 5
+                    }
+                    ComboBox {
+                        id: datesComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
+                    // Ligne pour Q
+                    Label {
+                        text: "Q"
+                        Layout.alignment: Qt.AlignRight
+                    }
+                    ComboBox {
+                        id: qComboBox
+                        model: columnMappingDialog.headers
+                        currentIndex: 0
+                        Layout.fillWidth: true
+                    }
+
+
+                }
+
+            }
+
+
+    }
 
 
     DataErrorsDialog {
-        id: runningErrors
+        id: baseflowErrors
         title: "❌ ERRORS FOUNDS !!!"
         standardButtons: Dialog.Ok
         width: 400
@@ -83,7 +249,10 @@ Dialog{
                             width: 50
                             height: parent.height
                             text: qsTr("📥")
-                            ToolTip.text: qsTr("Load Parameters")
+                            ToolTip.text: qsTr("Load Data")
+                            onClicked: {
+                                fileChooseComponent.open()
+                            }
                         }
 
                         /*background: Rectangle{
@@ -138,7 +307,12 @@ Dialog{
                                     Button{
                                         id : run
                                         anchors.centerIn: parent
-                                        enabled: true
+                                        enabled: {
+                                            console.log("ACTIVATION", baseFlowSimulation.activated)
+                                            baseFlowSimulation.activated
+                                        }
+                                        flat : true
+                                        opacity: enabled ? 1 : 0.7
                                         icon.source: "../icons/run.png"
                                         icon.height: 15
                                         icon.width: 55
@@ -159,9 +333,18 @@ Dialog{
                                             border.color: run.pressed ? run.borderColor : "transparent"
                                         }
 
-
                                         onClicked: {
+                                            if(baseFlowSimulation.errors.length !==0){
 
+                                                baseflowErrors.open()
+                                                console.log(JSON.stringify(baseFlowSimulation.errors))
+                                                return
+                                            }
+                                            baseFlowSimulation.computeBaseflow(recession_params.parameterModel)
+                                            baseflowChart.updateChart(
+                                                        baseFlowSimulation.dataDict["Dates"],
+                                                        baseFlowSimulation.dataDict["Q"],
+                                                        baseFlowSimulation.baseflowData["Baseflow"])
 
                                         }
                                     }
@@ -211,8 +394,11 @@ Dialog{
                         CustomToolButton {
                             width: 50
                             height: parent.height
-                            text: qsTr("▶️")
-                            ToolTip.text: qsTr("Optimize")
+                            text: qsTr("💾")
+                            ToolTip.text: qsTr("Save Options")
+                            onClicked: {
+                                saveBaseFlowOptions.open()
+                            }
                         }
                     }
                     Column {
@@ -234,17 +420,12 @@ Dialog{
         }
 
 
-    function chartMapping(){
-        //console.log("------------- SIMCHART RUNNIG---------------")
-        //console.log(JSON.stringify(manualCalibration.simulationValues))
-        let dates = manualCalibration.simulationValues["DATES"]
-        let q_obs = manualCalibration.simulationValues["OBS"]
-        let q_sim = manualCalibration.smoothnessValues
 
-        baseflowChart.updateChart([...dates["VALIDATION"]],
-                    [...q_obs["VALIDATION"]],
-                    [...q_sim["VALIDATION"]])
+
+    function cleanFilePath(filePath) {
+        if (filePath.startsWith("file:///")) {
+            return filePath.substring(8);
+        }
+        return filePath;
     }
-
-
 }

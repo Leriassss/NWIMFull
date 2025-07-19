@@ -230,6 +230,7 @@ class FileHandler(QObject):
             print(f"Erreur lors de la lecture du fichier : {e}")
 
 
+
     @Slot(dict)
     def setDictValues(self, data_dict):
         self._errors = []

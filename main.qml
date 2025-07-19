@@ -12,7 +12,7 @@ import "frontend/components"
 
 ApplicationWindow {
     visible: true
-    //minimumWidth: 1350
+    minimumWidth: 1350
     minimumHeight: 750
     maximumWidth: 1350
     maximumHeight: 750
