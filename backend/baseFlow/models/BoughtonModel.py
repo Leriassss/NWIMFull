@@ -44,15 +44,15 @@ class BoughtonModel:
     @staticmethod
     def get_default_values():
         return {
-            "k": 0.9,
-            "c": 1.1
+            "k": 0.1,
+            "c": 0.5
         }
 
     @staticmethod
     def get_default_ranges():
         return {
             "k": [0.1,1],
-            "c": [1,1.1]
+            "c": [0.5,1.1]
         }
     
     @staticmethod

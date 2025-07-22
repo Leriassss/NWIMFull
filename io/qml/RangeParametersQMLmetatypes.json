@@ -58,6 +58,13 @@
                         "index": 5,
                         "read": "parameters",
                         "notify": "parametersChanged"
+                    },
+                    {
+                        "name": "parameterValues",
+                        "type": "QVariant",
+                        "index": 6,
+                        "read": "parameterValues",
+                        "notify": "parametersChanged"
                     }
                 ],
                 "signals": [

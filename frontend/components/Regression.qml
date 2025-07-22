@@ -80,18 +80,14 @@ Dialog {
                         console.log("filehandler.activate ", fileHandler.activate)
                         if(modelRegression){
                             regressionFile.singleCalibration(fileHandler.ptq,regComboBox.currentText)
-                            regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
-                                        [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
-                                        [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
                         }
                         if(qSimRegression){
                             regressionFile.qSimRegression(fileHandler.ptq,regComboBox.currentText)
-                            regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
-                                        [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
-                                        [...regressionFile.simValues["CALIBRATION"], ...regressionFile.simValues["VALIDATION"]])
                         }
-
-
+                        regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
+                                    [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
+                                    fileHandler.ptq["CALIBRATION"]["Dates"],regressionFile.simValues["CALIBRATION"],
+                                    fileHandler.ptq["VALIDATION"]["Dates"], regressionFile.simValues["VALIDATION"])
 
                     }
                 }
@@ -148,7 +144,7 @@ Dialog {
                 CustomRadioButton{
                     height: 50
                     width: parent.width
-                    text: "Load QSim"
+                    text: "Load Data"
                     onClicked: {
                         loadQSimDialog.open()
                         loadOptions.close()

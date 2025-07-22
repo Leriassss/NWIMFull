@@ -38,7 +38,7 @@ class LyneHollick(BaseFlowRoutine, BaseFlow):
         Q_base_rev = np.zeros(len(Q_direct))
         Q_base_rev[0]  = previous_qbase
         for k in range(1, len(Q_direct)):
-            Q_base_rev[k] = -Q_base_rev[k-1] + (1+self.k)*(Q_direct[k]-Q_direct[k-1])/(1-self.k)
+            Q_base_rev[k] = Q_base_rev[k-1] + (1+self.k)*(Q_direct[k]-Q_direct[k-1])/(1-self.k)
         return np.maximum(0,Q_base_rev)
 
     def calibration_routine(self,data : DataBaseFlow):

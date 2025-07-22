@@ -705,18 +705,18 @@ Rectangle{
             console.log("STEP 3 FRONT ", Date(Date.now()))
             simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
                         [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
-                        [...q_sim["CALIBRATION"], ...q_sim["VALIDATION"]])
+                        dates["CALIBRATION"],q_sim["CALIBRATION"],
+                        dates["VALIDATION"], q_sim["VALIDATION"])
+
             console.log("STEP 4 FRONT ", Date(Date.now()))
         }
         else if(calibrationCheckBox.checked && !validationCheckBox.checked){
-            simChart.updateChart([...dates["CALIBRATION"]],
-                        [...q_obs["CALIBRATION"]],
-                        [...q_sim["CALIBRATION"]])
+            simChart.updateChart(dates["CALIBRATION"],q_obs["CALIBRATION"],
+                                 dates["CALIBRATION"],q_sim["CALIBRATION"],[],[])
         }
         else if(!calibrationCheckBox.checked && validationCheckBox.checked){
-            simChart.updateChart([...dates["VALIDATION"]],
-                        [...q_obs["VALIDATION"]],
-                        [...q_sim["VALIDATION"]])
+            simChart.updateChart(dates["VALIDATION"],q_obs["VALIDATION"],[],[],
+                                 dates["VALIDATION"],q_sim["VALIDATION"])
         }
     }
 }

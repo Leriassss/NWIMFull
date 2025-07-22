@@ -18,7 +18,7 @@ class NathanMcMahon(BaseFlowRoutine, BaseFlow):
         Q_base = np.zeros_like(flow_series)
         for k in range(1, len(flow_series)):
             Q_base[k] = self.k*Q_base[k-1] + (1-self.k)*(flow_series[k]-flow_series[k-1])/2
-        return Q_base
+        return np.maximum(0,Q_base)
 
 
     def reverse_compute(self, previous_qbase, Q_direct):
@@ -26,7 +26,7 @@ class NathanMcMahon(BaseFlowRoutine, BaseFlow):
         Q_base_rev[0] = previous_qbase
 
         for k in range(1, len(Q_direct)):
-            Q_base_rev[k] = (1-self.k)*(Q_direct[k-1])/(1+self.k) + Q_base_rev[k-1]
+            Q_base_rev[k] = max(0,(1-self.k)*(Q_direct[k-1])/(1+self.k) + Q_base_rev[k-1])
 
         return Q_base_rev
 

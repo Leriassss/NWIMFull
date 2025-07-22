@@ -3,6 +3,7 @@ import numpy as np
 import datetime
 
 from backend.simulation.Simulation import Simulation
+from backend.grid.Grid import Grid,GridModel
 from backend.ptq.PTQ import PTQ
 from backend.factory.OptimizationFactory import OptimizationFactory
 from PySide6.QtCore import QObject, Signal, Slot, Property
@@ -47,7 +48,7 @@ class GridCalibration(QObject):
         return self._parameter_bundle
 
     @Slot(dict, list, dict)
-    def setParameters(self, params_dict, optim_list, ptq):
+    def gridCalibration(self, params_dict, optim_list, ptq):
         self._errors = []
 
         self._parameter_bundle =  {
@@ -56,32 +57,45 @@ class GridCalibration(QObject):
         self._parameters_methods = {
             "pn":None,"qb":None,"sim": None,"loss" : None
         }
-
+        print("GC GridCalibration--------")
+        print(params_dict)
         self._ptq = ptq
 
         if self.check_keys_match(params_dict, self.parameters_type):
             for key in self.parameters_type :
-                range_parameter_model = params_dict[key]
-                    #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
-                methodKeys = list(range_parameter_model.property('methodKeys').keys())
-                parameters_dict = range_parameter_model.property('parameters')
-                if self.check_keys_match(parameters_dict, methodKeys) :
-                    self._parameter_bundle[key] = parameters_dict
-                    self._parameters_methods[key] = range_parameter_model.property('currentMethod')
+                range_parameter_model_list = params_dict[key]
+                if len(range_parameter_model_list) == 0 :
+                    self._errors.append("Required methods not provided")
+                    return
 
-                    self.paramsBundleChanged.emit()
-                else:
-                    self._errors.append("Required parameters not provided")
+                self._parameter_bundle[key] = []
+                self._parameters_methods[key] = []
+                for range_parameter_model in range_parameter_model_list:
+                    #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
+                    methodKeys = list(range_parameter_model.property('methodKeys').keys())
+                    parameters_dict = dict(zip(range_parameter_model.property('parameterNames'), range_parameter_model.property('parameterValues')))
+                    #parameters_dict = range_parameter_model.property('parameters')
+                    if self.check_keys_match(parameters_dict, methodKeys) :
+                        self._parameter_bundle[key].append(parameters_dict)
+                        self._parameters_methods[key].append(range_parameter_model.property('currentMethod'))
+
+                        self.paramsBundleChanged.emit()
+                    else:
+                        self._errors.append("Required parameters not provided")
         else:
             self._errors.append("Required methods not provided")
 
-        print("---- setParameters AC --------")
-        print(self._parameter_bundle)
-        print(self._parameters_methods)
+
+        print("GC GC--- 1 : ", self._parameter_bundle)
+        print("GC GC--- 2 : ",self._parameters_methods)
+
 
         if any(item is None for values in self._parameter_bundle.values() for item in values):
             self._errors.append("Provided parameters are non-correct")
             return
+
+        grid_bundle = {key : {self._parameters_methods[key][index] : self._parameter_bundle[key][index] for index in  range(0, len(self._parameters_methods[key]))} for key in self.parameters_type}
+        print("grid_bundle : ", grid_bundle)
 
         calibration_df = pd.DataFrame(self._ptq["CALIBRATION"])
         validation_df = pd.DataFrame(self._ptq["VALIDATION"])
@@ -92,24 +106,30 @@ class GridCalibration(QObject):
         ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
             validation_df["Q"], validation_df["Dates"])
 
-        sim = Simulation(self._parameters_methods["pn"],self._parameters_methods["qb"],
-        self._parameters_methods["sim"],self._parameters_methods["loss"], ptq_calibration, ptq_validation)
-
-        sim.crit = self._optim_metric
-
         optim = optim_list[0]
         optim_parameters = optim.property('parameters')
         optimizator_name = optim.property('currentMethod')
-        optimizator = OptimizationFactory.createInstance(optimizator_name, sim, self._parameter_bundle, optim_parameters)
-        print("---- setParameters 2 AC --------")
-        print(optim_parameters)
-        print(optimizator)
 
-        sim_r_hun = optimizator.optim()
+        gm = GridModel(grid_bundle["pn"], grid_bundle["qb"], grid_bundle["sim"], grid_bundle["loss"])
+
+        grid_search_ga = Grid(gm, ptq_calibration, ptq_validation)
+
+
+        grid_results_ga, combn = grid_search_ga.grid_optimization(optimizator_name, **optim_parameters)
+
+        #sim.crit = self._optim_metric
+
         print(" ------ optim res -------")
-        print(sim_r_hun.params)
-        print(sim_r_hun.calibration_metric)
-        print(sim_r_hun.validation_metric)
+
+        best_results = {
+            method_name : {
+                param: paramValue for param, paramValue in zip(grid_bundle[key][method_name].keys(),grid_results_ga.params[key])
+            }
+            for key, method_name in dict(zip(['pn', 'qb', 'sim', 'loss'], combn)).items()
+        }
+        print(best_results)
+        print(grid_results_ga.calibration_metric)
+        print(grid_results_ga.validation_metric)
 
 
 

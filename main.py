@@ -15,6 +15,7 @@ from api.load_data.EToManager import EToManager
 from api.load_data.RegressionFile import RegressionFile
 from api.FactoryManager import FactoryManager
 from api.simulation.ManualCalibration import ManualCalibration
+from api.simulation.GridCalibration import GridCalibration
 from api.simulation.AutomaticCalibration import AutomaticCalibration
 from api.simulation.BaseFlowSimulation import BaseFlowSimulation
 
@@ -49,7 +50,9 @@ if __name__ == "__main__":
     automatic_calibration = AutomaticCalibration()
     regression_file = RegressionFile()
     baseflow_simulation = BaseFlowSimulation()
+    grid_calibration = GridCalibration()
 
+    engine.rootContext().setContextProperty("gridCalibration", grid_calibration)
     engine.rootContext().setContextProperty("baseFlowSimulation", baseflow_simulation)
     engine.rootContext().setContextProperty("regressionFile", regression_file)
     engine.rootContext().setContextProperty("manualCalibration", manual_calibration)

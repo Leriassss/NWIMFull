@@ -1,19 +1,13 @@
-from backend.production.Holtan import Holtan, HoltanModel
-from backend.production.Horton import Horton, HortonModel
-from backend.production.Phi import Phi, PhiModel
 from backend.production.Philip import Philip, PhilipModel
 from backend.production.SCS import SCS, SCSModel
-from backend.production.W import W, WModel
 from backend.production.WMin import WMin, WMinModel
-
+from backend.production.HortonModified import HortonModified, HortonModifiedModel
 
 class ProductionFactory:
     methods = {
             "SCS" : [SCS, SCSModel],
-            "W" : [W, WModel],
             "WMin" : [WMin, WMinModel],
-            "Horton" : [Horton, HortonModel],
-            "Holtan" : [Holtan,  HoltanModel],
+            "HortonModified" : [HortonModified, HortonModifiedModel],
             "Philip" : [Philip, PhilipModel]
         }
             

@@ -19,7 +19,16 @@ class GridParametersQML(QObject):
         self._current_method = None
         self._parameters = {}
         self._methods = []
+        self._keys = []
         self._parameterErrors = {}
+
+    @Property('QVariant')
+    def methodKeys(self):
+        return self._keys
+
+    @Property(str, notify=methodChanged)
+    def currentMethod(self):
+        return self._current_method
 
     @Property('QVariant', notify=methodChanged)
     def availableMethods(self):
@@ -35,6 +44,11 @@ class GridParametersQML(QObject):
     def parameters(self):
         """Retourne les paramètres sous forme de range {'param': [min, max]}."""
         return self._parameters
+
+    @Property('QVariant', notify=parametersChanged)
+    def parameterValues(self):
+        """Retourne les noms des paramètres disponibles."""
+        return list(self._parameters.values())
 
     @Property('QVariant', notify=parameterErrorChanged)
     def parameterErrors(self):
@@ -65,9 +79,14 @@ class GridParametersQML(QObject):
 
         self._current_method = method_name
 
-        # Récupération des valeurs par défaut
-        default_values = self._factory.getModelParameters(method_name)
-        self._parameters = {key: [None,None] for key in default_values}
+        # Récupération du model
+        model = self._factory.getModel(method_name)
+
+        self._keys = model.get_parameter_names()
+        default_values = model.get_default_ranges()
+        self._parameters = {key: default_values[key] for key in self._keys}
+        self._parameterErrors = {key: {"min":True,"max":True} for key in self._keys}
+
         self.methodChanged.emit()
         self.parametersChanged.emit()
 

@@ -9,7 +9,7 @@ class GridModel:
         for prod, rec, loss, rout in cartesian_product:
             comb_dict : RoutingData = {
                 "pn": prod[1], 
-                "qb": rec[1], 
+                "qb": rec[1],
                 "loss": loss[1], 
                 "sim": rout[1],
             }

@@ -47,38 +47,48 @@ Rectangle {
         }
 
         LineSeries {
-            id: seriesQModel
-            name: "Simulated"
+            id: seriesQClibration
+            name: "Calibration"
             axisX: daxisX
             axisY: vaxisY
             color: "red"
         }
+        LineSeries {
+            id: seriesQValidation
+            name: "Validation"
+            axisX: daxisX
+            axisY: vaxisY
+            color: "green"
+        }
     }
 
-    function updateChart(dates, q_obs_series, q_sim_series) {
+    function updateChart(dates_obs, q_obs_series, dates_cal, q_cal_series, dates_val, q_val_series) {
         seriesQ.clear()
-        seriesQModel.clear()
+        seriesQClibration.clear()
+        seriesQValidation.clear()
 
-        if (!dates || dates.length === 0)
+        if (!dates_obs || dates_obs.length === 0)
             return;
 
-        qobsChart.minDate = dates[0]
-        qobsChart.maxDate = dates[dates.length - 1]
+        qobsChart.minDate = dates_obs[0]
+        qobsChart.maxDate = dates_obs[dates_obs.length - 1]
 
         // Fusionner les deux séries pour obtenir le min/max global
-        var allValues = q_obs_series.concat(q_sim_series)
+        var allValues = q_obs_series.concat([...q_cal_series,...q_val_series])
         qobsChart.minValue = Math.min(...allValues)
         qobsChart.maxValue = Math.max(...allValues)
-
-        for (var i = 0; i < dates.length; i++) {
-            var x = new Date(dates[i])
-            var timestamp = x.getTime()
-
+        let i = 0
+        for (i =0 ; i < dates_obs.length; i++) {
             if (i < q_obs_series.length)
-                seriesQ.append(timestamp, q_obs_series[i])
-
-            if (i < q_sim_series.length)
-                seriesQModel.append(timestamp, q_sim_series[i])
+                seriesQ.append(new Date(dates_obs[i]).getTime(), q_obs_series[i])
+        }
+        for (i = 0; i < dates_cal.length; i++) {
+            if (i < q_cal_series.length)
+                seriesQClibration.append(new Date(dates_cal[i]).getTime(), q_cal_series[i])
+        }
+        for (i = 0; i < dates_val.length; i++) {
+            if (i < q_val_series.length)
+                seriesQValidation.append(new Date(dates_val[i]).getTime(), q_val_series[i])
         }
     }
 }

@@ -51,6 +51,11 @@ class RangeParametersQML(QObject):
         """Retourne les paramètres sous forme de range {'param': [min, max]}."""
         return self._parameters
 
+    @Property('QVariant', notify=parametersChanged)
+    def parameterValues(self):
+        """Retourne les noms des paramètres disponibles."""
+        return list(self._parameters.values())
+
     @Slot(str)
     def setFactory(self, factory_name):
         """Définit la factory et charge ses méthodes."""

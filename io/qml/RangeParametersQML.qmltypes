@@ -54,6 +54,14 @@ Module {
             index: 5
             isReadonly: true
         }
+        Property {
+            name: "parameterValues"
+            type: "QVariant"
+            read: "parameterValues"
+            notify: "parametersChanged"
+            index: 6
+            isReadonly: true
+        }
         Signal { name: "parametersChanged" }
         Signal { name: "methodChanged" }
         Signal { name: "parameterErrorChanged" }

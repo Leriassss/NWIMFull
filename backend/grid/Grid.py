@@ -31,7 +31,7 @@ class Grid:
         self.combin = [v for  v in self.combin]
         
         if isinstance(best_result, SimulationModel):
-            return best_result
+            return best_result, self.combin
         else:
             raise ValueError("Aucun résultat satisfaisant")
 

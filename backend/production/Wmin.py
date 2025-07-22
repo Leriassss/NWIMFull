@@ -20,19 +20,7 @@ class WMin(Production) :
         return rainfall_ini_loss
     
     def init_loss(self, prec, smax, alpha):
-        valeurs = np.array(prec, dtype=float)  
-        pertes_restantes = smax  
-        i = 0
-        while i < len(valeurs):
-            if pertes_restantes > 0:
-                if valeurs[i] >= pertes_restantes:
-                    valeurs[i] -= pertes_restantes
-                    valeurs[i] *= alpha
-                else:
-                    pertes_restantes -= valeurs[i]
-                    valeurs[i] = 0 
-            i+=1
-        return pd.Series(valeurs)
+        return pd.Series(np.maximum(0, (prec-smax)*alpha))
 
     def adapter(self,prec:pd.Series, loss_days, smax):
         non_null_groups = prec.groupby((np.round(prec,2) == 0.0).cumsum())

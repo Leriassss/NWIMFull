@@ -79,7 +79,7 @@ class Regressor:
 
         ridge_reg = linear_model.Ridge()
         param_grid = {
-            "alpha" : [0.1, 1.0, 10.0, 100.0]
+            "alpha" : list(range(0,100))
         }
         grid_search = GridSearchCV(ridge_reg, param_grid, cv=5,  scoring="neg_root_mean_squared_error")
         grid_search.fit(best_calibration_results, self.calage.q)
@@ -101,7 +101,7 @@ class Regressor:
         svr = SVR()
         param_grid = {
             'kernel' : ('linear', 'rbf'),
-            'C': [0.1, 1, 10, 100],
+            'C': list(range(0,100)),
             'gamma': [0.01, 0.1, 1, 'scale'],
             'epsilon': [0.01, 0.1, 0.5]
         }
@@ -125,8 +125,7 @@ class Regressor:
             'n_estimators': [100, 200],
             'max_depth': [None, 10, 20],
             'min_samples_split': [2, 5],
-            'min_samples_leaf': [1, 2],
-            'bootstrap': [True, False]
+            'min_samples_leaf': [1, 2]
         }
 
         grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, scoring="neg_root_mean_squared_error")
@@ -144,21 +143,17 @@ class Regressor:
 
     def xgboost_model(self, models_results):
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
-        parameters_grid = {
-            'max_depth': [4, 5, 6],
+        parameters_grid ={
+            'max_depth': list(range(1,10)),
             'learning_rate': [0.1, 0.2, 0.3],
-            'n_estimators': [50, 100, 150],
-            'gamma': range(0, 20),
-            'subsample': [0.8, 1],
-            'colsample_bytree': [0.8, 1],
-            'lambda': [0, 0.1, 1],
-            'tree_method': ['auto','exact','hist'],
-            'eval_metric': ["mae"]
+            'n_estimators': list(range(10,300,10)),
+            'gamma': list(range(0,100,10)),
+            'lambda': [0, 0.1, 1]
         }
 
         xgboost = xgb.XGBRegressor()
 
-        grid_search = GridSearchCV(xgboost, parameters_grid, cv=5, scoring="neg_mean_absolute_error")
+        grid_search = GridSearchCV(xgboost, parameters_grid, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
         best_xgb = grid_search.best_estimator_
 

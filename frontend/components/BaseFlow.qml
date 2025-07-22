@@ -344,7 +344,8 @@ Dialog{
                                             baseflowChart.updateChart(
                                                         baseFlowSimulation.dataDict["Dates"],
                                                         baseFlowSimulation.dataDict["Q"],
-                                                        baseFlowSimulation.baseflowData["Baseflow"])
+                                                        baseFlowSimulation.dataDict["Dates"],baseFlowSimulation.baseflowData["Baseflow"],
+                                                        [],[])
 
                                         }
                                     }

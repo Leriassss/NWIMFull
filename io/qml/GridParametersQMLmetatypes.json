@@ -19,30 +19,50 @@
                 ],
                 "properties": [
                     {
-                        "name": "availableMethods",
+                        "name": "methodKeys",
                         "type": "QVariant",
                         "index": 0,
+                        "read": "methodKeys"
+                    },
+                    {
+                        "name": "currentMethod",
+                        "type": "QString",
+                        "index": 1,
+                        "read": "currentMethod",
+                        "notify": "methodChanged"
+                    },
+                    {
+                        "name": "availableMethods",
+                        "type": "QVariant",
+                        "index": 2,
                         "read": "availableMethods",
                         "notify": "methodChanged"
                     },
                     {
                         "name": "parameterNames",
                         "type": "QVariant",
-                        "index": 1,
+                        "index": 3,
                         "read": "parameterNames",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameters",
                         "type": "QVariant",
-                        "index": 2,
+                        "index": 4,
                         "read": "parameters",
+                        "notify": "parametersChanged"
+                    },
+                    {
+                        "name": "parameterValues",
+                        "type": "QVariant",
+                        "index": 5,
+                        "read": "parameterValues",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameterErrors",
                         "type": "QVariant",
-                        "index": 3,
+                        "index": 6,
                         "read": "parameterErrors",
                         "notify": "parameterErrorChanged"
                     }

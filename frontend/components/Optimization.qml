@@ -367,6 +367,7 @@ Dialog {
                                                 let value = JSON.stringify(loss[index]).replace(/"/g, " ");
                                                 index + " : " + value
                                             }
+                                            wrapMode: Text.Wrap
                                             font.bold: true
                                         }
 
@@ -377,6 +378,7 @@ Dialog {
                                                 let value = JSON.stringify(pn[index]).replace(/"/g, " ");
                                                 index + " : " + value
                                             }
+                                            wrapMode: Text.Wrap
                                             font.bold: true
                                         }
 
@@ -386,6 +388,7 @@ Dialog {
                                                 let value = JSON.stringify(sim[index]).replace(/"/g, " ");
                                                 index + " : " + value
                                             }
+                                            wrapMode: Text.Wrap
                                             font.bold: true
                                         }
 
@@ -396,6 +399,7 @@ Dialog {
                                                 let value = JSON.stringify(qb[index]).replace(/"/g, " ");
                                                 index + " : " + value
                                             }
+                                            wrapMode: Text.Wrap
                                             font.bold: true
                                         }
                                     }

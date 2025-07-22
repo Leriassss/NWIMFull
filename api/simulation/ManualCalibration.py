@@ -102,6 +102,7 @@ class ManualCalibration(QObject):
 
                 #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
                 methodKeys = list(obj.property('methodKeys').keys())
+                print("methodKeys --- MC :", obj.property('methodKeys'))
                 parameters_dict = dict(zip(obj.property('parameterNames'), obj.property('parameterValues')))
                 #parameters_dict = obj.property('parameters')
                 print("---- setParameters2 MC --------")

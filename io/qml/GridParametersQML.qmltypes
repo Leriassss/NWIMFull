@@ -13,12 +13,21 @@ Module {
         prototype: "QObject"
         exports: ["io.qml/GridParametersQML 1.0"]
         exportMetaObjectRevisions: [256]
+        Property { name: "methodKeys"; type: "QVariant"; read: "methodKeys"; index: 0; isReadonly: true }
+        Property {
+            name: "currentMethod"
+            type: "QString"
+            read: "currentMethod"
+            notify: "methodChanged"
+            index: 1
+            isReadonly: true
+        }
         Property {
             name: "availableMethods"
             type: "QVariant"
             read: "availableMethods"
             notify: "methodChanged"
-            index: 0
+            index: 2
             isReadonly: true
         }
         Property {
@@ -26,7 +35,7 @@ Module {
             type: "QVariant"
             read: "parameterNames"
             notify: "parametersChanged"
-            index: 1
+            index: 3
             isReadonly: true
         }
         Property {
@@ -34,7 +43,15 @@ Module {
             type: "QVariant"
             read: "parameters"
             notify: "parametersChanged"
-            index: 2
+            index: 4
+            isReadonly: true
+        }
+        Property {
+            name: "parameterValues"
+            type: "QVariant"
+            read: "parameterValues"
+            notify: "parametersChanged"
+            index: 5
             isReadonly: true
         }
         Property {
@@ -42,7 +59,7 @@ Module {
             type: "QVariant"
             read: "parameterErrors"
             notify: "parameterErrorChanged"
-            index: 3
+            index: 6
             isReadonly: true
         }
         Signal { name: "parametersChanged" }
