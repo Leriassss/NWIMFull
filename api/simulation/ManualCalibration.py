@@ -248,14 +248,25 @@ class ManualCalibration(QObject):
         model_data = ResultsFileManager.load_calibration_results(path)
         print("--------------- MC LP----------------")
         print(model_data)
+        print(params_dict)
 
         if self.check_keys_match(params_dict, self.parameters_type) and self.check_keys_match(model_data, self.parameters_type):
             for key in self.parameters_type :
                 obj = params_dict[key]
                 method = next(iter(model_data[key]))
-                obj.setParameter(model_data[key][method],method)
+                try:
+                    method_index = obj.property('availableMethods').index(method)
+                    obj.setMethod(method_index)
+                    for param, paramValue in model_data[key][method].items():
+                        obj.updateParameter(param, paramValue)
+                    print("******************************************************************** : ",method_index, model_data[key][method])
+                    obj.parametersChanged.emit()
+                    if obj.desactivated :
+                        raise Exception("Non-correct data")
+                except Exception:
+                    raise Exception("Method not found")
         else:
-            self._errors.append("Required methods not provided")
+            raise Exception("Required methods not provided")
         print(path)
 
     def check_keys_match(self, d, keys_list):

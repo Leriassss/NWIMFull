@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls
 import QtQuick.Layouts 1.15
 
 import ".."
@@ -40,7 +40,7 @@ Column {
 
         // Répétiteur pour afficher les paramètres sous forme de plage (min, max)
         Repeater {
-            model: Object.keys(parameterModel.parameters)  // Correction ici
+            model: parameterModel.parameterNames // Correction ici
 
             delegate: RowLayout {
                 Layout.column: 0
@@ -56,7 +56,7 @@ Column {
 
         // Répétiteur pour les champs min
         Repeater {
-            model: Object.keys(parameterModel.parameters)
+            model: parameterModel.parameterNames
 
             delegate:CustomTextField {
                 Layout.column: 1
@@ -95,7 +95,7 @@ Column {
 
         // Répétiteur pour les champs max
         Repeater {
-            model: Object.keys(parameterModel.parameters)
+            model: parameterModel.parameterNames
 
             delegate: CustomTextField {
                 Layout.column: 2

@@ -393,11 +393,11 @@ Dialog {
                                 height:  30
                                 id: methodSelector
                                 model: etoManager.availableMethods
-                                onCurrentTextChanged: {
-                                    etoManager.setMethod(methodSelector.currentText)
+                                onCurrentValueChanged: {
+                                        etoManager?.setMethod(methodSelector.currentText)
                                 }
                                 Component.onCompleted: {
-                                    etoManager.setMethod(methodSelector.currentText)
+                                        etoManager.setMethod(methodSelector.currentText)
                                 }
                             }
 

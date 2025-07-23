@@ -105,7 +105,6 @@ class TestQML(QObject):
 
             print("---------------------UP")
             print("key : ", key)
-            print("model : ", model)
             print(self._parameters)
             print(self._current_method)
             print(validation_result)
@@ -119,6 +118,8 @@ class TestQML(QObject):
 
                 print(f"Validation pour {key}: {validation_result}")
 
+            print("self._parameters --- UP : ", self._parameters)
+            #self.parametersChanged.emit()
             self.parameterErrorChanged.emit()
             self.desactivatedChanged.emit()
 

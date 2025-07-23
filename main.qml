@@ -61,6 +61,13 @@ ApplicationWindow {
 
        }
 
+    DataErrorsDialog {
+        id: mainErrors
+        title: "❌ ERRORS FOUNDS !!!"
+        standardButtons: Dialog.Ok
+        width: 400
+        height: 300
+    }
     HomePage{
         id : homepage
         anchors.top: toolBar.bottom
@@ -86,7 +93,12 @@ ApplicationWindow {
          property string fileName: ""
          onAccepted: {
             fileName = cleanFilePath(loadFileDialog.file.toString());
-             manualCalibration.loadParameters(fileName, homepage.parameter_bundle2)
+             try{
+                manualCalibration.loadParameters(fileName, homepage.parameter_bundle2)
+             } catch(e){
+                 mainErrors.errors = [e+""]
+                 mainErrors.open()
+             }
 
          }
          onRejected: {

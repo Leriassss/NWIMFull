@@ -40,6 +40,32 @@ Rectangle{
 
     }
 
+    CalendarDialog{
+        id : chooseDatePopup
+        width: 350
+        height: 250
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        title: qsTr("CHOOSE PERIODS BEGININS")
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        /*calibration_dates : {
+            console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
+            console.log(JSON.stringify(fileHandler.calendar_dates))
+            fileHandler.calendar_dates
+        }*/
+
+        onAccepted: {
+            console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
+            console.log(JSON.stringify(chooseDatePopup.user_calibration))
+            fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
+
+            if(fileHandler.errors.length !==0){
+
+                dataErrorsDialog.open()
+            }
+        }
+    }
+
     Dialog {
         id: errorDialog
         title: "Erreur"
@@ -356,29 +382,7 @@ Rectangle{
                             }
 
 
-                            CalendarDialog{
-                                id : chooseDatePopup
-                                width: 350
-                                height: 250
-                                standardButtons: Dialog.Ok | Dialog.Cancel
-                                title: qsTr("CHOOSE PERIODS BEGININS")
-                                /*calibration_dates : {
-                                    console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
-                                    console.log(JSON.stringify(fileHandler.calendar_dates))
-                                    fileHandler.calendar_dates
-                                }*/
 
-                                onAccepted: {
-                                    console.log("-*-*-*--*-*-* CALIBRATION LENGTH -*-*-*-*-*-*-*-*-*")
-                                    console.log(JSON.stringify(chooseDatePopup.user_calibration))
-                                    fileHandler.updateCalibrationAndValibationDates(chooseDatePopup.user_calibration)
-
-                                    if(fileHandler.errors.length !==0){
-
-                                        dataErrorsDialog.open()
-                                    }
-                                }
-                            }
                         }
 
 

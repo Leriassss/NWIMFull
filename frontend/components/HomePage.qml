@@ -54,7 +54,6 @@ Rectangle{
             Rectangle{
                 width: parent.width * 0.17
                 height: parent.height
-                anchors.left: parent.left
                 clip: true
                 border.width: 1
                 border.color: "transparent"
@@ -292,7 +291,6 @@ Rectangle{
                 width: parent.width * 0.83 - parent.spacing
                 height: parent.height
                 //border.width: 1
-                anchors.right: parent.right
                 //color: "#d2d2d2"
                 /*gradient: Gradient {
                     GradientStop { position: 0.0; color: "#cecece" } // bord haut-gauche

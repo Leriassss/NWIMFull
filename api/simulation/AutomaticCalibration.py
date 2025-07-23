@@ -88,7 +88,8 @@ class AutomaticCalibration(QObject):
                 range_parameter_model = params_dict[key]
                     #A CHANGER POUR FAIRE PASSER DU KEY A VALUE
                 methodKeys = list(range_parameter_model.property('methodKeys').keys())
-                parameters_dict = range_parameter_model.property('parameters')
+                #parameters_dict = range_parameter_model.property('parameters')
+                parameters_dict = dict(zip(range_parameter_model.property('parameterNames'), range_parameter_model.property('parameterValues')))
                 if self.check_keys_match(parameters_dict, methodKeys) :
                     self._parameter_bundle[key] = parameters_dict
                     self._parameters_methods[key] = range_parameter_model.property('currentMethod')

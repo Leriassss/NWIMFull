@@ -13,7 +13,6 @@ Dialog {
     modal: true
     popupType: Popup.Window
     topInset : 5
-    standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
     padding: 5
     background:  Rectangle{
@@ -56,11 +55,11 @@ Dialog {
                         grid_calibration_bundle.every((bundle) => bundle.length > 0)
                     }*/
                     onClicked: {
-                        /*if(!fileHandler.activate){
-                            errorDialog.errorText = "No data load for optimization. See Data Import"
-                            errorDialog.open()
+                        if(!fileHandler.activate){
+                            gridCalibrationErrors.errors  = ["No data load for optimization. See Data Import"]
+                            gridCalibrationErrors.open()
                             return
-                        }*/
+                        }
                         //console.log(grid_calibration_bundle.every((bundle) => bundle.length > 0))
                         let grid_calibration_bundle =  {
                                     "pn" : factoryRepeater.itemAt(0).children[1].children.
@@ -81,8 +80,14 @@ Dialog {
                             gridCalibrationErrors.open()
                             return
                         }
+                        try{
+                            gridCalibration.gridCalibration(grid_calibration_bundle, [optimizationParameter.parameterModel], metricsComboBox.currentValue, fileHandler.ptq)
+                        }catch(e){
+                            gridCalibrationErrors.errors = [e+""]
+                            gridCalibrationErrors.open()
+                            console.log(e)
+                        }
 
-                        gridCalibration.gridCalibration(grid_calibration_bundle, [optimizationParameter.parameterModel],fileHandler.ptq)
                     }
 
 
@@ -103,7 +108,21 @@ Dialog {
         height: 300
     }
 
+    FileChoose {
+         id: saveGridResultsDialog
+         title: "Please choose a folder"
+         fileMode: FileChoose.SaveFile
+         nameFilters: ["JSON (*.json)"]
+         property string fileName: ""
+         onAccepted: {
+            fileName = cleanFilePath(saveGridResultsDialog.file.toString());
+             gridCalibration.saveSimulationResults(fileName)
 
+         }
+         onRejected: {
+            console.log("Canceled")
+         }
+     }
     SplitView {
         id: splitView
         anchors.fill: parent
@@ -138,7 +157,6 @@ Dialog {
                 Label{
                     id : gridText
                     Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: 35
                     text: "Grid optimization options"
                     font.bold: true
                     font.pointSize: 10
@@ -157,7 +175,6 @@ Dialog {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: parent.height - gridText.height
                     clip: true
-
                     ColumnLayout {
                         width: parent.width
                         height: parent.height
@@ -282,15 +299,8 @@ Dialog {
                                 width: parent.width * 0.8
                                 height:  25
                                 id: metricsComboBox
-                                model: automaticCalibration.metrics
+                                model: gridCalibration.metrics
                                 anchors.centerIn: parent
-                                onCurrentTextChanged: {
-                                    //console.log("-----------------------------")
-                                    automaticCalibration?.setMetric(metricsComboBox.currentText)
-                                }
-                                /*onCurrentIndexChanged: {
-                                    console.log("-----------------------------")
-                                }*/
                             }
 
                         }
@@ -374,7 +384,7 @@ Dialog {
                         ListView {
                             width: parent.width
                             height: 125
-                            model : [automaticCalibration.optimParams]
+                            model : [gridCalibration?.optimParams]
                             delegate:Rectangle {
                                 width: parent.width
                                 height: parent.height
@@ -401,6 +411,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
 
@@ -412,6 +423,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
                                         Text {
@@ -422,6 +434,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
 
@@ -433,6 +446,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
                                     }
 
@@ -456,7 +470,7 @@ Dialog {
                             }
                             Text{
                                 width: 50
-                                text : automaticCalibration.bestMetrics[0]
+                                text : gridCalibration.bestMetrics[0]
                             }
                             Text{
                                 text: "Validation : "
@@ -464,7 +478,7 @@ Dialog {
                             }
                             Text{
                                 width: 50
-                                text : automaticCalibration.bestMetrics[1]
+                                text : gridCalibration.bestMetrics[1]
                             }
                         }
 
@@ -473,7 +487,8 @@ Dialog {
                         Button{
                             id : runOptim
                             anchors.horizontalCenter:  parent.horizontalCenter
-                            enabled: true
+                            enabled: Object.keys(gridCalibration?.optimParams).length > 0 ? true : false
+                            opacity: enabled ? 1 : 0.7
                             /*icon.source: "../icons/save.png"
                             icon.height: 15
                             icon.width: 55
@@ -494,6 +509,10 @@ Dialog {
                                 border.color: parent.pressed ? parent.borderColor : "transparent"
                             }
                             hoverEnabled: false
+                            onClicked: {
+                                console.log("gridCalibration?.optimParams ", JSON.stringify(gridCalibration?.optimParams))
+                                saveGridResultsDialog.open()
+                            }
 
                         }
 

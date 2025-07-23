@@ -19,7 +19,7 @@ class GeneticalAlgorithmOptimization(Optimization):
     def optim(self):
         values = [v for category in self.kwargs.values() for v in category.values()]
         
-        params_bounds = np.array(values)
+        params_bounds = np.array(values, dtype=float)
 
         dim = sum(self.kwargs_length)
         

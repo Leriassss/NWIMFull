@@ -630,7 +630,7 @@ Dialog {
                             }
                             Text{
                                 Layout.preferredWidth: 50
-                                text:  (regressionFile?.metricsSummary[criteriaComboBox.currentText][1])?.toFixed(3)
+                                text:  (regressionFile.metricsSummary[criteriaComboBox.currentText][1])?.toFixed(3)
                             }
 
                         }

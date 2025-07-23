@@ -36,12 +36,12 @@ class GAModel:
     
     def to_dict(self):
         return {
-                'max_num_iteration': self.max_num_iteration,
-                'population_size': self.population_size,
-                'mutation_probability': self.mutation_probability,
-                'elit_ratio': self.elit_ratio,
-                'crossover_probability': self.crossover_probability,
-                'parents_portion': self.parents_portion,
+                'max_num_iteration': int(self.max_num_iteration),
+                'population_size': int(self.population_size),
+                'mutation_probability': float(self.mutation_probability),
+                'elit_ratio': float(self.elit_ratio),
+                'crossover_probability': float(self.crossover_probability),
+                'parents_portion': float(self.parents_portion),
                 'crossover_type':self.crossover_type,
                 'max_iteration_without_improv' : self.max_iteration_without_improv
         }

@@ -11,6 +11,15 @@ Column {
         console.log(JSON.stringify(parameters))
     }
 
+    Connections{
+        target: parameterModel
+        function onMethodChanged(){
+            let index = methodSelector.model.indexOf(parameterModel?.currentMethod)
+                 console.log(index)
+                 if (index >= 0)
+                    methodSelector.currentIndex = index;
+        }
+    }
 
     property var parameterModel
     property string factoryName
@@ -26,11 +35,12 @@ Column {
         width: parent.width
         height: 30
         id: methodSelector
-        model: parameterModel?.availableMethods
+        model: parameterModel.availableMethods
         onCurrentIndexChanged: {
             console.log("-------------CC----------------")
             parameterModel.setMethod(methodSelector.currentIndex)
         }
+
     }
 
     // Section pour les paramètres associés à la méthode sélectionnée
@@ -102,7 +112,7 @@ Column {
                                 anchors.bottom: parent.bottom
                                 width: parent.width
                                 height: 1  // Épaisseur de la bordure
-                                color: root.activeFocus ? "#21be2b" : "#bdbebf"  // Couleur dynamique
+                                color: "#21be2b"  // Couleur dynamique
                                 border.color: {
                                     console.log("----------------- RESULTATS1 -----------------------")
                                     console.log(JSON.stringify(parameterModel.parameterErrors))

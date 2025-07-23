@@ -252,13 +252,6 @@ Dialog {
                                 id: metricsComboBox
                                 model: automaticCalibration.metrics
                                 anchors.centerIn: parent
-                                onCurrentTextChanged: {
-                                    //console.log("-----------------------------")
-                                    automaticCalibration?.setMetric(metricsComboBox.currentText)
-                                }
-                                /*onCurrentIndexChanged: {
-                                    console.log("-----------------------------")
-                                }*/
                             }
 
                         }

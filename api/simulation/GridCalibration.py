@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import datetime
 
+from backend.results.ResultsFileManager import ResultsFileManager
 from backend.simulation.Simulation import Simulation
 from backend.grid.Grid import Grid,GridModel
 from backend.ptq.PTQ import PTQ
@@ -19,9 +20,13 @@ class GridCalibration(QObject):
         self._sim = None
         self._metrics = Simulation.Metrics
         self._optim_metric = "NSE"
+        self._best_metrics = ["",""]
+        self._optim_result = None
 
     metricsChanged = Signal()
     errorsChanged = Signal()
+    optimParamsChanged = Signal()
+    bestMetricsChanged = Signal()
     paramsBundleChanged = Signal()
     parameters_type = ["pn","qb","sim","loss"]
 
@@ -32,6 +37,14 @@ class GridCalibration(QObject):
     @Property(list, constant=True)
     def metrics(self):
         return self._metrics
+
+    @Property(list, notify=bestMetricsChanged)
+    def bestMetrics(self):
+        return self._best_metrics
+
+    @Property(dict, notify=optimParamsChanged)
+    def optimParams(self):
+        return self._optim_result
 
     @Slot(str)
     def setMetric(self, metric):
@@ -47,9 +60,11 @@ class GridCalibration(QObject):
     def paramsBundle(self):
         return self._parameter_bundle
 
-    @Slot(dict, list, dict)
-    def gridCalibration(self, params_dict, optim_list, ptq):
+    @Slot(dict, list, str, dict)
+    def gridCalibration(self, params_dict, optim_list, metric, ptq):
+        print("Metrics- GC  :", metric)
         self._errors = []
+        self._optim_result = None
 
         self._parameter_bundle =  {
         "pn":None,"qb":None,"sim": None,"loss" : None
@@ -57,9 +72,22 @@ class GridCalibration(QObject):
         self._parameters_methods = {
             "pn":None,"qb":None,"sim": None,"loss" : None
         }
-        print("GC GridCalibration--------")
-        print(params_dict)
+
         self._ptq = ptq
+
+        if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+            raise Exception("Calibration and validation datas not found")
+
+
+        if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
+            self._errors.append("Calibration and validation datas not not provided")
+            return
+
+        if not metric in self._metrics:
+            self._errors.append("Metric not found")
+            return
+
+        self._optim_metric = metric
 
         if self.check_keys_match(params_dict, self.parameters_type):
             for key in self.parameters_type :
@@ -115,27 +143,36 @@ class GridCalibration(QObject):
         grid_search_ga = Grid(gm, ptq_calibration, ptq_validation)
 
 
-        grid_results_ga, combn = grid_search_ga.grid_optimization(optimizator_name, **optim_parameters)
+        grid_results_ga, combn = grid_search_ga.grid_optimization(metric, optimizator_name, **optim_parameters)
 
-        #sim.crit = self._optim_metric
 
         print(" ------ optim res -------")
 
-        best_results = {
-            method_name : {
-                param: paramValue for param, paramValue in zip(grid_bundle[key][method_name].keys(),grid_results_ga.params[key])
-            }
-            for key, method_name in dict(zip(['pn', 'qb', 'sim', 'loss'], combn)).items()
+        self._optim_result = {
+            key : {
+                method_name : {
+                    param: paramValue for param, paramValue in zip(grid_bundle[key][method_name].keys(),grid_results_ga.params[key])
+                }
+            } for key, method_name in dict(zip(['pn', 'qb', 'sim', 'loss'], combn)).items()
         }
-        print(best_results)
+
+        self._best_metrics = [float(np.round(grid_results_ga.calibration_metric,3)),
+                                float(np.round(grid_results_ga.validation_metric,3))]
+
+        self.optimParamsChanged.emit()
+        self.bestMetricsChanged.emit()
+
+        print(self._optim_result)
         print(grid_results_ga.calibration_metric)
         print(grid_results_ga.validation_metric)
-
-
-
 
 
     def check_keys_match(self, d, keys_list):
         dict_keys = set(d.keys())
         list_keys = set(keys_list)
         return dict_keys == list_keys
+
+    @Slot(str)
+    def saveSimulationResults(self, path):
+        if self._optim_result is not None :
+            ResultsFileManager.save_calibration_results(self._optim_result, path)
