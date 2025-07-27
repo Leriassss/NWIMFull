@@ -26,10 +26,11 @@ class DifferentialEvolutionOptimization:
         model = differential_evolution(func = self.de_func, bounds = pars_bounds,
                                         updating='deferred', workers=-1)
 
-        qsim_calage, best_pars= self.get_qsim_calibration(model["x"])
-        criteria_validation, qsim_validation = self.simulation.validation()        
+        qsim_calage, best_= self.get_qsim_calibration(model["x"])
+        criteria_validation, qsim_validation = self.simulation.validation()
+        best_pars = {key : value.tolist() for key, value in best_.items()}
         
-        return SimulationModel(qsim_calage, qsim_validation, best_pars,  abs(model["fun"]), criteria_validation)
+        return SimulationModel(qsim_calage, qsim_validation, best_pars,  abs(model["fun"]), criteria_validation[self.simulation.crit])
     
     
     def de_func(self,X):
@@ -39,9 +40,9 @@ class DifferentialEvolutionOptimization:
             'sim': X[sum(self.kwargs_length[:2]) : sum(self.kwargs_length[:3])],
             'loss':X[sum(self.kwargs_length[:3]) : sum(self.kwargs_length[:4])]
         }
-        criteria_method =  self.simulation.criteria.methods()[self.simulation.crit]
+        criteria_method =  self.simulation.crit
         qsim = self.simulation.manual_calibration(args)
-        criteria_value = criteria_method(self.simulation.ptq_calage.q, qsim)
+        criteria_value = self.simulation.calibration_metric[self.simulation.crit]
         return -criteria_value
 
     def get_qsim_calibration(self, ga_variable):

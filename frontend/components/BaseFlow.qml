@@ -16,7 +16,6 @@ Dialog{
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
-    standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy : Popup.CloseOnEscape
 
     background:Rectangle{
@@ -141,6 +140,9 @@ Dialog{
                 else{
 
                     columnMappingDialog.close()
+                    baseflowChart.setChart(
+                                baseFlowSimulation.dataDict["Dates"],
+                                baseFlowSimulation.dataDict["Q"])
 
                 }
 
@@ -342,8 +344,6 @@ Dialog{
                                             }
                                             baseFlowSimulation.computeBaseflow(recession_params.parameterModel)
                                             baseflowChart.updateChart(
-                                                        baseFlowSimulation.dataDict["Dates"],
-                                                        baseFlowSimulation.dataDict["Q"],
                                                         baseFlowSimulation.dataDict["Dates"],baseFlowSimulation.baseflowData["Baseflow"],
                                                         [],[])
 
@@ -412,7 +412,7 @@ Dialog{
                             id: baseflowChart
                             width: parent.width
                             height: parent.height
-
+                            calibrationName : "Simulation"
                         }
 
                     }

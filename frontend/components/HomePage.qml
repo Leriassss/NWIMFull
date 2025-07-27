@@ -38,6 +38,13 @@ Rectangle{
     property color siderbarColor: "#bae7fe"
     property color sidebarTextColor: "black"
 
+    Connections{
+        target: fileHandler
+        function onDataDictChanged(){
+            simChart.setChart(fileHandler.dataDict["Dates"], fileHandler.dataDict["Q"])
+        }
+    }
+
     DataErrorsDialog {
         id: runningErrors
         title: "❌ ERRORS FOUNDS !!!"
@@ -672,7 +679,8 @@ Rectangle{
                             id: simChart
                             width: parent.width
                             height: parent.height
-
+                            calibrationName : "Calibration"
+                            validationName : "Validation"
                             Connections {
                                 target: homePage
                                 function onRunningClicked(){
@@ -695,25 +703,21 @@ Rectangle{
         let smoothing = slideSmoothing.enabled ? parseFloat(slideSmoothing.value) : 0
         manualCalibration.smoothness(manualCalibration.simulationValues, smoothing, rolling)
         let dates = manualCalibration.simulationValues["DATES"]
-        let q_obs = manualCalibration.simulationValues["OBS"]
         let q_sim = manualCalibration.smoothnessValues
 
         console.log("STEP 2 FRONT ", Date(Date.now()))
         if (calibrationCheckBox.checked && validationCheckBox.checked){
             console.log("STEP 3 FRONT ", Date(Date.now()))
-            simChart.updateChart([...dates["CALIBRATION"], ...dates["VALIDATION"]],
-                        [...q_obs["CALIBRATION"], ...q_obs["VALIDATION"]],
-                        dates["CALIBRATION"],q_sim["CALIBRATION"],
+            simChart.updateChart(dates["CALIBRATION"],q_sim["CALIBRATION"],
                         dates["VALIDATION"], q_sim["VALIDATION"])
 
             console.log("STEP 4 FRONT ", Date(Date.now()))
         }
         else if(calibrationCheckBox.checked && !validationCheckBox.checked){
-            simChart.updateChart(dates["CALIBRATION"],q_obs["CALIBRATION"],
-                                 dates["CALIBRATION"],q_sim["CALIBRATION"],[],[])
+            simChart.updateChart(dates["CALIBRATION"],q_sim["CALIBRATION"],[],[])
         }
         else if(!calibrationCheckBox.checked && validationCheckBox.checked){
-            simChart.updateChart(dates["VALIDATION"],q_obs["VALIDATION"],[],[],
+            simChart.updateChart([],[],
                                  dates["VALIDATION"],q_sim["VALIDATION"])
         }
     }

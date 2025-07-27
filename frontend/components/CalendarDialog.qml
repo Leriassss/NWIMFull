@@ -20,6 +20,7 @@ Dialog{
             width: parent.width
             height: parent.height
             border.width: 1
+            border.color: "#ebebeb"
             Column{
                 width: parent.width
                 height: parent.height

@@ -58,7 +58,7 @@ Column {
         Repeater {
             model: parameterModel.parameterNames
 
-            delegate:CustomTextField {
+            delegate:TextField {
                 Layout.column: 1
                 Layout.row: index
                 Layout.preferredWidth: 100
@@ -97,7 +97,7 @@ Column {
         Repeater {
             model: parameterModel.parameterNames
 
-            delegate: CustomTextField {
+            delegate: TextField {
                 Layout.column: 2
                 Layout.row: index
                 Layout.preferredWidth: 100

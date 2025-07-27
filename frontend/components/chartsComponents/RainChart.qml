@@ -8,38 +8,49 @@ Rectangle {
     property date maxDate
     property real minValue
     property real maxValue
-    property var barValues
-    property var axisXValues
 
     property string chartName
     ChartView {
-        id : chartView
+        id: chartView
+        title: chartName
         anchors.fill: parent
         antialiasing: true
 
-        BarSeries {
-                id: mySeries
-                barWidth : 0
-                axisX: BarCategoryAxis {
-                    categories: axisXValues
-                }
-                axisY: ValueAxis {
-                    id: axisY
-                    min:minValue
-                    max:1.1*maxValue
-                }
-                BarSet { label: chartContainer.chartName; values: barValues}
-            }
-    }
+        DateTimeAxis {
+            id: daxisX
+            format:fileHandler.userFormat
+            titleText: "Dates"
+            min:minDate
+            max: maxDate
+        }
 
+        ValueAxis {
+            id: vaxisY
+            min:minValue
+            max:1.1*maxValue
+        }
+        LineSeries {
+            id: seriesP
+            name: "Q"
+            axisX: daxisX
+            axisY: vaxisY
+        }
+    }
     function updateChart(dates, p_series) {
         if(p_series){
+            seriesP.clear();
             chartContainer.minDate = dates[0]
             chartContainer.maxDate = dates[dates.length-1]
             chartContainer.minValue = Math.min(...p_series)
             chartContainer.maxValue = Math.max(...p_series)
-            chartContainer.barValues = p_series
-            chartContainer.axisXValues = dates
+
+            for (var i = 0; i < dates.length; i++) {
+                var x = new Date(dates[i]);
+                if (i < p_series.length) {
+                    seriesP.append(x.getTime(), p_series[i]);
+                }
+            }
         }
+
     }
 }

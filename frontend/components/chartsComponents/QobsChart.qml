@@ -9,6 +9,8 @@ Rectangle {
     property date maxDate
     property real minValue
     property real maxValue
+    property real pminValue
+    property real pmaxValue
 
     property string chartName
 
@@ -18,6 +20,7 @@ Rectangle {
         id: chartView
         anchors.fill: parent
         antialiasing: true
+        title: chartName
 
         DateTimeAxis {
             id: daxisX
@@ -30,9 +33,22 @@ Rectangle {
         ValueAxis {
             id: vaxisY
             min:minValue
-            max:1.1*maxValue
+            max:maxValue
         }
-
+        ValueAxis {
+            id: axisY
+            min:minValue
+            max:pmaxValue
+            reverse : true
+            visible : false
+        }
+        LineSeries {
+            id: seriesQ2
+            name: "P"
+            axisX : daxisX
+            axisYRight : axisY
+            visible : false
+        }
         LineSeries {
             id: seriesQ
             name: "Q"
@@ -41,13 +57,39 @@ Rectangle {
         }
     }
 
-    function updateChart(dates, q_series) {
-        if(q_series){
+    function updateCombinedChart(dates, q_series, p_series) {
+        seriesQ2.visible = true
+        axisY.visible = true
+        if(q_series && p_series){
             seriesQ.clear();
+            seriesQ2.clear();
             qobsChart.minDate = dates[0]
             qobsChart.maxDate = dates[dates.length-1]
             qobsChart.minValue = Math.min(...q_series)
-            qobsChart.maxValue = Math.max(...q_series)
+            qobsChart.maxValue = 2*Math.max(...q_series)
+            qobsChart.pminValue = Math.min(...p_series)
+            qobsChart.pmaxValue = 2*Math.max(...p_series) + qobsChart.maxValue
+
+            for (var i = 0; i < dates.length; i++) {
+                var x = new Date(dates[i]);
+                if (q_series && i < q_series.length) {
+                    seriesQ.append(x.getTime(), q_series[i]);
+                    seriesQ2.append(x.getTime(), p_series[i]);
+                }
+            }
+        }
+
+    }
+    function updateChart(dates, q_series) {
+        seriesQ2.visible = false
+        axisY.visible = false
+        if(q_series){
+            seriesQ.clear();
+            seriesQ2.clear();
+            qobsChart.minDate = dates[0]
+            qobsChart.maxDate = dates[dates.length-1]
+            qobsChart.minValue = Math.min(...q_series)
+            qobsChart.maxValue = 1.1*Math.max(...q_series)
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);

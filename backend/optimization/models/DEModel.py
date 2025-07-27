@@ -18,11 +18,11 @@ class DEModel:
     def to_dict(self):
         """ Retourne les paramètres sous forme de dictionnaire. """
         return {
-            'maxiter': self.maxiter,
-            'popsize': self.popsize,
-            'tol': self.tol,
-            'mutation': (self.mutation,1),
-            'recombination': self.recombination
+            'maxiter': int(self.maxiter),
+            'popsize': int(self.popsize),
+            'tol': float(self.tol),
+            'mutation': float(self.mutation),
+            'recombination': float(self.recombination)
         }
 
     @staticmethod

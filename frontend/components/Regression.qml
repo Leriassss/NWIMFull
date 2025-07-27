@@ -29,6 +29,12 @@ Dialog {
     property bool modelRegression: true
     property bool qSimRegression: false
 
+    Connections{
+        target: fileHandler
+        function onDataDictChanged(){
+           regChart.setChart(fileHandler.dataDict["Dates"],fileHandler.dataDict["Q"])
+        }
+    }
     header: ToolBar {
             id: toolBar
             height: 30
@@ -84,9 +90,7 @@ Dialog {
                         if(qSimRegression){
                             regressionFile.qSimRegression(fileHandler.ptq,regComboBox.currentText)
                         }
-                        regChart.updateChart([...fileHandler.ptq["CALIBRATION"]["Dates"], ...fileHandler.ptq["VALIDATION"]["Dates"]],
-                                    [...fileHandler.ptq["CALIBRATION"]["Q"], ...fileHandler.ptq["VALIDATION"]["Q"]],
-                                    fileHandler.ptq["CALIBRATION"]["Dates"],regressionFile.simValues["CALIBRATION"],
+                        regChart.updateChart(fileHandler.ptq["CALIBRATION"]["Dates"],regressionFile.simValues["CALIBRATION"],
                                     fileHandler.ptq["VALIDATION"]["Dates"], regressionFile.simValues["VALIDATION"])
 
                     }
@@ -652,7 +656,8 @@ Dialog {
                         id: regChart
                         width: parent.width
                         height: parent.height
-
+                        calibrationName : "Calibration"
+                        validationName : "Validation"
                     }
                 }
 

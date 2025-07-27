@@ -88,7 +88,7 @@ Dialog{
                 }
             }
         }
-        TabButton {
+        /*TabButton {
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             background: Rectangle{
@@ -117,6 +117,7 @@ Dialog{
                 }
             }
         }
+        */
         TabButton {
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -204,7 +205,7 @@ Dialog{
             }
 
         }
-        Rectangle{
+        /*Rectangle{
             Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
             color: "white"
@@ -215,7 +216,7 @@ Dialog{
                 padding: 10
             }
 
-        }
+        }*/
 
         Rectangle{
             Layout.alignment : Qt.AlignCenter

@@ -140,6 +140,7 @@ class AutomaticCalibration(QObject):
             original_dict[section] = {model: param_dict}
 
         self._optim_result = original_dict
+        print("sim_r_hun ------------------ : ", sim_r_hun.validation_metric)
         self._best_metrics = [float(np.round(sim_r_hun.calibration_metric,3)),
                                 float(np.round(sim_r_hun.validation_metric,3))]
 

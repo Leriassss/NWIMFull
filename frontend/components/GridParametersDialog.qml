@@ -173,7 +173,7 @@ Dialog {
                 ScrollView {
                     id: scrollView
                     Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: parent.height - gridText.height
+                    Layout.preferredHeight: parent.height - gridText.height - parent.spacing
                     clip: true
                     ColumnLayout {
                         width: parent.width

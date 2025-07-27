@@ -12,8 +12,8 @@ Rectangle {
 
     signal runningStart
 
-    property string chartName
-
+    property string calibrationName : ""
+    property string validationName : ""
 
 
     ChartView {
@@ -23,12 +23,14 @@ Rectangle {
         legend.visible: true
 
 
+
         DateTimeAxis {
             id: daxisX
             format: fileHandler.userFormat
             titleText: "Dates"
             min: minDate
             max: maxDate
+            gridVisible : false
         }
 
         ValueAxis {
@@ -48,40 +50,26 @@ Rectangle {
 
         LineSeries {
             id: seriesQClibration
-            name: "Calibration"
+            name: calibrationName
             axisX: daxisX
             axisY: vaxisY
             color: "red"
         }
         LineSeries {
             id: seriesQValidation
-            name: "Validation"
+            name: validationName
             axisX: daxisX
             axisY: vaxisY
             color: "green"
+            visible : validationName === "" ? false : true
         }
     }
 
-    function updateChart(dates_obs, q_obs_series, dates_cal, q_cal_series, dates_val, q_val_series) {
-        seriesQ.clear()
+    function updateChart(dates_cal, q_cal_series, dates_val, q_val_series) {
         seriesQClibration.clear()
         seriesQValidation.clear()
-
-        if (!dates_obs || dates_obs.length === 0)
-            return;
-
-        qobsChart.minDate = dates_obs[0]
-        qobsChart.maxDate = dates_obs[dates_obs.length - 1]
-
-        // Fusionner les deux séries pour obtenir le min/max global
-        var allValues = q_obs_series.concat([...q_cal_series,...q_val_series])
-        qobsChart.minValue = Math.min(...allValues)
-        qobsChart.maxValue = Math.max(...allValues)
         let i = 0
-        for (i =0 ; i < dates_obs.length; i++) {
-            if (i < q_obs_series.length)
-                seriesQ.append(new Date(dates_obs[i]).getTime(), q_obs_series[i])
-        }
+        qobsChart.maxValue = Math.max(qobsChart.maxValue, Math.max(...[...q_cal_series,...q_val_series]))
         for (i = 0; i < dates_cal.length; i++) {
             if (i < q_cal_series.length)
                 seriesQClibration.append(new Date(dates_cal[i]).getTime(), q_cal_series[i])
@@ -91,4 +79,24 @@ Rectangle {
                 seriesQValidation.append(new Date(dates_val[i]).getTime(), q_val_series[i])
         }
     }
+    function setChart(dates_obs, q_obs_series) {
+        seriesQ.clear()
+        seriesQClibration.clear()
+        seriesQValidation.clear()
+        if (!dates_obs || dates_obs.length === 0)
+            return;
+
+        qobsChart.minDate = dates_obs[0]
+        qobsChart.maxDate = dates_obs[dates_obs.length - 1]
+
+        qobsChart.minValue = 0
+        qobsChart.maxValue = Math.max(...q_obs_series)
+        let i = 0
+        for (i =0 ; i < dates_obs.length; i++) {
+            if (i < q_obs_series.length)
+                seriesQ.append(new Date(dates_obs[i]).getTime(), q_obs_series[i])
+        }
+
+    }
+
 }

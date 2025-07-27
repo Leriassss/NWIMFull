@@ -8,6 +8,7 @@ Rectangle {
     property string factoryName
     property string methodName
     property bool activated: enableParams.checked
+    property var parameters: parameterModel.parameters
 
 
     Component.onCompleted: {
@@ -78,15 +79,24 @@ Rectangle {
 
             // Répétiteur pour les champs min
             Repeater {
-                model: parameterModel.parameterNames
+                model: {console.log("parameterModel.parameterNames : ",parameterModel.parameterNames)
+
+                    parameterModel.parameterNames}
+
 
                 delegate: TextField {
-                    Layout.column: 1
+                    Layout.column: {
+                        console.log("modelData : ",modelData)
+                        console.log("parameterModel.parameters[modelData] : ", parameters[modelData])
+                        1
+                    }
                     Layout.row: index
                     Layout.preferredWidth: 50
                     Layout.alignment: Qt.AlignRight
-                    text: parameterModel.parameters[modelData][0]
-                    onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1])
+                    text: parameters[modelData][0]
+                    onTextChanged: {
+                        parameterModel.updateParameter(modelData, text, parameters[modelData][1])
+                    }
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
                     }
@@ -130,8 +140,8 @@ Rectangle {
                     Layout.row: index
                     Layout.preferredWidth: 50
                     Layout.alignment: Qt.AlignRight
-                    text: parameterModel.parameters[modelData][1]
-                    onTextChanged: parameterModel.updateParameter(modelData, parameterModel.parameters[modelData][0], text)
+                    text: parameters[modelData][1]
+                    onTextChanged: parameterModel.updateParameter(modelData, parameters[modelData][0], text)
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
                     }
@@ -149,7 +159,7 @@ Rectangle {
                                     let errors = parameterModel.parameterErrors[modelData];
                                     if (errors && errors.max) {
                                         return "red"; // Erreur sur max
-                                    } else if (errors && errors.min && parameterModel.parameters[modelData][0] >= parameterModel.parameters[modelData][1]) {
+                                    } else if (errors && errors.min && parameters[modelData][0] >= parameters[modelData][1]) {
                                         return "red"; // min >= max
                                     } else {
                                         return "gray"; // Valeur correcte

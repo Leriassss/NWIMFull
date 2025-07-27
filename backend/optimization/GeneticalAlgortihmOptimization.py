@@ -12,8 +12,8 @@ from backend.simulation.models.SimulationModel import SimulationModel
 class GeneticalAlgorithmOptimization(Optimization):
     def __init__(self, simulation : Simulation, kwargs : RoutingData, params_algo : GAModel):
         self.simulation = simulation
-        self.kwargs = kwargs
-        self.kwargs_length = np.array([len(v) for v in kwargs.values()])
+        self.kwargs = {key : kwargs[key] for key in ["pn", "qb", "loss", "sim"]}
+        self.kwargs_length = np.array([len(v) for v in self.kwargs.values()])
         self.params_algo = params_algo
 
     def optim(self):
@@ -34,11 +34,12 @@ class GeneticalAlgorithmOptimization(Optimization):
         ga_variable = results['variable']
         ga_crit = results['function']
         
-        qsim_calage, best_pars = self.get_qsim_calibration(ga_variable)
+        qsim_calage, best_ = self.get_qsim_calibration(ga_variable)
         
+        best_pars = {key : value.tolist() for key, value in best_.items()}
         criteria_validation, qsim_validation = self.simulation.validation() 
 
-        return SimulationModel(qsim_calage, qsim_validation, best_pars, abs(ga_crit) , criteria_validation)
+        return SimulationModel(qsim_calage, qsim_validation, best_pars, abs(ga_crit) , criteria_validation[self.simulation.crit])
 
 
     def ga_func(self,X):

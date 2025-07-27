@@ -90,7 +90,7 @@ Rectangle{
     Dialog {
             id: columnMappingDialog
             title: "MAPPING"
-            implicitWidth:  500
+            implicitWidth:  350
             implicitHeight: 300
             modal: true
             standardButtons: Dialog.Ok | Dialog.Cancel
@@ -134,10 +134,10 @@ Rectangle{
                     //tableView.appendRow(fileHandler.displayData)
                     //transformData(fileHandler.dataDict)
                     let data_dates = fileHandler.dataDict["Dates"]
-                    tempChart.updateChart(data_dates,fileHandler.dataDict["T"])
-                    qchart.updateChart(data_dates,fileHandler.dataDict["Q"])
-                    rainChart.updateChart(data_dates,fileHandler.dataDict["P"])
-                    etpChart.updateChart(data_dates,fileHandler.dataDict["ETP"])
+                    //tempChart.updateChart(data_dates,fileHandler.dataDict["T"])
+                    qchart.updateCombinedChart(data_dates,fileHandler.dataDict["Q"], fileHandler.dataDict["P"])
+                    //rainChart.updateChart(data_dates,fileHandler.dataDict["P"])
+                    etpChart.updateCombinedChart(data_dates,fileHandler.dataDict["ETP"],fileHandler.dataDict["P"])
                     columnMappingDialog.close()
                     chooseDatePopup.open()
 
@@ -149,13 +149,13 @@ Rectangle{
             Rectangle{
                 anchors.fill: parent
                 border.width: 1
-                border.color: "grey"
+                border.color: "#ebebeb"
                 color : "#fcffff"
 
 
                 GridLayout {
                     height: parent.height
-                    width: parent.width * 0.5
+                    width: parent.width * 0.75
                     columns: 2 // Deux colonnes : une pour les labels, une pour les ComboBox
                     columnSpacing: 10
                     rowSpacing: 10
@@ -493,26 +493,16 @@ Rectangle{
                 anchors.centerIn: parent
                 width: parent.width
                 height: parent.height
-                columns: 2
+                rows: 2
                 QobsChart{
                     id : qchart
-                    width: parent.width / 2
-                    height: parent.height / 2
-                }
-                TempChart{
-                    id : tempChart
-                    width: parent.width / 2
-                    height: parent.height / 2
+                    width: parent.width
+                    height: parent.height/2
                 }
                 ETPChart{
                     id : etpChart
-                    width: parent.width / 2
-                    height: parent.height / 2
-                }
-                RainChart{
-                    id : rainChart
-                    width: parent.width / 2
-                    height: parent.height / 2
+                    width: parent.width
+                    height: parent.height /2
                 }
             }
 
