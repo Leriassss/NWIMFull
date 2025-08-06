@@ -35,19 +35,7 @@ class Model :
         smax : la quantité de perte initiale
         w : le coefficient de ruissellement
         """
-        valeurs = np.array(prec, dtype=float)  
-        pertes_restantes = smax  
-        i = 0
-        while i < len(valeurs):
-            if pertes_restantes > 0:
-                if valeurs[i] >= pertes_restantes:
-                    valeurs[i] -= pertes_restantes
-                    valeurs[i] *= w
-                else:
-                    pertes_restantes -= valeurs[i]
-                    valeurs[i] = 0 
-            i+=1
-        return pd.Series(valeurs)
+        return pd.Series(np.maximum(0, (prec-smax)*w))
     
     def compute_etp_loss(self,production, etp, etp_adj = 1):
         """

@@ -1,7 +1,5 @@
-import pandas as pd
-from scipy.optimize import curve_fit
 
-import numpy as np
+from scipy.optimize import curve_fit
 
 from backend.contracts.Bundle import DataBaseFlow
 class BaseFlowRoutine:

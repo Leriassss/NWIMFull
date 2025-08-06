@@ -36,7 +36,7 @@
                         "type": "QVariant",
                         "index": 2,
                         "read": "availableMethods",
-                        "notify": "methodChanged"
+                        "notify": "availableMethodsChanged"
                     },
                     {
                         "name": "parameterErrors",
@@ -50,7 +50,7 @@
                         "type": "QVariant",
                         "index": 4,
                         "read": "parameterNames",
-                        "notify": "parametersChanged"
+                        "notify": "parametersNamesChanged"
                     },
                     {
                         "name": "parameters",
@@ -64,13 +64,25 @@
                         "type": "QVariant",
                         "index": 6,
                         "read": "parameterValues",
-                        "notify": "parametersChanged"
+                        "notify": "parametersValuesChanged"
                     }
                 ],
                 "signals": [
                     {
                         "access": "public",
                         "name": "parametersChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersNamesChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersValuesChanged",
                         "arguments": [],
                         "returnType": "void"
                     },
@@ -83,6 +95,12 @@
                     {
                         "access": "public",
                         "name": "parameterErrorChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "availableMethodsChanged",
                         "arguments": [],
                         "returnType": "void"
                     }

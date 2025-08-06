@@ -5,7 +5,7 @@ from backend.pte.Evapotranspiration import Evapotranspiration
 
 class ETo(Evapotranspiration):
     """
-    Classe implémentant la méthode d'évapotranspiration Penman-Monteith.
+    Classe implémentant les méthodes de calcul de l'évapotranspiration potentielle.
     """
     def __init__(self, data : EToModel):
         self._data = data

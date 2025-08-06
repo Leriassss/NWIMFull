@@ -57,8 +57,8 @@ class PLA(Routing):
         epsilon = 1e-6
         n = len(q)
         x = np.zeros(n)
+        mu_over_landa = (mu / landa) if np.isfinite(mu / landa) else 0
         for i in range(3, n):
-            mu_over_landa = (mu / landa) if np.isfinite(mu / landa) else 0
             if q[i] == 0:
                 x[i] = x[i - 1] - mu_over_landa * x[i - 1]
             else:
@@ -67,7 +67,6 @@ class PLA(Routing):
         q_sim = np.zeros(n)
         for i in range(2, n):
             power_pla = q_sim[i - 1]  ** (2 * mu- 1) if q_sim[i - 1] > 0 else 0
-            mu_over_landa = (mu / landa) if np.isfinite(mu / landa) else 0
             if x[i] * s_f > t_x:
                 q_sim[i] = max(0, q_sim[i - 1] - mu_over_landa * power_pla + s_f * x[i] * q[i - 1] /landa)
             else:

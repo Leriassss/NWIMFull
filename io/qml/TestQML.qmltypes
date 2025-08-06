@@ -14,18 +14,18 @@ Module {
         exports: ["io.qml/TestQML 1.0"]
         exportMetaObjectRevisions: [256]
         Property {
-            name: "desactivated"
-            type: "bool"
-            read: "desactivated"
-            notify: "desactivatedChanged"
+            name: "availableMethods"
+            type: "QVariant"
+            read: "availableMethods"
+            notify: "availableMethodsChanged"
             index: 0
             isReadonly: true
         }
         Property {
-            name: "availableMethods"
-            type: "QVariant"
-            read: "availableMethods"
-            notify: "parametersChanged"
+            name: "desactivated"
+            type: "bool"
+            read: "desactivated"
+            notify: "desactivatedChanged"
             index: 1
             isReadonly: true
         }
@@ -74,6 +74,7 @@ Module {
         Signal { name: "methodChanged" }
         Signal { name: "parameterErrorChanged" }
         Signal { name: "desactivatedChanged" }
+        Signal { name: "availableMethodsChanged" }
         Method {
             name: "setFactory"
             Parameter { name: "a1"; type: "QString" }

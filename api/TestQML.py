@@ -12,6 +12,7 @@ class TestQML(QObject):
     methodChanged = Signal()
     parameterErrorChanged = Signal()
     desactivatedChanged = Signal()
+    availableMethodsChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -22,14 +23,15 @@ class TestQML(QObject):
         self._keys = []
         self._desactivated = True
 
+
+
+    @Property('QVariant', notify=availableMethodsChanged)
+    def availableMethods(self):
+        return self._methods
+
     @Property(bool, notify=desactivatedChanged)
     def desactivated(self):
         return self._desactivated
-
-    @Property('QVariant', notify=parametersChanged)
-    def availableMethods(self):
-        """Retourne la liste des méthodes disponibles pour le ComboBox en QML."""
-        return self._methods
 
     @Property(str, notify=methodChanged)
     def currentMethod(self):
@@ -72,6 +74,8 @@ class TestQML(QObject):
 
         self.methodChanged.emit()
         self.parametersChanged.emit()
+        self.availableMethodsChanged.emit()
+
 
     @Slot(str)
     def setMethod(self, index):

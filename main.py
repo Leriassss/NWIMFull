@@ -1,4 +1,6 @@
 import sys
+import os
+
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
@@ -41,6 +43,8 @@ if __name__ == "__main__":
     # Créer une instance de ProductionQML sans modèle spécifique
 
     engine = QQmlApplicationEngine()
+
+    #os.environ["QT_QUICK_CONTROLS_STYLE"] = "Fusion"
 
     file_handler = FileHandler()
     eto_manager = EToManager()

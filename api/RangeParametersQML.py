@@ -9,8 +9,11 @@ QML_IMPORT_MAJOR_VERSION = 1
 @QmlElement
 class RangeParametersQML(QObject):
     parametersChanged = Signal()
+    parametersNamesChanged = Signal()
+    parametersValuesChanged = Signal()
     methodChanged = Signal()
     parameterErrorChanged = Signal()
+    availableMethodsChanged = Signal()
 
     def __init__(self, parent=None):
         """Initialisation sans écoute du changement de factory."""
@@ -30,7 +33,7 @@ class RangeParametersQML(QObject):
     def currentMethod(self):
         return self._current_method
 
-    @Property('QVariant', notify=methodChanged)
+    @Property('QVariant', notify=availableMethodsChanged)
     def availableMethods(self):
         """Retourne la liste des méthodes disponibles pour la factory actuelle."""
         return self._methods
@@ -41,7 +44,7 @@ class RangeParametersQML(QObject):
         return self._parameterErrors
 
 
-    @Property('QVariant', notify=parametersChanged)
+    @Property('QVariant', notify=parametersNamesChanged)
     def parameterNames(self):
         """Retourne les noms des paramètres disponibles."""
         return list(self._parameters.keys())
@@ -51,7 +54,7 @@ class RangeParametersQML(QObject):
         """Retourne les paramètres sous forme de range {'param': [min, max]}."""
         return self._parameters
 
-    @Property('QVariant', notify=parametersChanged)
+    @Property('QVariant', notify=parametersValuesChanged)
     def parameterValues(self):
         """Retourne les noms des paramètres disponibles."""
         return list(self._parameters.values())
@@ -71,6 +74,9 @@ class RangeParametersQML(QObject):
 
         self.methodChanged.emit()
         self.parametersChanged.emit()
+        self.parametersValuesChanged.emit()
+        self.parametersNamesChanged.emit()
+        self.availableMethodsChanged.emit()
 
     @Slot(str)
     def setMethod(self, index):
@@ -91,6 +97,8 @@ class RangeParametersQML(QObject):
 
         self.methodChanged.emit()
         self.parametersChanged.emit()
+        self.parametersValuesChanged.emit()
+        self.parametersNamesChanged.emit()
 
     def safe_convert(self,value):
         """Convertit une chaîne en float si possible, sinon retourne None."""
@@ -143,6 +151,7 @@ class RangeParametersQML(QObject):
             self._parameters[key] = [min_value, max_value]
             # Émission des signaux finaux après mise à jour
             self.parametersChanged.emit()
+            self.parametersValuesChanged.emit()
             self._parameterErrors[key] = {
                  "min": False,
                  "max": False

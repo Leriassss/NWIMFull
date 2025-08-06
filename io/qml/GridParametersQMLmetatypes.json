@@ -35,15 +35,14 @@
                         "name": "availableMethods",
                         "type": "QVariant",
                         "index": 2,
-                        "read": "availableMethods",
-                        "notify": "methodChanged"
+                        "read": "availableMethods"
                     },
                     {
                         "name": "parameterNames",
                         "type": "QVariant",
                         "index": 3,
                         "read": "parameterNames",
-                        "notify": "parametersChanged"
+                        "notify": "parametersNamesChanged"
                     },
                     {
                         "name": "parameters",
@@ -57,7 +56,7 @@
                         "type": "QVariant",
                         "index": 5,
                         "read": "parameterValues",
-                        "notify": "parametersChanged"
+                        "notify": "parametersValuesChanged"
                     },
                     {
                         "name": "parameterErrors",
@@ -71,6 +70,18 @@
                     {
                         "access": "public",
                         "name": "parametersChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersNamesChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersValuesChanged",
                         "arguments": [],
                         "returnType": "void"
                     },

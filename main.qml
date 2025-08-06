@@ -19,7 +19,6 @@ ApplicationWindow {
     title: qsTr("NWIM")
     //Material.theme: Material.Light
     //Material.accent: Material.Blue
-
     menuBar:MenuBarModel{
         width: parent.width
         id: nwimMenuBar

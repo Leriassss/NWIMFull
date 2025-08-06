@@ -26,7 +26,7 @@ Module {
             name: "availableMethods"
             type: "QVariant"
             read: "availableMethods"
-            notify: "methodChanged"
+            notify: "availableMethodsChanged"
             index: 2
             isReadonly: true
         }
@@ -42,7 +42,7 @@ Module {
             name: "parameterNames"
             type: "QVariant"
             read: "parameterNames"
-            notify: "parametersChanged"
+            notify: "parametersNamesChanged"
             index: 4
             isReadonly: true
         }
@@ -58,13 +58,16 @@ Module {
             name: "parameterValues"
             type: "QVariant"
             read: "parameterValues"
-            notify: "parametersChanged"
+            notify: "parametersValuesChanged"
             index: 6
             isReadonly: true
         }
         Signal { name: "parametersChanged" }
+        Signal { name: "parametersNamesChanged" }
+        Signal { name: "parametersValuesChanged" }
         Signal { name: "methodChanged" }
         Signal { name: "parameterErrorChanged" }
+        Signal { name: "availableMethodsChanged" }
         Method {
             name: "setFactory"
             Parameter { name: "a1"; type: "QString" }

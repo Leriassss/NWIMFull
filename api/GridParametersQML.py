@@ -9,6 +9,8 @@ QML_IMPORT_MAJOR_VERSION = 1
 @QmlElement
 class GridParametersQML(QObject):
     parametersChanged = Signal()
+    parametersNamesChanged = Signal()
+    parametersValuesChanged = Signal()
     methodChanged = Signal()
     parameterErrorChanged = Signal()
 
@@ -30,12 +32,12 @@ class GridParametersQML(QObject):
     def currentMethod(self):
         return self._current_method
 
-    @Property('QVariant', notify=methodChanged)
+    @Property('QVariant', constant = True)
     def availableMethods(self):
         """Retourne la liste des méthodes disponibles pour la factory actuelle."""
         return self._methods
 
-    @Property('QVariant', notify=parametersChanged)
+    @Property('QVariant', notify=parametersNamesChanged)
     def parameterNames(self):
         """Retourne les noms des paramètres disponibles."""
         return list(self._parameters.keys())
@@ -45,7 +47,7 @@ class GridParametersQML(QObject):
         """Retourne les paramètres sous forme de range {'param': [min, max]}."""
         return self._parameters
 
-    @Property('QVariant', notify=parametersChanged)
+    @Property('QVariant', notify=parametersValuesChanged)
     def parameterValues(self):
         """Retourne les noms des paramètres disponibles."""
         return list(self._parameters.values())
@@ -68,6 +70,8 @@ class GridParametersQML(QObject):
             self._parameters = {}
             self._current_method = None
         self.methodChanged.emit()
+        self.parametersValuesChanged.emit()
+        self.parametersNamesChanged.emit()
         self.parametersChanged.emit()
 
     @Slot(str)
@@ -88,6 +92,8 @@ class GridParametersQML(QObject):
         self._parameterErrors = {key: {"min":True,"max":True} for key in self._keys}
 
         self.methodChanged.emit()
+        self.parametersValuesChanged.emit()
+        self.parametersNamesChanged.emit()
         self.parametersChanged.emit()
 
 
@@ -124,4 +130,5 @@ class GridParametersQML(QObject):
 
                 # Émission des signaux de mise à jour
             self.parametersChanged.emit()
+            self.parametersValuesChanged.emit()
             self.parameterErrorChanged.emit()

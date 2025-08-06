@@ -19,18 +19,18 @@
                 ],
                 "properties": [
                     {
-                        "name": "desactivated",
-                        "type": "bool",
-                        "index": 0,
-                        "read": "desactivated",
-                        "notify": "desactivatedChanged"
-                    },
-                    {
                         "name": "availableMethods",
                         "type": "QVariant",
-                        "index": 1,
+                        "index": 0,
                         "read": "availableMethods",
-                        "notify": "parametersChanged"
+                        "notify": "availableMethodsChanged"
+                    },
+                    {
+                        "name": "desactivated",
+                        "type": "bool",
+                        "index": 1,
+                        "read": "desactivated",
+                        "notify": "desactivatedChanged"
                     },
                     {
                         "name": "currentMethod",
@@ -96,6 +96,12 @@
                     {
                         "access": "public",
                         "name": "desactivatedChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "availableMethodsChanged",
                         "arguments": [],
                         "returnType": "void"
                     }

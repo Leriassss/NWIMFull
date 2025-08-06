@@ -24,7 +24,6 @@ class HUN(Routing):
         q_direct = datas["qdirect_means"]
         seq_hun = np.arange(0,len(q_direct),time_base)
         hun_time_base = []
-        interm_hun = []
         xtra_flow = np.zeros(time_base-1)
         for k in seq_hun:
             initial_production_seq = initial_production[k:k+time_base]
@@ -32,7 +31,6 @@ class HUN(Routing):
             transformed_production_seq = transformed_production[k:k+time_base]
             q_direct_seq = q_direct[k:k+time_base]
             hun_k = q_direct_seq/(transformed_production_seq.sum())
-            interm_hun.append(pd.Series(hun_k))
             total_sim = np.convolve(initial_production_seq,hun_k)
             sim_flow = total_sim[:len_ips]    
             sim_flow[:len(xtra_flow)] += xtra_flow[:len(sim_flow)]

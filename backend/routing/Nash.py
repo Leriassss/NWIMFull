@@ -11,10 +11,8 @@ class Nash(Routing):
     def __init__(self, kwargs: RoutingContract):
         self.kwargs = kwargs
         self.nashModel =  NashModel(*self.kwargs)
-        self.output_lim = 6
-        self.window = 65
     
-    def calage(self,datas : DataSimulation):
+    def compute(self,datas : DataSimulation):
         nash_k = self.nashModel.nash_k
         nash_n = self.nashModel.nash_n
         time_base = self.nashModel.time_base
@@ -24,29 +22,24 @@ class Nash(Routing):
         # Séquencement basé sur le temps
         seq_nash = np.arange(0, n, time_base)
         nash_time_base = []
+        t = np.arange(0, time_base)
+                # Fonction gamma de Nash
+        q = pd.Series(
+                    (1 / (nash_k * gamma(nash_n)))
+                    * np.power(t / nash_k, nash_n - 1)
+                    * np.exp(-t / nash_k)
+                )
         for k in seq_nash:
             # Extraction des précipitations nettes pour une séquence donnée
             production_seq = production[k : k + time_base]
             len_ips = len(production)
             
-            if production_seq.sum() > 0:
-                t = np.arange(0, len(production_seq))
-                # Fonction gamma de Nash
-                q = pd.Series(
-                    (1 / (nash_k * gamma(nash_n)))
-                    * np.power(t / nash_k, nash_n - 1)
-                    * np.exp(-t / nash_k)
-                )
-                # Convolution entre la séquence de production et la fonction gamma
-                nash_k_result = pd.Series(np.convolve(production_seq, q))[: len(production_seq)]
-                total_sim = np.convolve(production_seq, q)
-                sim_flow = total_sim[:len_ips]    
-                sim_flow[:len(xtra_flow)] += xtra_flow[:len(sim_flow)]
-                xtra_flow = total_sim[len_ips:]
-            else:
-                # Si aucune production dans la séquence, retourne des zéros
-                nash_k_result = pd.Series(np.zeros_like(production_seq))
-
+            nash_k_result = pd.Series(np.convolve(production_seq, q))[: len(production_seq)]
+            total_sim = np.convolve(production_seq, q)
+            sim_flow = total_sim[:len_ips]    
+            sim_flow[:len(xtra_flow)] += xtra_flow[:len(sim_flow)]
+            xtra_flow = total_sim[len_ips:]
+            
             nash_time_base.append(nash_k_result)
 
         # Assemblage des résultats et découpage à la taille initiale
@@ -54,39 +47,10 @@ class Nash(Routing):
         return q_sim_direct
     
     def validation(self, datas : DataSimulation):
-        nash_k = self.nashModel.nash_k
-        nash_n = self.nashModel.nash_n
-        time_base = self.nashModel.time_base
-        #production = np.maximum(0, net_rainfall - self.ptq_calage.etp)
-        production = datas["pn"]
-        n = len(production)
-
-        # Séquencement basé sur le temps
-        seq_nash = np.arange(0, n, time_base)
-        nash_time_base = []
-
-        for k in seq_nash:
-            # Extraction des précipitations nettes pour une séquence donnée
-            production_seq = production[k : k + time_base]
-            if production_seq.sum() > 0:
-                t = np.arange(0, len(production_seq))
-                # Fonction gamma de Nash
-                q = pd.Series(
-                    (1 / (nash_k * gamma(nash_n)))
-                    * np.power(t / nash_k, nash_n - 1)
-                    * np.exp(-t / nash_k)
-                )
-                # Convolution entre la séquence de production et la fonction gamma
-                nash_k_result = pd.Series(np.convolve(production_seq, q))[: len(production_seq)]
-            else:
-                # Si aucune production dans la séquence, retourne des zéros
-                nash_k_result = pd.Series(np.zeros_like(production_seq))
-
-            nash_time_base.append(nash_k_result)
-
-        # Assemblage des résultats et découpage à la taille initiale
-        q_sim_direct =  pd.concat(nash_time_base).reset_index(drop=True)[:n]     
-        return q_sim_direct
+        return self.compute(datas)
+    
+    def calage(self, datas : DataSimulation):
+        return self.compute(datas)
     
     @staticmethod
     def help():

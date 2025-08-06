@@ -8,12 +8,13 @@ Rectangle {
     property string factoryName
     property string methodName
     property bool activated: enableParams.checked
-    property var parameters: parameterModel.parameters
+    property var parameters
 
 
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)
         parameterModel.setMethod(methodName)
+        parameters = parameterModel.parameters
     }
 
     Column {

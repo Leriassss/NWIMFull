@@ -82,3 +82,4 @@ class NashBaseFlow(BaseFlow):
         - cs_over_c : Ratio des coefficients (par défaut 1.1).
         """
         print(description)
+

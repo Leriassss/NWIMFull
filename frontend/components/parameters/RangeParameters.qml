@@ -59,12 +59,14 @@ Column {
             model: parameterModel.parameterNames
 
             delegate:TextField {
+                id : minField
                 Layout.column: 1
                 Layout.row: index
                 Layout.preferredWidth: 100
                 Layout.alignment: Qt.AlignRight
-                text: parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0] : ""
-
+                Component.onCompleted: {
+                        minField.text = parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0].toString() : ""
+                    }
                 onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : "")
 
                 validator: DoubleValidator {
@@ -98,12 +100,14 @@ Column {
             model: parameterModel.parameterNames
 
             delegate: TextField {
+                id : maxField
                 Layout.column: 2
                 Layout.row: index
                 Layout.preferredWidth: 100
                 Layout.alignment: Qt.AlignRight
-                text: parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : ""
-
+                Component.onCompleted: {
+                    maxField.text = parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1].toString() : ""
+                }
                 onTextChanged: parameterModel.updateParameter(modelData, parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0] : "", text)
 
                 validator: DoubleValidator {
