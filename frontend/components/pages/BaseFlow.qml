@@ -4,8 +4,9 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 import "."
-import "./parameters"
-import "./chartsComponents"
+import "../parameters"
+import "../chartsComponents"
+import "../customComponents"
 
 //import "../../io/qml"
 import io.qml
@@ -44,6 +45,10 @@ Dialog{
                     height: 50
                     width: parent.width
                     text: "Save Plot"
+                    onClicked: {
+                        saveGraphic.open()
+                        saveBaseFlowOptions.close()
+                    }
 
                 }
                 Rectangle{
@@ -106,6 +111,18 @@ Dialog{
             console.log("Canceled")
          }
      }
+    FileChoose{
+        id: saveGraphic
+        title: "Save Plot"
+        fileMode: FileChoose.SaveFile
+        nameFilters: ["Images (*.png *.jpg *.jpeg)"]
+        onAccepted: {
+            baseflowChart.grabToImage(function(result) {
+                let fileName = cleanFilePath(saveGraphic.file.toString());
+                result.saveToFile(fileName)
+            })
+        }
+    }
 
     Dialog {
             id: columnMappingDialog
@@ -315,7 +332,7 @@ Dialog{
                                         }
                                         flat : true
                                         opacity: enabled ? 1 : 0.7
-                                        icon.source: "../icons/run.png"
+                                        icon.source: "../../icons/run.png"
                                         icon.height: 15
                                         icon.width: 55
                                         icon.color: "#ffffff"

@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
-import "./parameters"
-import "../../io/qml"
+import "../parameters"
+import "../customComponents"
 import io.qml
 import Qt5Compat.GraphicalEffects
 import Qt.labs.qmlmodels
@@ -181,7 +181,7 @@ Dialog {
                         rowSpacing: 10
                         property real comboBoxWidth: 100
                         Image{
-                            source: "../icons/dates.png"
+                            source: "../../icons/dates.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
 
@@ -198,7 +198,7 @@ Dialog {
                             Layout.preferredWidth: parent.comboBoxWidth
                         }
                         Image{
-                            source: "../icons/tmean.png"
+                            source: "../../icons/tmean.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -214,7 +214,7 @@ Dialog {
                         }
 
                         Image{
-                            source: "../icons/tmin.png"
+                            source: "../../icons/tmin.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -229,7 +229,7 @@ Dialog {
                             Layout.preferredWidth: parent.comboBoxWidth
                         }
                         Image{
-                            source: "../icons/tmax.png"
+                            source: "../../icons/tmax.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -244,7 +244,7 @@ Dialog {
                             Layout.preferredWidth: parent.comboBoxWidth
                         }
                         Image{
-                            source: "../icons/humidity.png"
+                            source: "../../icons/humidity.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -259,7 +259,7 @@ Dialog {
                             Layout.preferredWidth: parent.comboBoxWidth
                         }
                         Image{
-                            source: "../icons/rad.png"
+                            source: "../../icons/rad.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -276,7 +276,7 @@ Dialog {
                             Layout.preferredWidth: parent.comboBoxWidth
                         }
                         Image{
-                            source: "../icons/windSpeed.png"
+                            source: "../../icons/windSpeed.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -292,7 +292,7 @@ Dialog {
                         }
 
                         Image{
-                            source: "../icons/latitude.png"
+                            source: "../../icons/latitude.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }
@@ -310,7 +310,7 @@ Dialog {
                             }
                         }
                         Image{
-                            source: "../icons/elevation.png"
+                            source: "../../icons/elevation.png"
                             sourceSize.height: 20
                             sourceSize.width: 20
                         }

@@ -4,7 +4,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
-import "frontend/components"
+import "frontend/components/pages"
+import "frontend/components/customComponents"
 //import "./frontend/components/parameters"
 //import io.qt.test 1.0 as TestModule
 //import "io/qt/rangeqarameterqml"
@@ -104,6 +105,7 @@ ApplicationWindow {
             console.log("Canceled")
          }
      }
+
     Dialog {
         id: saveOptions
         x: Math.round((parent.width - width) / 2)
@@ -138,6 +140,10 @@ ApplicationWindow {
                     height: 50
                     width: parent.width
                     text: "Save Plot"
+                    onClicked: {
+                        homepage.saveGraph()
+                        saveOptions.close()
+                    }
 
                 }
                 Rectangle{

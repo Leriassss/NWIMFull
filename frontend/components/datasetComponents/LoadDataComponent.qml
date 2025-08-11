@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Qt.labs.qmlmodels
 import ".."
 import "../chartsComponents"
+import "../customComponents"
 import io.qml
 import QtQuick.Effects
 import Qt5Compat.GraphicalEffects

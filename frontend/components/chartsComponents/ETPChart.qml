@@ -63,12 +63,14 @@ Rectangle {
         if(etp_series && p_series){
             seriesETP.clear();
             seriesQ2.clear();
+            let finite_etp_series = etp_series.filter(Number.isFinite)
+            let finite_p_series = p_series.filter(Number.isFinite)
             etpChart.minDate = dates[0]
             etpChart.maxDate = dates[dates.length-1]
-            etpChart.minValue = Math.min(...etp_series)
-            etpChart.maxValue = 2*Math.max(...etp_series)
-            etpChart.pminValue = Math.min(...p_series)
-            etpChart.pmaxValue = 2*Math.max(...p_series) + etpChart.maxValue
+            etpChart.minValue = Math.min(...finite_etp_series)
+            etpChart.maxValue = 2*Math.max(...finite_etp_series)
+            etpChart.pminValue = Math.min(...finite_p_series)
+            etpChart.pmaxValue = 2*Math.max(...finite_p_series) + etpChart.maxValue
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);
@@ -84,10 +86,11 @@ Rectangle {
         axisTop.visible = false
         if(etp_series){
             seriesETP.clear();
+            let finite_etp_series = etp_series.filter(Number.isFinite)
             etpChart.minDate = dates[0]
             etpChart.maxDate = dates[dates.length-1]
-            etpChart.minValue = Math.min(...etp_series)
-            etpChart.maxValue = 1.1*Math.max(...etp_series)
+            etpChart.minValue = Math.min(...finite_etp_series)
+            etpChart.maxValue = 1.1*Math.max(...finite_etp_series)
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);

@@ -6,7 +6,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer
 
 from backend.ptq.PTQ import PTQ
-from backend.criteria.Criteria import Criteria
 import pandas as pd
 import numpy as np
 import xgboost as xgb

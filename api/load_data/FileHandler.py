@@ -93,6 +93,8 @@ class FileHandler(QObject):
             v_end = pd.to_datetime(user_dates["validation"][1])
             if c_start >= c_end or v_start >= v_end or c_start == v_start or c_end == v_end or  c_start == v_end or v_start == v_end:
                 raise Exception("Dates non-corrects")
+            if c_end - c_start <pd.Timedelta(days=365):
+                raise Exception("Non-suffisant values")
             if c_start >= v_start and v_end >= c_start:
                 raise Exception("Crossing dates")
             dates = self._data_dict["Dates"]

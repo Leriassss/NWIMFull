@@ -2,9 +2,9 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Effects
-import "./parameters"
-import "../../io/qml"
-import "./chartsComponents"
+import "../parameters"
+import "../customComponents"
+import "../chartsComponents"
 import io.qml
 import Qt5Compat.GraphicalEffects
 import Qt.labs.qmlmodels
@@ -186,6 +186,18 @@ Dialog {
             console.log("Canceled")
          }
      }
+    FileChoose{
+        id: saveRegressionGraphic
+        title: "Save Plot"
+        fileMode: FileChoose.SaveFile
+        nameFilters: ["Images (*.png *.jpg *.jpeg)"]
+        onAccepted: {
+            regChart.grabToImage(function(result) {
+                let fileName = cleanFilePath(saveGraphic.file.toString());
+                result.saveToFile(fileName)
+            })
+        }
+    }
 
     FileChoose {
          id: loadModelDialog
@@ -242,6 +254,10 @@ Dialog {
                     height: 50
                     width: parent.width
                     text: "Save Plot"
+                    onClicked: {
+                        saveRegressionGraphic.open()
+                        saveRegressionOptions.close()
+                    }
 
                 }
                 Rectangle{

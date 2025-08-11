@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.qmlmodels
-import "."
-import "datasetComponents"
+import ".."
+import "../datasetComponents"
 import io.qml
 
 
@@ -43,7 +43,7 @@ Dialog{
                     Button{
                         hoverEnabled: false
                         text: qsTr("    Load")
-                        icon.source: "../icons/load.png"
+                        icon.source: "../../icons/load.png"
                         icon.height: 15
                         icon.width: 50
                         icon.color: "#000000"
@@ -73,7 +73,7 @@ Dialog{
                     Button{
                         hoverEnabled: false
                         text: qsTr("    P")
-                        icon.source: "../icons/rainfall.png"
+                        icon.source: "../../icons/rainfall.png"
                         icon.height: 15
                         icon.width: 50
                         icon.color: "#000000"
@@ -132,7 +132,7 @@ Dialog{
                     Button{
                         hoverEnabled: false
                         text: qsTr("    Q")
-                        icon.source: "../icons/streamflow.png"
+                        icon.source: "../../icons/streamflow.png"
                         icon.height: 15
                         icon.width: 50
                         icon.color: "#000000"
@@ -160,7 +160,7 @@ Dialog{
                     Button{
                         hoverEnabled: false
                         text: qsTr("  PET")
-                        icon.source: "../icons/pet.png"
+                        icon.source: "../../icons/pet.png"
                         icon.height: 15
                         icon.width: 50
                         icon.color: "#000000"

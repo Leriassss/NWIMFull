@@ -4,10 +4,10 @@ import QtQuick.Controls.Material
 import QtQuick.Layouts
 import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
-import "."
-import "./parameters"
-import "./chartsComponents"
-
+import ".."
+import "../parameters"
+import "../chartsComponents"
+import "../customComponents"
 //import "../../io/qml"
 import io.qml
 Rectangle{
@@ -34,6 +34,7 @@ Rectangle{
                            loss_params.checkPassed
 
     signal runningClicked
+    signal saveGraph
 
     property color siderbarColor: "#bae7fe"
     property color sidebarTextColor: "black"
@@ -45,6 +46,13 @@ Rectangle{
         }
     }
 
+    Connections {
+        target: homePage
+        function onSaveGraph(){
+            saveGraphic.open()
+        }
+    }
+
     DataErrorsDialog {
         id: runningErrors
         title: "❌ ERRORS FOUNDS !!!"
@@ -53,6 +61,19 @@ Rectangle{
         height: 300
     }
 
+
+    FileChoose{
+        id: saveGraphic
+        title: "Save Plot"
+        fileMode: FileChoose.SaveFile
+        nameFilters: ["Images (*.png *.jpg *.jpeg)"]
+        onAccepted: {
+            simChart.grabToImage(function(result) {
+                let fileName = cleanFilePath(saveGraphic.file.toString());
+                result.saveToFile(fileName)
+            })
+        }
+    }
     Row {
         anchors.fill: parent
         id: splitView
@@ -115,7 +136,8 @@ Rectangle{
                         width: parent.width
                         height: parent.height * 0.8
                         //color : siderbarColor
-                        //enabled: fileHandler.activate ? true : false
+                        enabled: fileHandler.activate ? true : false
+                        opacity: enabled ? 1 : 0.9
                         SplitView {
                             anchors.fill: parent
                             orientation: Qt.Vertical
@@ -245,8 +267,9 @@ Rectangle{
                         Button{
                             id : run
                             anchors.centerIn: parent
-                            enabled: true
-                            icon.source: "../icons/run.png"
+                            enabled: activate === 0 && fileHandler.activate ? true : false
+                            opacity: enabled ? 1 : 0.7
+                            icon.source: "../../icons/run.png"
                             icon.height: 15
                             icon.width: 55
                             icon.color: "#ffffff"

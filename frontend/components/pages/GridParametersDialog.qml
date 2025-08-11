@@ -1,28 +1,27 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts 1.15
-import QtQuick.Effects
-import "./parameters"
-import "../../io/qml"
+import QtQuick.Layouts
+
+import "../parameters"
+import "../customComponents"
 import io.qml
-import Qt5Compat.GraphicalEffects
+
 Dialog {
-    title: "OPTIMIZATION"
-    implicitWidth:  1000
+    id : gridZone
+    title: "GRID OPTIMIZATION"
+    implicitWidth:  1300
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
-    id: dialogOptim
-
+    topInset : 5
     closePolicy : Popup.CloseOnEscape
-    //padding: 5
-    x: Math.round((parent.width - width) / 2)
-    y: Math.round((parent.height - height) / 2)
-
-    background: Rectangle{
+    padding: 5
+    background:  Rectangle{
         anchors.fill: parent
-        color : "#fcffff"
+        color : "#ffffff"
     }
+
+
 
     header: ToolBar {
             id: toolBar
@@ -35,7 +34,7 @@ Dialog {
             clip: true
             Row{
                 anchors.fill: parent
-                spacing: 1
+                spacing: 20
                 CustomToolButton {
                     width: 50
                     height: parent.height
@@ -51,16 +50,50 @@ Dialog {
                     height: parent.height
                     text: qsTr("▶️")
                     ToolTip.text: qsTr("Optimize")
+                    /*enabled: {
+
+                        console.log(grid_calibration_bundle.every((bundle) => bundle.length > 0))
+                        grid_calibration_bundle.every((bundle) => bundle.length > 0)
+                    }*/
                     onClicked: {
                         if(!fileHandler.activate){
-                            errorDialog.errorText = "No data load for optimization. See Data Import"
-                            errorDialog.open()
+                            gridCalibrationErrors.errors  = ["No data load for optimization. See Data Import"]
+                            gridCalibrationErrors.open()
                             return
                         }
+                        //console.log(grid_calibration_bundle.every((bundle) => bundle.length > 0))
+                        let grid_calibration_bundle =  {
+                                    "pn" : factoryRepeater.itemAt(0).children[1].children.
+                                                filter(function(e){return e.activated === true}).
+                                                map(function(e){return e.parameterModel}),
+                                    "loss" :  factoryRepeater.itemAt(1).children[1].children.
+                                                filter(function(e){return e.activated === true}).
+                                                map(function(e){return e.parameterModel}),
+                                    "sim" : factoryRepeater.itemAt(2).children[1].children.
+                                                filter(function(e){return e.activated === true}).
+                                                map(function(e){return e.parameterModel}),
+                                    "qb" : factoryRepeater.itemAt(3).children[1].children.
+                                            filter(function(e){return e.activated === true}).
+                                            map(function(e){return e.parameterModel})
+                                    }
+                        if(!Object.values(grid_calibration_bundle).every((bundle) => bundle.length > 0)){
+                            gridCalibrationErrors.errors = ["Required methods need all to be provided"]
+                            gridCalibrationErrors.open()
+                            return
+                        }
+                        try{
+                            gridCalibration.gridCalibration(grid_calibration_bundle, [optimizationParameter.parameterModel], metricsComboBox.currentValue, fileHandler.ptq)
+                        }catch(e){
+                            gridCalibrationErrors.errors = [e+""]
+                            gridCalibrationErrors.open()
+                            console.log(e)
+                        }
 
-                        console.log("--------- OPTIMIZE -----------------")
-                        automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
                     }
+
+
+
+
                 }
             }
 
@@ -68,76 +101,36 @@ Dialog {
 
        }
 
-    property var parameters_bundle: {
-        "pn":productionRange.parameterModel,
-        "qb":recessionRange.parameterModel,
-        "sim": routingRange.parameterModel,
-        "loss" : initialLossRange.parameterModel
-    }
-    property var optimization_bundle: [optimizationParameter.parameterModel]
-
-    FileChoose {
-        id: loadRangeParams
-        fileMode: FileChoose.SaveFile
-        nameFilters: ["JSON (*.json)"]
-        property string fileName: ""
-
-        onAccepted: {
-            fileName = cleanFilePath(loadRangeParams.file.toString());
-            if (fileName) {
-                try {
-                    console.log("------ OPTIM NAME------")
-                    console.log(fileName)
-                } catch (error) {
-                    errorDialog.errorText = "Erreur lors du chargement du fichier : " + error
-                    errorDialog.open()
-                }
-            }
-        }
-        onRejected: {
-            console.log("Sélection annulée");
-        }
-
+    DataErrorsDialog {
+        id: gridCalibrationErrors
+        title: "❌ ERRORS FOUNDS !!!"
+        standardButtons: Dialog.Ok
+        width: 400
+        height: 300
     }
 
     FileChoose {
-         id: saveResultsDialog
+         id: saveGridResultsDialog
          title: "Please choose a folder"
          fileMode: FileChoose.SaveFile
          nameFilters: ["JSON (*.json)"]
          property string fileName: ""
          onAccepted: {
-            fileName = cleanFilePath(saveResultsDialog.file.toString());
-             automaticCalibration.saveSimulationResults(fileName)
+            fileName = cleanFilePath(saveGridResultsDialog.file.toString());
+             gridCalibration.saveSimulationResults(fileName)
 
          }
          onRejected: {
             console.log("Canceled")
          }
      }
-
-    Dialog {
-        id: errorDialog
-        title: "Errors"
-        standardButtons: Dialog.Ok
-        property string errorText: ""
-        Label {
-            text: errorDialog.errorText
-        }
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
-        modal: true
-        background: Rectangle{
-            anchors.fill:parent
-            border.color: "red"
-            color: "#f0f0f0"
-            border.width: 1
-        }
-    }
-
     SplitView {
         id: splitView
         anchors.fill: parent
+        background:  Rectangle{
+            anchors.fill: parent
+            color : "#eaf6f4"
+        }
 
         handle: Rectangle {
             implicitWidth: 4
@@ -147,15 +140,113 @@ Dialog {
             border.width: 1
             border.color: "grey"
         }
-
         Rectangle{
             color: "#eaf6f4"
             border.width: 1
             border.color: "gray"
             topLeftRadius: 5
             topRightRadius : 5
-            SplitView.minimumWidth:  parent.width*0.5
+            SplitView.minimumWidth:  parent.width*0.3
             SplitView.preferredWidth: parent.width*0.5
+            clip : true
+            ColumnLayout{
+                width: parent.width - 5
+                height: parent.height - 5
+                anchors.centerIn: parent
+                spacing : 10
+                //border.width: 1
+                Label{
+                    id : gridText
+                    Layout.preferredWidth: parent.width
+                    text: "Grid optimization options"
+                    font.bold: true
+                    font.pointSize: 10
+                    padding: 5
+                    color: "black"
+                    horizontalAlignment:  Text.AlignHCenter
+                    background: Rectangle {
+                        anchors.fill: parent
+                        topLeftRadius: 5
+                        topRightRadius : 5
+                        color : "#bae7fe"
+                    }
+                }
+                ScrollView {
+                    id: scrollView
+                    Layout.preferredWidth: parent.width
+                    Layout.preferredHeight: parent.height - gridText.height - parent.spacing
+                    clip: true
+                    ColumnLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 20
+
+                        Repeater {
+                            id: factoryRepeater
+                            model: [
+                                factoryManager.productionMethods,
+                                factoryManager.initialLossMethods,
+                                factoryManager.routingMethods,
+                                factoryManager.recessionMethods
+                            ]
+                            property var factoryNames: ["Production", "InitialLoss" , "Routing", "Recession"]
+
+                            delegate: Column {
+                                id: contentColumn
+                                width: parent.width
+                                clip: true
+                                spacing: 5
+
+                                property string factoryName: factoryRepeater.factoryNames[model.index]
+                                property var methodsList: modelData  // Liste des méthodes pour cette catégorie
+
+                                Label {
+                                    text: factoryName + " Methods"
+                                    font.bold: true
+                                    font.pointSize: 10
+                                    padding: 5
+                                    color: "black"
+                                    horizontalAlignment: Qt.AlignHCenter
+                                }
+                                Grid {
+                                    width: 600
+                                    spacing: 10
+                                    columns: 2
+                                    columnSpacing: 20
+                                    rowSpacing: 5
+                                    Repeater {
+                                        model: methodsList
+
+                                        delegate: GridParameters {
+                                            width: 250
+                                            height: 150
+                                            parameterModel: GridParametersQML{}
+                                            factoryName: contentColumn.factoryName
+                                            methodName: modelData
+                                            border.width: 1
+                                            radius: 3
+                                            border.color : "grey"
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+        Rectangle{
+            color: "#eaf6f4"
+            border.width: 1
+            border.color: "gray"
+            topLeftRadius: 5
+            topRightRadius : 5
             //width: parent.width*0.4
             //height: parent.height
             Column{
@@ -167,7 +258,7 @@ Dialog {
                     id : outputLabel
                     anchors.margins: 5
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "OPTIMIZATION OPTIONS"
+                    text: "Algorithms"
                     horizontalAlignment: Qt.AlignHCenter
                     font.bold: true
                     font.pointSize: 10
@@ -181,47 +272,6 @@ Dialog {
                         color : "#bae7fe"
                     }
                 }
-
-                CustomCheckDelegate{
-                    id : setGoal
-                    checked: true
-                    text: "Set Goal"
-                    font.bold: true
-                }
-
-                Rectangle{
-                    enabled: setGoal.checked ? true : false
-                    height: 70
-                    width: parent.width *0.5
-                    radius: 5
-                    anchors.left:  parent.left
-                    color: "#fcffff"
-                    border.color: "#ebebeb"
-                    border.width: 1
-                    Grid{
-                        leftPadding:10
-                        columns: 2
-                        rowSpacing: 10
-                        columnSpacing: 10
-                        Label{
-                            text: "Nb iterations "
-                        }
-                        CustomTextField{
-                            id : nbIter
-                            width : 75
-                            bottomPadding: 5
-                        }
-                        Label{
-                            text: "Target "
-                        }
-                        CustomTextField{
-                            id : target
-                            width : 75
-                        }
-
-                    }
-                }
-
 
                 Row{
                     spacing: 5
@@ -250,7 +300,7 @@ Dialog {
                                 width: parent.width * 0.8
                                 height:  25
                                 id: metricsComboBox
-                                model: automaticCalibration.metrics
+                                model: gridCalibration.metrics
                                 anchors.centerIn: parent
                             }
 
@@ -335,7 +385,7 @@ Dialog {
                         ListView {
                             width: parent.width
                             height: 125
-                            model : [automaticCalibration.optimParams]
+                            model : [gridCalibration?.optimParams]
                             delegate:Rectangle {
                                 width: parent.width
                                 height: parent.height
@@ -362,6 +412,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
 
@@ -373,6 +424,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
                                         Text {
@@ -383,6 +435,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
 
 
@@ -394,6 +447,7 @@ Dialog {
                                             }
                                             wrapMode: Text.Wrap
                                             font.bold: true
+                                            width: parent.width
                                         }
                                     }
 
@@ -417,7 +471,7 @@ Dialog {
                             }
                             Text{
                                 width: 50
-                                text : automaticCalibration.bestMetrics[0]
+                                text : gridCalibration.bestMetrics[0]
                             }
                             Text{
                                 text: "Validation : "
@@ -425,7 +479,7 @@ Dialog {
                             }
                             Text{
                                 width: 50
-                                text : automaticCalibration.bestMetrics[1]
+                                text : gridCalibration.bestMetrics[1]
                             }
                         }
 
@@ -434,7 +488,8 @@ Dialog {
                         Button{
                             id : runOptim
                             anchors.horizontalCenter:  parent.horizontalCenter
-                            enabled: true
+                            enabled: Object.keys(gridCalibration?.optimParams).length > 0 ? true : false
+                            opacity: enabled ? 1 : 0.7
                             /*icon.source: "../icons/save.png"
                             icon.height: 15
                             icon.width: 55
@@ -456,14 +511,9 @@ Dialog {
                             }
                             hoverEnabled: false
                             onClicked: {
-                                if(!fileHandler.activate){
-                                    errorDialog.errorText = "No data load for optimization. See Data Import"
-                                    errorDialog.open()
-                                    return
-                                }
-                                saveResultsDialog.open()
+                                console.log("gridCalibration?.optimParams ", JSON.stringify(gridCalibration?.optimParams))
+                                saveGridResultsDialog.open()
                             }
-
 
                         }
 
@@ -477,174 +527,6 @@ Dialog {
 
         }
 
-        Rectangle{
-            color: "#eaf6f4"
-            border.width: 1
-            border.color: "gray"
-            topLeftRadius: 5
-            topRightRadius : 5
-            width: parent.width*0.6
-            height: parent.height
-            Column{
-                width: parent.width - 5
-                height: parent.height - 5
-                anchors.centerIn: parent
-                spacing: 2
-                clip: true
-                Label {
-                    id : methodsLabel
-                    anchors.margins: 5
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "PARAMETERS"
-                    horizontalAlignment: Qt.AlignHCenter
-                    font.bold: true
-                    font.pointSize: 10
-                    padding: 5
-                    color: "black"
-                    width: parent.width
-                    background: Rectangle {
-                        anchors.fill: parent
-                        topLeftRadius: 5
-                        topRightRadius : 5
-                        color : "#bae7fe"
-                    }
-                }
-
-                Rectangle {
-                    id: simParameters
-                    width: parent.width
-                    height: parent.height * 0.8
-                    color : "transparent"
-                    SplitView {
-                        anchors.fill: parent
-                        orientation: Qt.Vertical
-                        handle: Rectangle {
-                            implicitWidth: 4
-                            implicitHeight: 4
-                            color: SplitHandle.pressed ? "#81e889"
-                                : (SplitHandle.hovered ? Qt.lighter("#c2f4c6", 1.1) : "#c2f4c6")
-                            border.width: 1
-                            border.color: "grey"
-                        }
-                        Rectangle{
-                            SplitView.minimumHeight: 45
-                            SplitView.preferredHeight: 250
-                            color : "#eaf6f4"
-                            Column {
-                                width: parent.width
-                                height: parent.height
-                                spacing: 2
-                                padding: 5
-
-                                Label {
-                                    width: parent.width
-                                    text: "Production Methods"
-                                    font.bold: true
-                                    font.pointSize: 10
-                                    padding: 1
-                                    color: "black"
-                                    horizontalAlignment: Qt.AlignHCenter
-                                }
-
-                                RangeParameters{
-                                    id : productionRange
-                                    parameterModel : RangeParametersQML{}
-                                    factoryName : "Production"
-                                    height: childrenRect.height
-                                    width: parent.width - 2*parent.padding
-                                    spacing: 10
-                                }
-
-                                RangeParameters{
-                                    id : initialLossRange
-                                    parameterModel : RangeParametersQML{}
-                                    factoryName : "InitialLoss"
-                                    height: 75
-                                    width: parent.width - 2*parent.padding
-                                    spacing: 10
-                                }
-                            }
-                        }
-
-                        Rectangle{
-                            SplitView.minimumHeight: 45
-                            SplitView.preferredHeight: 150
-                            color : "#eaf6f4"
-                            Column {
-                                spacing: 2
-                                padding: 5
-                                anchors.fill: parent
-
-                                Label {
-                                    width: parent.width
-                                    text: "Routing Methods"
-                                    font.bold: true
-                                    font.pointSize: 10
-                                    padding: 1
-                                    color: "black"
-                                    horizontalAlignment: Qt.AlignHCenter
-                                }
-
-                                RangeParameters{
-                                    id : routingRange
-                                    parameterModel : RangeParametersQML{}
-                                    factoryName : "Routing"
-                                    height: childrenRect.height
-                                    width: parent.width - 2*parent.padding
-                                    spacing: 10
-                                }
-
-                            }
-
-                        }
-
-                        Rectangle{
-                            color : "#eaf6f4"
-                            SplitView.minimumHeight: 100
-                            Column {
-                                anchors.fill: parent
-                                width: parent.width
-                                spacing: 2
-                                padding: 5
-
-                                Label {
-                                    width: parent.width
-                                    text: "Recession Methods"
-                                    font.bold: true
-                                    font.pointSize: 10
-                                    padding: 1
-                                    color: "black"
-                                    horizontalAlignment: Qt.AlignHCenter
-                                }
-                                RangeParameters{
-                                    id : recessionRange
-                                    parameterModel : RangeParametersQML{}
-                                    factoryName : "Recession"
-                                    height: childrenRect.height
-                                    width: parent.width - 2*parent.padding
-                                    spacing: 10
-                                }
-                            }
-
-                        }
-
-
-                    }
-
-                }
-
-
-            }
-
-
-        }
-
-
     }
-    function cleanFilePath(filePath) {
-        if (filePath.startsWith("file:///")) {
-            return filePath.substring(8);
-        }
-        return filePath;
-    }
+
 }

@@ -69,7 +69,7 @@ Rectangle {
         seriesQClibration.clear()
         seriesQValidation.clear()
         let i = 0
-        qobsChart.maxValue = Math.max(qobsChart.maxValue, Math.max(...[...q_cal_series,...q_val_series]))
+        qobsChart.maxValue = Math.max(qobsChart.maxValue, Math.max(...[...q_cal_series,...q_val_series].filter(Number.isFinite)))
         for (i = 0; i < dates_cal.length; i++) {
             if (i < q_cal_series.length)
                 seriesQClibration.append(new Date(dates_cal[i]).getTime(), q_cal_series[i])
@@ -88,9 +88,8 @@ Rectangle {
 
         qobsChart.minDate = dates_obs[0]
         qobsChart.maxDate = dates_obs[dates_obs.length - 1]
-
         qobsChart.minValue = 0
-        qobsChart.maxValue = Math.max(...q_obs_series)
+        qobsChart.maxValue = Math.max(...q_obs_series.filter(Number.isFinite))
         let i = 0
         for (i =0 ; i < dates_obs.length; i++) {
             if (i < q_obs_series.length)

@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls
 import QtQuick.Layouts 1.15
 
-import ".."
+import "../customComponents"
 
 Column {
     id: scrollView

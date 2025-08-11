@@ -63,12 +63,15 @@ Rectangle {
         if(q_series && p_series){
             seriesQ.clear();
             seriesQ2.clear();
+            let finite_q_series = q_series.filter(Number.isFinite)
+            let finite_p_series = p_series.filter(Number.isFinite)
+
             qobsChart.minDate = dates[0]
             qobsChart.maxDate = dates[dates.length-1]
-            qobsChart.minValue = Math.min(...q_series)
-            qobsChart.maxValue = 2*Math.max(...q_series)
-            qobsChart.pminValue = Math.min(...p_series)
-            qobsChart.pmaxValue = 2*Math.max(...p_series) + qobsChart.maxValue
+            qobsChart.minValue = Math.min(...finite_q_series)
+            qobsChart.maxValue = 2*Math.max(...finite_q_series)
+            qobsChart.pminValue = Math.min(...finite_p_series)
+            qobsChart.pmaxValue = 2*Math.max(...finite_p_series) + qobsChart.maxValue
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);
@@ -86,10 +89,11 @@ Rectangle {
         if(q_series){
             seriesQ.clear();
             seriesQ2.clear();
+            let finite_q_series = q_series.filter(Number.isFinite)
             qobsChart.minDate = dates[0]
             qobsChart.maxDate = dates[dates.length-1]
-            qobsChart.minValue = Math.min(...q_series)
-            qobsChart.maxValue = 1.1*Math.max(...q_series)
+            qobsChart.minValue = Math.min(...finite_q_series)
+            qobsChart.maxValue = 1.1*Math.max(...finite_q_series)
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);

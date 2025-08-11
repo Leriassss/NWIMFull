@@ -41,8 +41,8 @@ Rectangle {
             seriesP.clear();
             chartContainer.minDate = dates[0]
             chartContainer.maxDate = dates[dates.length-1]
-            chartContainer.minValue = Math.min(...p_series)
-            chartContainer.maxValue = Math.max(...p_series)
+            chartContainer.minValue = Math.min(...p_series.filter(Number.isFinite))
+            chartContainer.maxValue = Math.max(...p_series.filter(Number.isFinite))
 
             for (var i = 0; i < dates.length; i++) {
                 var x = new Date(dates[i]);

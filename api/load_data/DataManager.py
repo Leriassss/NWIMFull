@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import datetime
 from dateutil import parser
-from PySide6.QtCore import QObject, Signal, Slot, Property
-from PySide6.QtQml import QmlElement
 from itertools import zip_longest
 
 
