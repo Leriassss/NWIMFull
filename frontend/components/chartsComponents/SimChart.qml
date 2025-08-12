@@ -9,7 +9,7 @@ Rectangle {
     property date maxDate
     property real minValue
     property real maxValue
-
+    property real maxObs
     signal runningStart
 
     property string calibrationName : ""
@@ -69,7 +69,7 @@ Rectangle {
         seriesQClibration.clear()
         seriesQValidation.clear()
         let i = 0
-        qobsChart.maxValue = Math.max(qobsChart.maxValue, Math.max(...[...q_cal_series,...q_val_series].filter(Number.isFinite)))
+        qobsChart.maxValue = Math.max(qobsChart.maxObs, Math.max(...[...q_cal_series,...q_val_series].filter(Number.isFinite)))
         for (i = 0; i < dates_cal.length; i++) {
             if (i < q_cal_series.length)
                 seriesQClibration.append(new Date(dates_cal[i]).getTime(), q_cal_series[i])
@@ -90,6 +90,7 @@ Rectangle {
         qobsChart.maxDate = dates_obs[dates_obs.length - 1]
         qobsChart.minValue = 0
         qobsChart.maxValue = Math.max(...q_obs_series.filter(Number.isFinite))
+        qobsChart.maxObs = qobsChart.maxValue
         let i = 0
         for (i =0 ; i < dates_obs.length; i++) {
             if (i < q_obs_series.length)

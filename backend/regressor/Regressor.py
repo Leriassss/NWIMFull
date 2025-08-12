@@ -2,7 +2,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import linear_model
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import make_scorer
 
 from backend.ptq.PTQ import PTQ
@@ -78,9 +78,9 @@ class Regressor:
 
         ridge_reg = linear_model.Ridge()
         param_grid = {
-            "alpha" : list(range(0,100))
+            "alpha" : list(range(0,500))
         }
-        grid_search = GridSearchCV(ridge_reg, param_grid, cv=5,  scoring="neg_root_mean_squared_error")
+        grid_search = GridSearchCV(ridge_reg, param_grid, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
 
         ridge_reg = grid_search.best_estimator_
@@ -101,10 +101,10 @@ class Regressor:
         param_grid = {
             'kernel' : ('linear', 'rbf'),
             'C': list(range(0,100)),
-            'gamma': [0.01, 0.1, 1, 'scale'],
-            'epsilon': [0.01, 0.1, 0.5]
+            'gamma': [0.01, 0.05,  0.1, 0.5,  1, 'scale'],
+            'epsilon': [0.01, 0.05, 0.1, 0.5, 1]
         }
-        grid_search = GridSearchCV(svr, param_grid, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1)
+        grid_search = RandomizedSearchCV(svr, param_grid, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
 
         best_svr = grid_search.best_estimator_
@@ -121,13 +121,13 @@ class Regressor:
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
 
         param_grid = {
-            'n_estimators': [100, 200],
-            'max_depth': [None, 10, 20],
-            'min_samples_split': [2, 5],
+            'n_estimators': list(range(1,200)),
+            'max_depth': list(range(1,100)),
+            'min_samples_split': list(range(2,10)),
             'min_samples_leaf': [1, 2]
         }
 
-        grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, scoring="neg_root_mean_squared_error")
+        grid_search = RandomizedSearchCV(RandomForestRegressor(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
 
         best_rf = grid_search.best_estimator_
@@ -144,15 +144,15 @@ class Regressor:
         best_calibration_results, best_validation_results = self._prepare_data(models_results)
         parameters_grid ={
             'max_depth': list(range(1,10)),
-            'learning_rate': [0.1, 0.2, 0.3],
-            'n_estimators': list(range(10,300,10)),
-            'gamma': list(range(0,100,10)),
-            'lambda': [0, 0.1, 1]
+            'learning_rate': [0.1, 0.2, 0.3, 0.4],
+            'n_estimators': list(range(1,200)),
+            'gamma': list(range(0,200)),
+            'lambda': [0, 0.01, 0.05, 0.1, 0.5, 1]
         }
 
         xgboost = xgb.XGBRegressor()
 
-        grid_search = GridSearchCV(xgboost, parameters_grid, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1)
+        grid_search = RandomizedSearchCV(xgboost, parameters_grid, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1)
         grid_search.fit(best_calibration_results, self.calage.q)
         best_xgb = grid_search.best_estimator_
 
@@ -168,7 +168,6 @@ class Regressor:
     def methods(self):
         return {
             "knn" : self.knn,
-            "linreg" : self.linreg,
             "ridge": self.ridgereg,
             "svm": self.svm,
             "random_forest": self.random_forest,
@@ -179,7 +178,6 @@ class Regressor:
     def methodsList():
         return [
         "knn",
-        "linreg",
         "ridge",
         "svm",
         "random_forest",

@@ -13,7 +13,7 @@ class NashModel:
         """
         self.nash_k = float(nash_k)
         self.nash_n = float(nash_n)
-        self.time_base = int(time_base)
+        self.time_base = int(float(time_base))
         self.validate()
 
     def validate(self):
