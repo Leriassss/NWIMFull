@@ -11,6 +11,7 @@ Column {
 
     property var parameterModel
     property string factoryName
+    property bool checkPassed: parameterModel?.desactivated
 
     Component.onCompleted: {
         parameterModel.setFactory(factoryName)  // Charger la factory au démarrage
@@ -57,7 +58,7 @@ Column {
         // Répétiteur pour les champs min
         Repeater {
             model: parameterModel.parameterNames
-
+            id : minRepeater
             delegate:TextField {
                 id : minField
                 Layout.column: 1
@@ -67,8 +68,10 @@ Column {
                 Component.onCompleted: {
                         minField.text = parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0].toString() : ""
                     }
-                onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : "")
-
+                //onTextChanged: parameterModel.updateParameter(modelData, text, parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1] : "")
+                onTextChanged: {
+                    parameterModel.updateParameter(modelData,text, maxRepeater.itemAt(index).text)
+                }
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
                 }
@@ -98,7 +101,7 @@ Column {
         // Répétiteur pour les champs max
         Repeater {
             model: parameterModel.parameterNames
-
+            id : maxRepeater
             delegate: TextField {
                 id : maxField
                 Layout.column: 2
@@ -108,8 +111,9 @@ Column {
                 Component.onCompleted: {
                     maxField.text = parameterModel.parameters[modelData][1] !== null ? parameterModel.parameters[modelData][1].toString() : ""
                 }
-                onTextChanged: parameterModel.updateParameter(modelData, parameterModel.parameters[modelData][0] !== null ? parameterModel.parameters[modelData][0] : "", text)
-
+                onTextChanged: {
+                    parameterModel.updateParameter(modelData, minRepeater.itemAt(index).text, text)
+                }
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
                 }

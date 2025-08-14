@@ -25,44 +25,51 @@
                         "read": "methodKeys"
                     },
                     {
+                        "name": "desactivated",
+                        "type": "bool",
+                        "index": 1,
+                        "read": "desactivated",
+                        "notify": "desactivatedChanged"
+                    },
+                    {
                         "name": "currentMethod",
                         "type": "QString",
-                        "index": 1,
+                        "index": 2,
                         "read": "currentMethod",
                         "notify": "methodChanged"
                     },
                     {
                         "name": "availableMethods",
                         "type": "QVariant",
-                        "index": 2,
+                        "index": 3,
                         "read": "availableMethods",
                         "notify": "availableMethodsChanged"
                     },
                     {
                         "name": "parameterErrors",
                         "type": "QVariant",
-                        "index": 3,
+                        "index": 4,
                         "read": "parameterErrors",
                         "notify": "parameterErrorChanged"
                     },
                     {
                         "name": "parameterNames",
                         "type": "QVariant",
-                        "index": 4,
+                        "index": 5,
                         "read": "parameterNames",
                         "notify": "parametersNamesChanged"
                     },
                     {
                         "name": "parameters",
                         "type": "QVariant",
-                        "index": 5,
+                        "index": 6,
                         "read": "parameters",
                         "notify": "parametersChanged"
                     },
                     {
                         "name": "parameterValues",
                         "type": "QVariant",
-                        "index": 6,
+                        "index": 7,
                         "read": "parameterValues",
                         "notify": "parametersValuesChanged"
                     }
@@ -101,6 +108,12 @@
                     {
                         "access": "public",
                         "name": "availableMethodsChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "desactivatedChanged",
                         "arguments": [],
                         "returnType": "void"
                     }

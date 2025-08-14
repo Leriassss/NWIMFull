@@ -102,7 +102,7 @@ class Simulation:
 
         qsim_total = qsim+qbase_rev_corr
         
-        evaluator = RegressionMetric(np.array(self.ptq_calage.q), np.array(qsim_total))
+        evaluator = RegressionMetric((np.array(self.ptq_calage.q) + 1e-10) , (np.array(qsim_total) + 1e-10))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
         #◘plt.plot(qsim_total, "r")
@@ -140,7 +140,7 @@ class Simulation:
         qbase_rev_corr = pd.Series(self.qbase_model.validation_routine(baseflow_bundle))
         qsim_total = qsim + qbase_rev_corr
 
-        evaluator = RegressionMetric(np.array(self.ptq_validation.q), np.array(qsim_total))
+        evaluator = RegressionMetric((np.array(self.ptq_validation.q) + 1e-10), (np.array(qsim_total)+ 1e-10))
         results = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
         plt.plot(qsim_total, "r")

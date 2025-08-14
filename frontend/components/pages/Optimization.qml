@@ -15,6 +15,11 @@ Dialog {
     popupType: Popup.Window
     id: dialogOptim
 
+    property int activate: productionRange.checkPassed +
+                           recessionRange.checkPassed +
+                           routingRange.checkPassed +
+                           initialLossRange.checkPassed
+
     closePolicy : Popup.CloseOnEscape
     //padding: 5
     x: Math.round((parent.width - width) / 2)
@@ -49,6 +54,8 @@ Dialog {
 
                 CustomToolButton {
                     width: 50
+                    enabled: activate === 0 && fileHandler.activate ? true : false
+                    opacity: enabled ? 1 : 0.5
                     height: parent.height
                     text: qsTr("▶️")
                     ToolTip.text: qsTr("Optimize")

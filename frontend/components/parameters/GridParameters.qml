@@ -80,12 +80,14 @@ Rectangle {
 
             // Répétiteur pour les champs min
             Repeater {
+                id : minRepeater
                 model: {console.log("parameterModel.parameterNames : ",parameterModel.parameterNames)
 
                     parameterModel.parameterNames}
 
 
                 delegate: TextField {
+
                     Layout.column: {
                         console.log("modelData : ",modelData)
                         console.log("parameterModel.parameters[modelData] : ", parameters[modelData])
@@ -96,7 +98,7 @@ Rectangle {
                     Layout.alignment: Qt.AlignRight
                     text: parameters[modelData][0]
                     onTextChanged: {
-                        parameterModel.updateParameter(modelData, text, parameters[modelData][1])
+                        parameterModel.updateParameter(modelData,text, maxRepeater.itemAt(index).text)
                     }
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
@@ -134,6 +136,7 @@ Rectangle {
 
             // Répétiteur pour les champs max
             Repeater {
+                id : maxRepeater
                 model: parameterModel.parameterNames
 
                 delegate: TextField {
@@ -142,7 +145,7 @@ Rectangle {
                     Layout.preferredWidth: 50
                     Layout.alignment: Qt.AlignRight
                     text: parameters[modelData][1]
-                    onTextChanged: parameterModel.updateParameter(modelData, parameters[modelData][0], text)
+                    onTextChanged: parameterModel.updateParameter(modelData, minRepeater.itemAt(index).text, text)
                     validator: DoubleValidator {
                         notation: DoubleValidator.StandardNotation
                     }

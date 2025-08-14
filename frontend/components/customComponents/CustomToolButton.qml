@@ -18,11 +18,11 @@ ToolButton {
     background: Rectangle {
         id: bg
         anchors.fill: parent
-        color: run.pressed ? run.pressedColor :
-               run.hovered ? run.hoverColor :
+        color: run.pressed && run.enabled ? run.pressedColor :
+               run.hovered && run.enabled ? run.hoverColor :
                run.defaultColor
-        border.width: run.hovered  ? 1 : 0
-        border.color: run.hovered ? run.borderColor : "transparent"
+        border.width: run.hovered && run.enabled ? 1 : 0
+        border.color: run.hovered && run.enabled ? run.borderColor : "transparent"
         opacity: 1
 
         Behavior on color {
@@ -35,14 +35,14 @@ ToolButton {
 
     // Optionnel : effet visuel à l'appui
     onPressedChanged: {
-        if (pressed) {
+        if (pressed && enabled) {
             bg.scale = 0.95
         } else {
             bg.scale = 1.0
         }
     }
 
-    layer.enabled: run.hovered
+    layer.enabled: run.hovered && run.enabled
     layer.effect: DropShadow {
         horizontalOffset: 0
         verticalOffset: 2

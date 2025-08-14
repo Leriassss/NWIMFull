@@ -121,6 +121,7 @@ class AutomaticCalibration(QObject):
         optim = optim_list[0]
         optim_parameters = optim.property('parameters')
         optimizator_name = optim.property('currentMethod')
+
         optimizator = OptimizationFactory.createInstance(optimizator_name, sim, self._parameter_bundle, optim_parameters)
 
         sim_r_hun = optimizator.optim()
@@ -140,7 +141,6 @@ class AutomaticCalibration(QObject):
             original_dict[section] = {model: param_dict}
 
         self._optim_result = original_dict
-        print("sim_r_hun ------------------ : ", sim_r_hun.validation_metric)
         self._best_metrics = [float(np.round(sim_r_hun.calibration_metric,3)),
                                 float(np.round(sim_r_hun.validation_metric,3))]
 

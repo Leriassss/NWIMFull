@@ -5,12 +5,20 @@ Dialog{
     modal: true
     id : calendarDialog
     property var calibration_dates
-    property var user_calibration: {
+    /*property var user_calibration: {
         "calibration": ["1985-01-01", "2006-12-31"],
         "validation": ["2007-01-01", "2015-12-31"]
+    }*/
+
+    property var user_calibration: {
+        "calibration": ["1999-01-01", "2001-12-31"],
+        "validation": ["2002-01-01", "2003-12-31"]
     }
 
-
+    /*property var user_calibration: {
+        "calibration": ["1985-01-02", "1999-12-31"],
+        "validation": ["2002-06-19", "2008-10-10"]
+    }*/
     Row {
         width: parent.width
         height: parent.height

@@ -28,7 +28,7 @@ Dialog {
 
     property bool modelRegression: true
     property bool qSimRegression: false
-
+    property var mlBundle : ml_params.parameters
     Connections{
         target: fileHandler
         function onDataDictChanged(){
@@ -79,7 +79,7 @@ Dialog {
                     height: parent.height
                     text: qsTr("🟢")
                     ToolTip.text: qsTr("Compute")
-                    enabled: fileHandler.activate
+                    enabled: fileHandler.activate && regressionFile.parametersList.length >0
                     onClicked: {
                         console.log("modelRegression ", modelRegression)
                         console.log("qSimRegression ", qSimRegression)
@@ -90,9 +90,25 @@ Dialog {
                         if(qSimRegression){
                             regressionFile.qSimRegression(fileHandler.ptq,regComboBox.currentText)
                         }
+                        if(regressionFile.errors.length !==0){
+                            console.log(JSON.stringify(regressionFile.errors))
+                            regressiondataErrorsDialog.errors = regressionFile.errors
+                            regressiondataErrorsDialog.open()
+                            return
+                        }
                         regChart.updateChart(fileHandler.ptq["CALIBRATION"]["Dates"],regressionFile.simValues["CALIBRATION"],
                                     fileHandler.ptq["VALIDATION"]["Dates"], regressionFile.simValues["VALIDATION"])
 
+                    }
+                }
+                CustomToolButton {
+                    width: 50
+                    height: parent.height
+                    enabled: fileHandler.activate && regressionFile.parametersList.length >0
+                    text: qsTr("🛠️")
+                    ToolTip.text: qsTr("Manual Regression")
+                    onClicked: {
+                        dlg.open()
                     }
                 }
                 ToolSeparator{
@@ -107,12 +123,67 @@ Dialog {
                         saveRegressionOptions.open()
                     }
                 }
+
             }
-
-
-
        }
 
+    Dialog {
+        title: "Run Model"
+        implicitWidth:  300
+        implicitHeight: 250
+        popupType: Popup.Window
+        id: dlg
+        closePolicy : Popup.CloseOnEscape
+        //padding: 5
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        Column{
+            anchors.fill : parent
+            padding: 5
+            spacing: 10
+            Parameters {
+                id : ml_params
+                height: 150
+                spacing: 10
+                width: parent.width - 2*parent.padding
+                parameterModel: TestQML{}
+                factoryName: "MachineLearning"
+            }
+            Rectangle{
+                height: 100
+                width: parent.width
+                Button{
+                    anchors.right: parent.right
+                    text: "Run"
+                    font.bold: true
+                    width: 100
+                    onClicked: {
+                        console.log(JSON.stringify(mlBundle))
+                        console.log(ml_params.comboProperty)
+                        if(modelRegression){
+                            regressionFile.listModelManualRunning(fileHandler.ptq,ml_params.comboProperty,mlBundle)
+                        }
+                        if(qSimRegression){
+                            regressionFile.listDataManualRunnig(fileHandler.ptq,ml_params.comboProperty, mlBundle)
+                        }
+                        if(regressionFile.errors.length !==0){
+                            console.log(JSON.stringify(regressionFile.errors))
+                            regressiondataErrorsDialog.errors = regressionFile.errors
+                            regressiondataErrorsDialog.open()
+                            return
+                        }
+                        regChart.updateChart(fileHandler.ptq["CALIBRATION"]["Dates"],regressionFile.simValues["CALIBRATION"],
+                                    fileHandler.ptq["VALIDATION"]["Dates"], regressionFile.simValues["VALIDATION"])
+                    }
+                }
+            }
+        }
+        background: Rectangle{
+            anchors.fill: parent
+            color: "#ffffff"
+        }
+
+    }
     Dialog {
         id: loadOptions
         x: Math.round((parent.width - width) / 2)
@@ -576,14 +647,18 @@ Dialog {
 
                         RowLayout{
                             anchors.fill: parent
-                            ComboBox {
-                                leftPadding: 10
-                                Layout.preferredWidth: 150
-                                Layout.alignment: Qt.AlignHCenter
-                                Layout.preferredHeight: 20
-                                id: regComboBox
-                                model:regressionFile?.regressors
+                            ColumnLayout{
+                                ComboBox {
+                                    leftPadding: 10
+                                    Layout.preferredWidth: 150
+                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.preferredHeight: 20
+                                    id: regComboBox
+                                    model:regressionFile?.regressors
+                                }
                             }
+
+
                             Rectangle{
                                 Layout.preferredWidth: parent.width - regComboBox.width - parent.spacing
                                 Layout.preferredHeight: parent.height
@@ -599,6 +674,7 @@ Dialog {
                                     }
 
                                     Label{
+                                        id : hyperparametersLabel
                                         visible: modelRegression
                                         text : JSON.stringify(regressionFile?.currentRegressor["hyperparameters"]).replace(/["{}}]/g, " ")
                                         leftPadding: 5

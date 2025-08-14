@@ -16,7 +16,7 @@ Dialog{
     implicitHeight: 700
     modal: true
     popupType: Popup.Window
-    standardButtons: Dialog.Ok | Dialog.Cancel
+    standardButtons: Dialog.Ok
     closePolicy : Popup.CloseOnEscape
     background:Rectangle{
         anchors.fill: parent

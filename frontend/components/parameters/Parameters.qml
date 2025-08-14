@@ -28,6 +28,8 @@ Column {
     property var parameters: parameterModel?.parameters
     property bool checkPassed: parameterModel?.desactivated
 
+    property var comboProperty: methodSelector.currentText
+
     // Sélecteur de méthode
     ComboBox {
         leftPadding: 10

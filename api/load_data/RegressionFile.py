@@ -13,6 +13,7 @@ from backend.simulation.Simulation import Simulation
 from backend.simulation.models.SimulationModel import SimulationModel
 from backend.regressor.Regressor import Regressor
 from backend.results.ResultsFileManager import ResultsFileManager
+from backend.factory.MLFactory import MLFactory
 class RegressionFile(QObject):
     def __init__(self):
         super().__init__()
@@ -42,7 +43,7 @@ class RegressionFile(QObject):
 
     @Property(list, constant = True)
     def regressors(self):
-        return Regressor.methodsList()
+        return MLFactory.getMethodKeys()
 
     @Property(list, notify = dataQSimListChanged)
     def qSimList(self):
@@ -90,167 +91,138 @@ class RegressionFile(QObject):
             self._data_qsim_list.append({"id" : path,"data" : pd.read_table(path, sep= '\t', header = 0)})
         self.dataQSimListChanged.emit()
 
-    @Slot(dict, str)
-    def singleCalibration(self, ptq, regressor):
+    def _reset_state(self):
         self._sim_finished = False
         self._errors = []
-        self._sim = {"CALIBRATION":None,
-                    "VALIDATION" : None,
-                    "HYPERPARAMETERS" : None}
-        self._ptq = ptq
-        print("-------- SC RF -------")
-        print(self._ptq.keys())
-        if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
+        self._sim = {"CALIBRATION": None, "VALIDATION": None, "HYPERPARAMETERS": None}
+
+    def _validate_inputs(self, ptq, regressor, require_params=False, require_qsim=False):
+        if require_params and len(self._data_parameters_list) == 0:
+            self._errors.append("No models list supplied. Add model before")
+            self.errorsChanged.emit()
+            return False
+        if require_qsim and len(self._data_qsim_list) == 0:
+            self._errors.append("No QSim data supplied. Add QSim before")
+            self.errorsChanged.emit()
+            return False
+        if set(ptq.keys()) != {"CALIBRATION", "VALIDATION"}:
             self._errors.append("Calibration and validation datas not found")
             self.errorsChanged.emit()
-            return
-
-        if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
-            self._errors.append("Calibration and validation datas not not provided")
+            return False
+        if len(ptq["CALIBRATION"]) == 0 or len(ptq["VALIDATION"]) == 0:
+            self._errors.append("Calibration and validation datas not provided")
             self.errorsChanged.emit()
-            return
-
-        if not regressor in Regressor.methodsList():
+            return False
+        if regressor not in MLFactory.getMethodKeys():
             self._errors.append("Provided regressor or metric are non-correct")
             self.errorsChanged.emit()
-            return
-        calibration_df = pd.DataFrame(ptq["CALIBRATION"])
-        validation_df = pd.DataFrame(ptq["VALIDATION"])
+            return False
+        return True
 
+    def _create_ptq_objects(self, ptq):
+        cal_df = pd.DataFrame(ptq["CALIBRATION"])
+        val_df = pd.DataFrame(ptq["VALIDATION"])
+        ptq_cal = PTQ(cal_df["P"], cal_df["ETP"], cal_df["Q"], cal_df["Dates"])
+        ptq_val = PTQ(val_df["P"], val_df["ETP"], val_df["Q"], val_df["Dates"])
+        return ptq_cal, ptq_val, pd.to_datetime(cal_df["Dates"]), pd.to_datetime(val_df["Dates"])
 
-        ptq_calibration = PTQ(calibration_df["P"], calibration_df["ETP"],
-        calibration_df["Q"], calibration_df["Dates"])
-
-        ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
-        validation_df["Q"], validation_df["Dates"])
-
+    def _build_sm_list_from_params(self, ptq_cal, ptq_val):
         sm_list = []
-        reg = None
-        print("RF SC; self._data_parameters_list : ", self._data_parameters_list)
-        for json_data_dict in self._data_parameters_list.copy() :
+        for json_data_dict in self._data_parameters_list.copy():
             original_dict = dict(json_data_dict)
             del original_dict['id']
-
-            dict_params = {}
-            dict_methods = {}
-
+            dict_params, dict_methods = {}, {}
             for key, model_dict in original_dict.items():
-                # Récupérer le nom du modèle (il y a une seule clé à ce niveau)
                 model_name = next(iter(model_dict))
                 model_params = model_dict[model_name]
-
                 dict_methods[key] = model_name
                 dict_params[key] = list(model_params.values())
-
-            else:
-                self._errors.append("Required methods not provided")
-                self.errorsChanged.emit()
-
-            if any(item is None for values in dict_params.values() for item in values):
+            if any(v is None for values in dict_params.values() for v in values):
                 self._errors.append("Provided parameters are non-correct")
                 self.errorsChanged.emit()
-                return
-
-            sim = Simulation(dict_methods["pn"],dict_methods["qb"],
-            dict_methods["sim"],dict_methods["loss"], ptq_calibration, ptq_validation)
-
+                return None
+            sim = Simulation(dict_methods["pn"], dict_methods["qb"],
+                            dict_methods["sim"], dict_methods["loss"], ptq_cal, ptq_val)
             hun_sim_cal = sim.manual_calibration(dict_params)
-
             hun_sim_val = sim.validation()
+            sm_list.append(SimulationModel(hun_sim_cal.tolist(), hun_sim_val[1].tolist(), None, None, None))
+        return sm_list
 
-            sm = SimulationModel(hun_sim_cal.tolist(), hun_sim_val[1].tolist(), None, None, None)
+    def _build_sm_list_from_qsim(self, ptq_cal, ptq_val, cal_dates, val_dates):
+        sm_list = []
+        for json_data_dict in self._data_qsim_list.copy():
+            df = json_data_dict["data"]
+            if set(df.columns) != {"Dates", "Obs", "Sim"}:
+                self._errors.append("Wrong data format")
+                self.errorsChanged.emit()
+                return None
+            df["Dates"] = pd.to_datetime(df["Dates"])
+            df.index = df["Dates"]
+            sm_list.append(SimulationModel(df["Sim"].loc[cal_dates].tolist(),
+                                        df["Sim"].loc[val_dates].tolist(), None, None, None))
+        return sm_list
 
-            reg = Regressor(ptq_calibration,ptq_validation)
-            sm_list.append(sm)
-
-
-        reg_method = reg.methods()[regressor](sm_list)
-
-        self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
-        self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
-
-        self._regressor = {"model" : regressor, "hyperparameters" : reg_method[0].params}
-
-
+    def _execute_ml(self, regressor, reg, sm_list, mode="tuning", ml_bundle=None):
+        ml_algo = MLFactory.createInstance(regressor, reg, sm_list)
+        if mode == "run" and ml_bundle is not None:
+            algo_model = MLFactory.createModel(regressor, ml_bundle)
+            reg_method = ml_algo.run(algo_model)
+        else:
+            reg_method = ml_algo.tuning()
+        self._sim["CALIBRATION"] = reg_method[0].calibration_sim.tolist()
+        self._sim["VALIDATION"] = reg_method[0].validation_sim.tolist()
+        self._regressor = {"model": regressor, "hyperparameters": reg_method[0].params}
         self._sim_finished = True
-        metrics_calibration = reg_method[1][0]
-        metrics_validation = reg_method[1][1]
-
-        self._metrics_summary = merged = {k: [float(metrics_calibration[k]), float(metrics_validation[k])] for k in metrics_calibration}
-
+        metrics_cal = reg_method[1][0]
+        metrics_val = reg_method[1][1]
+        self._metrics_summary = {k: [float(metrics_cal[k]), float(metrics_val[k])] for k in metrics_cal}
         self.simvaluesChanged.emit()
         self.metricsSummaryChanged.emit()
         self.currentRegressorChanged.emit()
 
+    @Slot(dict, str)
+    def singleCalibration(self, ptq, regressor):
+        self._reset_state()
+        if not self._validate_inputs(ptq, regressor, require_params=True):
+            return
+        ptq_cal, ptq_val, *_ = self._create_ptq_objects(ptq)
+        sm_list = self._build_sm_list_from_params(ptq_cal, ptq_val)
+        if sm_list is None: return
+        reg = Regressor(ptq_cal, ptq_val)
+        self._execute_ml(regressor, reg, sm_list, mode="tuning")
+
+    @Slot(dict, str, dict)
+    def listModelManualRunning(self, ptq, regressor, ml_bundle):
+        self._reset_state()
+        if not self._validate_inputs(ptq, regressor, require_params=True):
+            return
+        ptq_cal, ptq_val, *_ = self._create_ptq_objects(ptq)
+        sm_list = self._build_sm_list_from_params(ptq_cal, ptq_val)
+        if sm_list is None: return
+        reg = Regressor(ptq_cal, ptq_val)
+        self._execute_ml(regressor, reg, sm_list, mode="run", ml_bundle=ml_bundle)
 
     @Slot(dict, str)
     def qSimRegression(self, ptq, regressor):
-            self._sim_finished = False
-            self._errors = []
-            self._ptq = ptq
-            print("-------- QSR RF -------")
-            print(self._ptq.keys())
-            if not set(self._ptq.keys()) == set(["CALIBRATION","VALIDATION"]) :
-                self._errors.append("Calibration and validation datas not found")
-                self.errorsChanged.emit()
-                return
+        self._reset_state()
+        if not self._validate_inputs(ptq, regressor, require_qsim=True):
+            return
+        ptq_cal, ptq_val, cal_dates, val_dates = self._create_ptq_objects(ptq)
+        sm_list = self._build_sm_list_from_qsim(ptq_cal, ptq_val, cal_dates, val_dates)
+        if sm_list is None: return
+        reg = Regressor(ptq_cal, ptq_val)
+        self._execute_ml(regressor, reg, sm_list, mode="tuning")
 
-            if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
-                self._errors.append("Calibration and validation datas not not provided")
-                self.errorsChanged.emit()
-                return
-
-            if not regressor in Regressor.methodsList():
-                self._errors.append("Provided regressor or metric are non-correct")
-                self.errorsChanged.emit()
-                return
-            calibration_df = pd.DataFrame(ptq["CALIBRATION"])
-            validation_df = pd.DataFrame(ptq["VALIDATION"])
-
-
-            ptq_calibration = PTQ(calibration_df["P"], calibration_df["ETP"],
-            calibration_df["Q"], calibration_df["Dates"])
-
-            ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
-            validation_df["Q"], validation_df["Dates"])
-
-            sm_list = []
-            reg = None
-            calibration_dates = pd.to_datetime(calibration_df["Dates"])
-            validation_dates = pd.to_datetime(validation_df["Dates"])
-            print("RF SC; self._data_qsim_list : ", self._data_qsim_list)
-            for json_data_dict in self._data_qsim_list.copy() :
-                if set(json_data_dict["data"].columns.tolist()) != set(['Dates', 'Obs', 'Sim']) :
-                    self._errors.append("Wrong data format")
-                    self.errorsChanged.emit()
-                    return
-
-                df = dict(json_data_dict)["data"]
-                df["Dates"] = pd.to_datetime(df["Dates"])
-                df.index = df["Dates"]
-
-                sm = SimulationModel(df["Sim"].loc[calibration_dates].tolist(),
-                                    df["Sim"].loc[validation_dates].tolist(), None, None, None)
-
-                reg = Regressor(ptq_calibration,ptq_validation)
-                sm_list.append(sm)
-
-
-            reg_method = reg.methods()[regressor](sm_list)
-
-            self._sim["CALIBRATION"] = (reg_method[0].calibration_sim).tolist()
-            self._sim["VALIDATION"] = (reg_method[0].validation_sim).tolist()
-
-            self._sim_finished = True
-            metrics_calibration = reg_method[1][0]
-            metrics_validation = reg_method[1][1]
-
-            self._metrics_summary = merged = {k: [float(metrics_calibration[k]), float(metrics_validation[k])] for k in metrics_calibration}
-
-            self.simvaluesChanged.emit()
-            self.metricsSummaryChanged.emit()
-            self.currentRegressorChanged.emit()
-
+    @Slot(dict, str, dict)
+    def listDataManualRunnig(self, ptq, regressor, ml_bundle):
+        self._reset_state()
+        if not self._validate_inputs(ptq, regressor, require_qsim=True):
+            return
+        ptq_cal, ptq_val, cal_dates, val_dates = self._create_ptq_objects(ptq)
+        sm_list = self._build_sm_list_from_qsim(ptq_cal, ptq_val, cal_dates, val_dates)
+        if sm_list is None: return
+        reg = Regressor(ptq_cal, ptq_val)
+        self._execute_ml(regressor, reg, sm_list, mode="run", ml_bundle=ml_bundle)
 
     @Slot(str)
     def saveQSim(self, path):

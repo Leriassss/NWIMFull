@@ -1,7 +1,6 @@
 from PySide6.QtQml import QmlElement
 from PySide6.QtCore import QObject, Property, Signal, Slot
 from api.FactoryManager import FactoryManager
-import math
 
 QML_IMPORT_NAME = "io.qml"
 QML_IMPORT_MAJOR_VERSION = 1
@@ -14,6 +13,7 @@ class RangeParametersQML(QObject):
     methodChanged = Signal()
     parameterErrorChanged = Signal()
     availableMethodsChanged = Signal()
+    desactivatedChanged = Signal()
 
     def __init__(self, parent=None):
         """Initialisation sans écoute du changement de factory."""
@@ -24,11 +24,16 @@ class RangeParametersQML(QObject):
         self._parameterErrors = {}
         self._methods = []
         self._keys = []
+        self._desactivated = True
 
     @Property('QVariant')
     def methodKeys(self):
         return self._keys
-
+    
+    @Property(bool, notify=desactivatedChanged)
+    def desactivated(self):
+        return self._desactivated
+    
     @Property(str, notify=methodChanged)
     def currentMethod(self):
         return self._current_method
@@ -110,6 +115,7 @@ class RangeParametersQML(QObject):
     @Slot(str, str, str)
     def updateParameter(self, key, min_value, max_value):
         """Met à jour un paramètre avec min et max en gérant les erreurs dynamiquement."""
+        
         if key in self._parameters:
             # Conversion sécurisée des valeurs
             min_value = self.safe_convert(min_value)
@@ -125,7 +131,9 @@ class RangeParametersQML(QObject):
                      "min": min_error,
                      "max": max_error
                 }
+                self._desactivated = True
                 self.parameterErrorChanged.emit()
+                self.desactivatedChanged.emit()
                 return
 
             min_error = True if min_value is None else False
@@ -137,6 +145,8 @@ class RangeParametersQML(QObject):
                      "max": max_error
                 }
                 self.parameterErrorChanged.emit()
+                self._desactivated = True
+                self.desactivatedChanged.emit()
                 return
 
             if min_value >= max_value:
@@ -145,7 +155,10 @@ class RangeParametersQML(QObject):
                      "max": max_error
                 }
                 self.parameterErrorChanged.emit()
+                self._desactivated = True
+                self.desactivatedChanged.emit()
                 return
+            
 
             # Mise à jour du paramètre
             self._parameters[key] = [min_value, max_value]
@@ -156,4 +169,6 @@ class RangeParametersQML(QObject):
                  "min": False,
                  "max": False
             }
+            self._desactivated = False
             self.parameterErrorChanged.emit()
+            self.desactivatedChanged.emit()

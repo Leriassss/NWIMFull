@@ -61,6 +61,7 @@ class LatinHypercubeOptimization:
     def optim(self):
         crit =self.simulation.crit
         parameters = self.population(self.param_ranges,self.n_samples)
+        print("parameters optim LHS ------------- : ", parameters)
         results =  []
         for i in range(self.n_samples):
             parameters_line = parameters.iloc[i]
@@ -78,7 +79,7 @@ class LatinHypercubeOptimization:
         runs = pd.DataFrame(results).sort_values([crit],ascending=False)
         best_run : pd.DataFrame = runs.iloc[0]["parameters"]
         best_pars = best_run.reset_index(level='Parameter', drop=True).groupby("Category").apply(list).to_dict()
-        
+        print("best_pars optim LHS -------------- : ", best_pars)
         best_sim = self.simulation.manual_calibration(best_pars)
         criteria_value, qsim_validation  = self.simulation.validation()
         return SimulationModel(best_sim,qsim_validation,best_pars,runs.iloc[0][crit],criteria_value[crit])

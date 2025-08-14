@@ -3,6 +3,7 @@ from backend.factory.RecessionFactory import RecessionFactory
 from backend.factory.RoutingFactory import RoutingFactory
 from backend.factory.InitialLossFactory import InitialLossFactory
 from backend.factory.OptimizationFactory import OptimizationFactory
+from backend.factory.MLFactory import MLFactory
 
 from PySide6.QtCore import QObject, Signal, Slot, Property
 
@@ -14,7 +15,8 @@ class FactoryManager(QObject):
         "Recession": RecessionFactory,
         "Routing": RoutingFactory,
         "InitialLoss": InitialLossFactory,
-        "Optimization" : OptimizationFactory
+        "Optimization" : OptimizationFactory,
+        "MachineLearning" : MLFactory
     }
 
 
@@ -38,6 +40,10 @@ class FactoryManager(QObject):
     @Property(list, constant = True)
     def routingMethods(self):
         return self.getFactoryMethods("Routing")
+
+    @Property(list, constant = True)
+    def routingMethods(self):
+        return self.getFactoryMethods("MachineLearning")
 
     @classmethod
     def get_factory(cls, factory_name):
