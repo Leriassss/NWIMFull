@@ -193,7 +193,7 @@ Dialog{
             }
 
         }
-        Rectangle{
+        /*Rectangle{
             Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
             color: "white"
@@ -204,7 +204,7 @@ Dialog{
                 padding: 10
             }
 
-        }
+        }*/
         /*Rectangle{
             Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
@@ -217,7 +217,7 @@ Dialog{
             }
 
         }*/
-
+/*
         Rectangle{
             Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
@@ -241,7 +241,7 @@ Dialog{
                 padding: 10
             }
 
-        }
+        */
     }
 
 

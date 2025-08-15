@@ -19,8 +19,8 @@ class RandomForestModel:
         """Valide les paramètres."""
         if self.n_estimators <= 0:
             raise ValueError("Le paramètre 'n_estimators' doit être un entier strictement positif.")
-        if  self.max_depth <= 0:
-            raise ValueError("Le paramètre 'max_depth' doit être un entier strictement positif ou None.")
+        if  self.max_depth <0:
+            raise ValueError("Le paramètre 'max_depth' doit être un entier strictement positif ou  0 (None).")
         if self.min_samples_split < 2:
             raise ValueError("Le paramètre 'min_samples_split' doit être un entier supérieur ou égal à 2.")
 
@@ -28,7 +28,7 @@ class RandomForestModel:
         """Retourne les paramètres sous forme de dictionnaire."""
         return {
             'n_estimators': self.n_estimators,
-            'max_depth': self.max_depth,
+            'max_depth': self.max_depth if self.max_depth>0 else None,
             'min_samples_split': self.min_samples_split
         }
 
@@ -73,8 +73,8 @@ class RandomForestModel:
                 return True
             if key == "n_estimators" and value <= 0:
                 raise ValueError("Le paramètre 'n_estimators' doit être un entier strictement positif.")
-            elif key == "max_depth" and value <= 0:
-                raise ValueError("Le paramètre 'max_depth' doit être un entier strictement positif ou None.")
+            elif key == "max_depth" and value < 0:
+                raise ValueError("Le paramètre 'max_depth' doit être un entier strictement positif ou 0 (None) .")
             elif key == "min_samples_split" and value < 2:
                 raise ValueError("Le paramètre 'min_samples_split' doit être >= 2.")
             return True

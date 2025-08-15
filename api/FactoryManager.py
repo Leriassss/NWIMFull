@@ -42,7 +42,7 @@ class FactoryManager(QObject):
         return self.getFactoryMethods("Routing")
 
     @Property(list, constant = True)
-    def routingMethods(self):
+    def machineLearningMethods(self):
         return self.getFactoryMethods("MachineLearning")
 
     @classmethod

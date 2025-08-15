@@ -15,13 +15,13 @@ class SVM(MachineLearning):
     def tuning(self)  -> SimulationModel:
         
         param_grid = {
-            'kernel' : ('linear', 'rbf'),
+            'kernel' : ('rbf', 'sigmoid', 'poly', 'linear'),
             'C': list(range(1,100)),
             'gamma': [0.01, 0.05,  0.1, 0.5,  1],
             'epsilon': [0.01, 0.05, 0.1, 0.5, 1]
         }
 
-        grid_search = RandomizedSearchCV(SVR(), param_grid,  n_iter = 100, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1, random_state = 123)
+        grid_search = RandomizedSearchCV(SVR(), param_grid,  n_iter = 50, cv=5,  scoring="neg_root_mean_squared_error", n_jobs=-1, random_state = 123)
     
         grid_search.fit(self.best_calibration_results, self.regressor.calage.q)
 

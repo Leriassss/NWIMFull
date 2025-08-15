@@ -28,7 +28,6 @@ Dialog {
 
     property bool modelRegression: true
     property bool qSimRegression: false
-    property var mlBundle : ml_params.parameters
     Connections{
         target: fileHandler
         function onDataDictChanged(){
@@ -78,7 +77,8 @@ Dialog {
                     width: 50
                     height: parent.height
                     text: qsTr("🟢")
-                    ToolTip.text: qsTr("Compute")
+                    opacity : enabled ? 1 : 0.8
+                    ToolTip.text: qsTr("Tuning")
                     enabled: fileHandler.activate && regressionFile.parametersList.length >0
                     onClicked: {
                         console.log("modelRegression ", modelRegression)
@@ -105,6 +105,7 @@ Dialog {
                     width: 50
                     height: parent.height
                     enabled: fileHandler.activate && regressionFile.parametersList.length >0
+                    opacity : enabled ? 1 : 0.8
                     text: qsTr("🛠️")
                     ToolTip.text: qsTr("Manual Regression")
                     onClicked: {
@@ -140,7 +141,7 @@ Dialog {
         Column{
             anchors.fill : parent
             padding: 5
-            spacing: 10
+            spacing: 20
             Parameters {
                 id : ml_params
                 height: 150
@@ -151,20 +152,28 @@ Dialog {
             }
             Rectangle{
                 height: 100
-                width: parent.width
+                width: parent.width - 2*parent.padding
                 Button{
                     anchors.right: parent.right
                     text: "Run"
                     font.bold: true
                     width: 100
+                    enabled: !ml_params.checkPassed
+                    opacity: enabled ? 1 : 0.7
                     onClicked: {
-                        console.log(JSON.stringify(mlBundle))
+                        console.log("---------------------------------------- : ", JSON.stringify(ml_params.parameters))
                         console.log(ml_params.comboProperty)
+                        console.log(modelRegression)
+                        let index = regComboBox.model.indexOf(ml_params.comboProperty)
+                             console.log(index)
+                             if (index >= 0)
+                                regComboBox.currentIndex = index;
+
                         if(modelRegression){
-                            regressionFile.listModelManualRunning(fileHandler.ptq,ml_params.comboProperty,mlBundle)
+                            regressionFile.listModelManualRunning(fileHandler.ptq,ml_params.comboProperty,ml_params.parameters)
                         }
                         if(qSimRegression){
-                            regressionFile.listDataManualRunnig(fileHandler.ptq,ml_params.comboProperty, mlBundle)
+                            regressionFile.listDataManualRunnig(fileHandler.ptq,ml_params.comboProperty, ml_params.parameters)
                         }
                         if(regressionFile.errors.length !==0){
                             console.log(JSON.stringify(regressionFile.errors))
@@ -244,7 +253,13 @@ Dialog {
          fileMode: FileChoose.OpenFile
          onAccepted: {
             let fileName = cleanFilePath(loadRegressionDialog.file.toString());
-            regressionFile.loadParameters(fileName)
+             try{
+                 regressionFile.loadParameters(fileName)
+             }catch(e){
+                 regressiondataErrorsDialog.errors = [e+""]
+                 regressiondataErrorsDialog.open()
+                 console.log(e)
+             }
 
             let index = regComboBox.model.indexOf(regressionFile?.currentRegressor["model"])
                  console.log(index)
@@ -276,8 +291,13 @@ Dialog {
          nameFilters: ["JSON (*.json)"]
          fileMode: FileChoose.OpenFiles
          onAccepted: {
-            regressionFile.getParameters(loadModelDialog.files)
-
+             try{
+                regressionFile.getParameters(loadModelDialog.files)
+             }catch(e){
+                 regressiondataErrorsDialog.errors = [e+""]
+                 regressiondataErrorsDialog.open()
+                 console.log(e)
+             }
          }
      }
 

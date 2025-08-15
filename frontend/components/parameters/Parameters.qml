@@ -25,7 +25,7 @@ Column {
     property string factoryName
 
     // Get the parameters and the values typed by user
-    property var parameters: parameterModel?.parameters
+    property var parameters
     property bool checkPassed: parameterModel?.desactivated
 
     property var comboProperty: methodSelector.currentText
@@ -95,7 +95,8 @@ Column {
                     onTextChanged: {
                         parameterModel.updateParameter(modelName, text)
                         console.log("----------------- RESULTATS -----------------------")
-                        console.log(JSON.stringify(parameterModel.parameters))
+                        parameters = parameterModel.parameters
+                        console.log(JSON.stringify(parameters))
                     }
                     Layout.preferredWidth: 75 // Largeur fixe pour les TextField
                     Layout.alignment: Qt.AlignRight

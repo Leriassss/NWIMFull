@@ -5,7 +5,9 @@ class SVMModel:
 
     Kernels ={
         0 : 'linear',
-        1: 'rbf'
+        1: 'rbf',
+        2 : 'sigmoid',
+        3 : 'poly'
     } 
 
     def __init__(self, kernel, C, gamma, epsilon):
@@ -24,8 +26,8 @@ class SVMModel:
 
     def validate(self):
         """Valide les paramètres."""
-        if self.kernel not in (0,1):
-            raise ValueError(f"Le paramètre 'kernel' inconnu.")
+        if self.kernel not in [0,1,2,3]:
+            raise ValueError(f"Le paramètre 'kernel' doit être parmi {SVMModel.Kernels}.")
         if self.C  < 0 :
             raise ValueError(f"Le paramètre 'C' doit être positif")
         if self.gamma < 0 :
@@ -36,7 +38,7 @@ class SVMModel:
     def to_dict(self):
         """Retourne les paramètres sous forme de dictionnaire."""
         return {
-            'kernel': self.kernel,
+            'kernel': self.Kernels[self.kernel],
             'C': self.C,
             'gamma': self.gamma,
             'epsilon': self.epsilon
@@ -83,7 +85,7 @@ class SVMModel:
         try:
             value = float(value)
             if key == "kernel":
-                if int(value) not in (0,1):
+                if int(value) not in [0,1,2,3]:
                     raise ValueError(f"Le paramètre 'kernel' doit être parmi {SVMModel.Kernels}.")
             elif key == "C":
                 if value < 0 :

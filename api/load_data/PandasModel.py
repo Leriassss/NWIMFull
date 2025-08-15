@@ -5,11 +5,15 @@ from __future__ import annotations
 import pandas as pd
 
 from PySide6.QtWidgets import QTableView, QApplication
-from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex
+from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, QObject, Slot, Signal
+from PySide6.QtQml import QmlElement
 import sys
 
+QML_IMPORT_NAME = "io.qml"
+QML_IMPORT_MAJOR_VERSION = 1
 
-class PandasModel(QAbstractTableModel):
+@QmlElement
+class PandasModel(QAbstractTableModel, QObject):
     dataframeChanged = Signal()
     """A model to interface a Qt view with pandas dataframe """
 

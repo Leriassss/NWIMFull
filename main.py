@@ -10,6 +10,7 @@ from PySide6.QtCore import QUrl, QtMsgType, QFileInfo, QFile
 
 from api.RangeParametersQML import RangeParametersQML
 from api.TestQML import TestQML
+from api.load_data.PandasModel import PandasModel
 from api.GridParametersQML import GridParametersQML
 from api.load_data.FileHandler import FileHandler
 from api.load_data.TableModel import TableModel

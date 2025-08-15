@@ -10,6 +10,7 @@ class ExponentialRecessionCurve(BaseFlow):
     """
     def __init__(self,separationModel : SeparationModel):
         self.k = separationModel.k
+        self.window = separationModel.window
     """
     def compute(self, ptq : PTQ):
         precip = np.asarray(ptq.p)
@@ -70,7 +71,7 @@ class ExponentialRecessionCurve(BaseFlow):
                 i = j
             else:
                 i += 1
-        debit_base = debit_base.rolling(window=10, center=True, min_periods=1).mean()
+        debit_base = debit_base.rolling(window=self.window, center=True, min_periods=1).mean()
         return debit_base
 
     
