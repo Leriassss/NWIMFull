@@ -7,10 +7,11 @@ class PTQ:
         self.q = q
         self.dates = dates
 
-    def daily_qobs_mean(self):
+    @staticmethod
+    def daily_mean(dates, q):
         df = pd.DataFrame({
-            "Date": pd.to_datetime(self.dates),
-            "Q_obs": self.q
+            "Date": pd.to_datetime(dates),
+            "Q_obs": q
         })
         df["month"] = df["Date"].dt.month
         df["day"] = df["Date"].dt.day
@@ -50,11 +51,11 @@ class PTQ:
         date = pd.to_datetime(self.dates[0])
         prev_day = date - pd.Timedelta(days=1)
         jour_annee = prev_day.dayofyear
-        prev_qobs = self.daily_qobs_mean()[jour_annee-1]
+        prev_qobs = PTQ.daily_mean(self.dates,self.q)[jour_annee-1]
         return prev_qobs
     
-
-    def expand_flow(self, dates, qdirect_means):
+    @staticmethod
+    def expand_flow(dates, qdirect_means):
         df = pd.DataFrame({
             "Date": pd.to_datetime(dates),
         })

@@ -8,17 +8,30 @@ Dialog{
     /*property var user_calibration: {
         "calibration": ["1985-01-01", "2006-12-31"],
         "validation": ["2007-01-01", "2015-12-31"]
-    }*/
+    } // */
 
-    property var user_calibration: {
+    /*property var user_calibration: {
         "calibration": ["1999-01-01", "2001-12-31"],
         "validation": ["2002-01-01", "2003-12-31"]
-    }
+    }*/
 
     /*property var user_calibration: {
         "calibration": ["1985-01-02", "1999-12-31"],
         "validation": ["2002-06-19", "2008-10-10"]
+    } // Save*/
+
+    /*property var user_calibration: {
+        "calibration": ["1985-01-01", "1996-12-31"],
+        "validation": ["2001-01-01", "2006-12-31"]
+    } // Atcherigbe*/
+    /*property var user_calibration: {
+        "calibration": ["1995-01-01", "2006-12-31"],
+        "validation": ["2007-01-01", "2011-12-31"]
     }*/
+    property var user_calibration: {
+            "calibration": ["1987-01-01", "2005-12-31"],
+            "validation": ["2010-01-01", "2015-12-31"]
+        }
     Row {
         width: parent.width
         height: parent.height
@@ -141,15 +154,24 @@ Dialog{
 
     }
     function checkDates(user_dates){
-        let c_start = new Date(user_dates["calibration"][0])
-        let c_end = new Date(user_dates["calibration"][1])
-        let v_start = new Date(user_dates["validation"][0])
-        let v_end = new Date(user_dates["validation"][1])
-        if (c_start >= c_end || v_start >= v_end || c_start == v_start || c_end == v_end || c_start == v_end){
+        let c_start = new Date(user_dates["calibration"][0]).getTime()
+        let c_end   = new Date(user_dates["calibration"][1]).getTime()
+        let v_start = new Date(user_dates["validation"][0]).getTime()
+        let v_end   = new Date(user_dates["validation"][1]).getTime()
+
+        // Vérification des bornes
+        if (isNaN(c_start) || isNaN(c_end) || isNaN(v_start) || isNaN(v_end)) {
+            return false; // une date invalide
+        }
+
+        if (c_start >= c_end ||
+            v_start >= v_end ||
+            c_start === v_start ||
+            c_end   === v_end ||
+            c_start === v_end) {
             return false
         }
-        else{
-            return true
-        }
+        return true
     }
+
 }

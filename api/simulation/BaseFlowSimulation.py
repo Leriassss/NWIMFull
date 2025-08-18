@@ -6,6 +6,7 @@ import datetime
 
 from backend.results.ResultsFileManager import ResultsFileManager
 from backend.factory.RecessionFactory import RecessionFactory
+from backend.ptq.PTQ import PTQ
 from dateutil import parser
 from PySide6.QtCore import QObject, Signal, Slot, Property
 from PySide6.QtQml import QmlElement
@@ -17,6 +18,7 @@ class BaseFlowSimulation(QObject):
         self._headers = []
         self._data = []
         self._data_dict = {}
+        self._df = []
         self._errors = []
         self._baseflow = {"Dates": None, "Baseflow" : None}
         self._activated = False
@@ -92,6 +94,14 @@ class BaseFlowSimulation(QObject):
         try:
             parsed_dates = np.vectorize(self.check_and_convert_date)(data_dict_values["Dates"])
             data_dict_values["Dates"] = np.array([d.strftime("%Y-%m-%d") for d in parsed_dates]).tolist()
+             
+
+            df = pd.DataFrame(data_dict_values)
+            dm_df = PTQ.daily_mean(df["Dates"],df["Q"])
+            dm_df = dm_df.where(dm_df == np.nan,0)
+            expand_dm_df = PTQ.expand_flow(data_dict_values["Dates"], dm_df)
+            self._df = df["Q"].fillna(expand_dm_df).tolist()
+
         except Exception as e:
             self._errors = e.args[0].split(";")
             return
@@ -112,7 +122,7 @@ class BaseFlowSimulation(QObject):
         prametersValues =  params_dict['parameterValues']
         currentMethod = params_dict["currentMethod"]
 
-        self._baseflow["Baseflow"] = RecessionFactory.createInstance(currentMethod,*prametersValues).compute(np.array(self._data_dict["Q"])).tolist()
+        self._baseflow["Baseflow"] = RecessionFactory.createInstance(currentMethod,*prametersValues).compute(np.array(self._df)).tolist()
         self.baseflowChanged.emit()
 
     @Slot(str)
@@ -127,3 +137,4 @@ class BaseFlowSimulation(QObject):
 
     def check_and_convert_date(self, date):
         return parser.parse(str(date))
+

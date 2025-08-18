@@ -11,8 +11,8 @@ class DataManager:
             self._errors = []
             self._data_dict = self.setDictValues(data, columnMapping)
             self._ptq = {
-              "CALIBRATION" : {"Dates" : None, "P" : None, "T" : None, "Q" : None},
-              "VALIDATION" : {"Dates" : None, "P" : None, "T" : None, "Q" : None}
+              "CALIBRATION" : {"Dates" : None, "P" : None, "Q" : None},
+              "VALIDATION" : {"Dates" : None, "P" : None, "Q" : None}
             }
 
         def check_keys_match(self, d, keys_list):
@@ -27,7 +27,7 @@ class DataManager:
                 raise Exception("The series contains missing values !")
 
             data_dict_values = { key: data[value] for key, value in columnMapping.items() }
-            if not self.check_keys_match(data_dict_values, ["Dates","T", "ETP", "Q", "P"]):
+            if not self.check_keys_match(data_dict_values, ["Dates", "ETP", "Q", "P"]):
                 raise Exception("Data columns are missing!")
 
             self._errors = []
@@ -41,12 +41,11 @@ class DataManager:
             except Exception :
                  self._errors.append("Format de dates non reconnues")
             try :
-                 ptq = np.round(np.array([data_dict_values["P"], data_dict_values["T"],
+                 ptq = np.round(np.array([data_dict_values["P"],
                  data_dict_values["Q"],data_dict_values["ETP"]],dtype='float'), 3).tolist()
                  data_dict_values["P"] = ptq[0]
-                 data_dict_values["T"] = ptq[1]
-                 data_dict_values["Q"] = ptq[2]
-                 data_dict_values["ETP"] = ptq[3]
+                 data_dict_values["Q"] = ptq[1]
+                 data_dict_values["ETP"] = ptq[2]
             except Exception :
                  self._errors.append("Données non-numériques détectées")
 

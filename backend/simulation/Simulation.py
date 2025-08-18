@@ -33,29 +33,23 @@ class Simulation:
         self.ptq_validation = ptq_validation
         self.kwargs = {}
         self.calibration_metric = 0
-        self.q_means = ptq_calage.daily_qobs_mean()
+        self.q_means = ptq_calage.daily_mean(ptq_calage.dates, self.ptq_calage.q)
         self.prev_q_calib = ptq_calage.get_prev_q_obs()
         self.prev_q_valid = ptq_validation.get_prev_q_obs()
         
         #--------- ROUTING WARMUP ------------------------------------
-        self.qdirect_means = np.maximum(0, self.q_means - RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.q_means))
+        self.qdirect_means = None
         #-------- RECESSION WARMUP--------------------------------------
-        self.qbase_default = RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)
+        self.qbase_default = None
         """
         self.qdirect_means = pd.Series(np.maximum(0, 
             self.ptq_calage.q - RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)))
         
         self.qdirect_means = self.qdirect_means.groupby(self.ptq_calage.dates.dt.strftime("%m-%d")).mean()
         """
-        self.direct_flow_default = pd.Series(np.maximum(0, self.ptq_calage.q-
-                                              RecessionFactory.createInstance("Chapman",*[0.925]).compute(self.ptq_calage.q)))
-        
-        debit_sim = self.direct_flow_default.where(self.ptq_calage.p != 0).dropna()
-        debit_base = (self.qbase_default.where(self.ptq_calage.p != 0)).dropna()
-        self.recession_factors = BaseFlowRoutine.regBaseFlow(debit_base,debit_sim)
+        self.direct_flow_default = None
 
-        self.output_lim = 3.5
-        self.window = 1
+        self.recession_factors = None
 
         
     
@@ -71,9 +65,13 @@ class Simulation:
         net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
 
         self.qbase_model : BaseFlow = RecessionFactory.createInstance(self.methods["recession"],*kwargs["qb"])
-        
-        """ --------------- TRANSFER ROUTINE ----------------"""
 
+
+        #-------- RECESSION WARMUP--------------------------------------
+        self.qbase_default = self.qbase_model.compute(self.ptq_calage.q)
+
+        """ --------------- TRANSFER ROUTINE ----------------"""
+        self.qdirect_means = np.maximum(0, self.q_means - self.qbase_model.compute(self.q_means))
         routing_bundle : DataSimulation = {
             "pn" : net_rainfall,
             "qbase" : self.qbase_default,

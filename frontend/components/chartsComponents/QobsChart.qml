@@ -55,6 +55,32 @@ Rectangle {
             axisX: daxisX
             axisY: vaxisY
         }
+        MouseArea {
+                   id: mouseArea
+                   anchors.fill: parent
+                   hoverEnabled: true
+
+                   onPositionChanged: (mouse) => {
+                       // conversion pixel -> valeur (x,y) du graphique
+                       let value = chartView.mapToValue(Qt.point(mouse.x, mouse.y), seriesQ)
+                       let dateX = new Date(value.x)
+                       tooltip.x = mouse.x + 15
+                       tooltip.y = mouse.y - 10
+                       tooltip.text = "x: " + Qt.formatDateTime(dateX, "yyyy-MM-dd") + ", y: " + value.y.toFixed(2)
+                       tooltip.visible = true
+                   }
+
+                   onExited: tooltip.visible = false
+               }
+
+               // Petit texte flottant qui suit la souris
+               Label {
+                   id: tooltip
+                   visible: false
+                   color: "black"
+                   font.pixelSize: 12
+                   text: ""
+               }
     }
 
     function updateCombinedChart(dates, q_series, p_series) {

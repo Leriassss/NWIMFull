@@ -5,7 +5,7 @@ import pandas as pd
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.models.SeparationModel import SeparationModel
 from backend.contracts.Bundle import DataBaseFlow
-
+from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 class QuadraticRecessionCurve(BaseFlow):
     """
     Classe pour implémenter la méthode de récession quadratique.
@@ -13,6 +13,8 @@ class QuadraticRecessionCurve(BaseFlow):
     def __init__(self,separationModel : SeparationModel):
         self.k = separationModel.k
         self.window = separationModel.window
+        self.ratio = separationModel.ratio
+        self.a, self.b = 0, 0
 
     def compute(self):
         """
@@ -54,7 +56,10 @@ class QuadraticRecessionCurve(BaseFlow):
         - cs_over_c : Ratio des coefficients (par défaut 1.1).
         """
         print(description)
-    def compute(self, data : DataBaseFlow):
+    def compute(self, flow_series):
+        return self.ratio*flow_series
+
+    def compute2(self, data : DataBaseFlow):
         """
         Estimation du débit de base par décroissance exponentielle.
         
@@ -68,13 +73,16 @@ class QuadraticRecessionCurve(BaseFlow):
         Retourne :
         - Serie de débit de base estimé
         """
-        a = data['factors'][0]
-        b = data['factors'][1]
+
         # Étape 1 : considérer les périodes sans pluie
         debit_modifie = data['qsim'].where(data["p"] != 0)
         
+        debit_sim = debit_modifie.dropna()
+        qb = (self.ratio * data['qObs']).where(data["p"] != 0).dropna()
+        self.a, self.b = BaseFlowRoutine.regBaseFlow(qb,debit_sim)
+        
         # Étape 2 : appliquer la loi a * Q^b quand c’est défini
-        debit_modifie = debit_modifie.apply(lambda q: a * q**b if pd.notna(q) else np.nan)
+        debit_modifie = debit_modifie.apply(lambda q: self.a * q**self.b if pd.notna(q) else np.nan)
         
         # Étape 3 : appliquer la décroissance exponentielle aux périodes manquantes
         debit_base = debit_modifie.copy()
@@ -99,9 +107,33 @@ class QuadraticRecessionCurve(BaseFlow):
 
     
     def calibration_routine(self,data : DataBaseFlow):
-        return self.compute(data)
+        return self.compute2(data)
     
     def validation_routine(self,data : DataBaseFlow):
-        return self.compute(data)
+        # Étape 1 : considérer les périodes sans pluie
+        debit_modifie = data['qsim'].where(data["p"] != 0)
+        # Étape 2 : appliquer la loi a * Q^b quand c’est défini
+        debit_modifie = debit_modifie.apply(lambda q: self.a * q**self.b if pd.notna(q) else np.nan)
+        
+        # Étape 3 : appliquer la décroissance exponentielle aux périodes manquantes
+        debit_base = debit_modifie.copy()
+        debit_base.iloc[0] = data['prevObs']  # initialisation
+        
+        i = 1
+        while i < len(debit_base):
+            if pd.isna(debit_base.iloc[i]):
+                q0 = debit_base.iloc[i - 1] if i == 1 else debit_base.iloc[i - 1] + data['qsim'].iloc[i-1]
+                t = 1
+                j = i
+                while j < len(debit_base) and pd.isna(debit_base.iloc[j]):
+                    debit_base.iloc[j] = q0 /((1+self.k*t)**2)
+
+                    t += 1
+                    j += 1
+                i = j
+            else:
+                i += 1
+        debit_base = debit_base.rolling(window=self.window, center=True, min_periods=1).mean()
+        return debit_base
         
 

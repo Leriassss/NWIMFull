@@ -25,7 +25,7 @@ class Muskingum(Routing):
 
         # Initialisation du tableau pour le débit simulé
         hydrogramm_muskingum = np.zeros(n)
-
+        hydrogramm_muskingum[0] =  production[0]
         # Boucle pour le calcul de la méthode Muskingum
         for t in range(1, n):
             hydrogramm_muskingum[t] = max(0,

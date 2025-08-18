@@ -50,8 +50,8 @@ class PLAModel:
     @staticmethod
     def get_default_ranges():
         return {
-            'mu': [1,10],
-            'landa': [1,10]
+            'mu': [0.9,2],
+            'landa': [1,25]
             }
     
     @staticmethod

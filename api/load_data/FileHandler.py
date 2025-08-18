@@ -26,7 +26,6 @@ class FileHandler(QObject):
         self._user_format = "yyyy-MM-dd"
         self._qInfos = {}
         self._pInfos = {}
-        self._tempInfos = {}
         self._etpInfos = {}
         self._datesInfos = {}
 
@@ -54,7 +53,6 @@ class FileHandler(QObject):
     qInfosChanged = Signal()
     pInfosChanged = Signal()
     etpInfosChanged = Signal()
-    tempInfosChanged = Signal()
     datesInfosChanged = Signal()
     displayDataChanged = Signal()
 
@@ -138,7 +136,6 @@ class FileHandler(QObject):
 
             self.qInfosChanged.emit()
             self.pInfosChanged.emit()
-            self.tempInfosChanged.emit()
             self.etpInfosChanged.emit()
             self.datesInfosChanged.emit()
             self.ptqChanged.emit()
@@ -154,7 +151,6 @@ class FileHandler(QObject):
     def updateFields(self):
         self._qInfos = self._data_manager.updateDatas("Q", self._calibration_length, self._validation_length)
         self._pInfos = self._data_manager.updateDatas("P", self._calibration_length, self._validation_length)
-        self._tempInfos = self._data_manager.updateDatas("T", self._calibration_length, self._validation_length)
         self._etpInfos = self._data_manager.updateDatas("ETP", self._calibration_length, self._validation_length)
         self._datesInfos = self._data_manager.updateDatesInfos(self._data_dict["Dates"], self._calibration_length, self._validation_length)
 
@@ -180,10 +176,6 @@ class FileHandler(QObject):
     @Property(dict, notify=pInfosChanged)
     def pInfos(self):
         return self._pInfos
-
-    @Property(dict, notify=tempInfosChanged)
-    def tempInfos(self):
-        return self._tempInfos
 
 
     @Property(dict, notify=etpInfosChanged)

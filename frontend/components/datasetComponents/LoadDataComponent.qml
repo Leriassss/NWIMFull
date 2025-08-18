@@ -107,7 +107,6 @@ Rectangle{
                 columnMapping = {
                     "Dates":datesComboBox.currentText ,
                     "P": pComboBox.currentText,
-                    "T": tComboBox.currentText,
                     "Q": qComboBox.currentText,
                     "ETP": etpComboBox.currentText
                 }
@@ -128,7 +127,7 @@ Rectangle{
                     console.log(JSON.stringify(fileHandler.errors))
                 }
                 else{
-                    populateTable(fileHandler.dataDict)
+                    //populateTable(fileHandler.dataDict)
                     fileHandler.calibrationTime()
 
                     /*dataTableModel.setData(fileHandler.dataDict)*/
@@ -182,18 +181,6 @@ Rectangle{
                     }
                     ComboBox {
                         id: pComboBox
-                        model: columnMappingDialog.headers
-                        currentIndex: 0
-                        Layout.fillWidth: true
-                    }
-
-                    // Ligne pour T
-                    Label {
-                        text: "T"
-                        Layout.alignment: Qt.AlignRight
-                    }
-                    ComboBox {
-                        id: tComboBox
                         model: columnMappingDialog.headers
                         currentIndex: 0
                         Layout.fillWidth: true
