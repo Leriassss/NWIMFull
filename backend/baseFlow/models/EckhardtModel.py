@@ -20,7 +20,7 @@ class EckhardtModel:
         """
         if not isinstance(self.alpha, (int, float)) or not (0 < self.alpha <= 1):
             raise ValueError("Le coefficient alpha doit être un nombre entre 0 et 1.")
-        if not isinstance(self.bfi_max, (int, float)) or not (0 < self.bfi_max <= 1):
+        if not isinstance(self.bfi_max, (int, float)) or not (0 < self.bfi_max < 1):
             raise ValueError("Le coefficient alpha doit être un nombre entre 0 et 1.")
 
     def to_dict(self):
@@ -53,7 +53,7 @@ class EckhardtModel:
     def get_default_ranges():
         return {
                 'alpha': [0.1,1],
-                'bfi_max' : [0.1,1]
+                'bfi_max' : [0.1,0.9]
         }
     
     @staticmethod
@@ -69,7 +69,7 @@ class EckhardtModel:
             value = float(value)  # S'assure que la valeur est un nombre
             if key == "alpha" and not (0 < value <= 1):
                 raise ValueError("Le paramètre 'alpha' doit être un nombre entre 0 et 1.")
-            if key == "bfi_max" and not (0 < value <= 1):
+            if key == "bfi_max" and not (0 < value < 1):
                 raise ValueError("Le paramètre 'alpha' doit être un nombre entre 0 et 1.")
             return True
         except Exception as e:

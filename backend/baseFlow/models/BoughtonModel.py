@@ -52,7 +52,7 @@ class BoughtonModel:
     def get_default_ranges():
         return {
             "k": [0.1,1],
-            "c": [0.5,1.1]
+            "c": [0.5,3.1]
         }
     
     @staticmethod

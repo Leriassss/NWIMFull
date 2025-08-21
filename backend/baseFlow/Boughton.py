@@ -3,7 +3,7 @@ from backend.baseFlow.models.BoughtonModel import BoughtonModel
 from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
 from backend.contracts.Bundle import DataBaseFlow
 import numpy as np
-
+import pandas as pd
 
 class Boughton(BaseFlowRoutine, BaseFlow):
     """
@@ -13,20 +13,9 @@ class Boughton(BaseFlowRoutine, BaseFlow):
         self.k = boughtonModel.k
         self.c = boughtonModel.c
 
-    def compute(self, flow_series):
-        """
-        Implémente le filtre basé sur les paramètres physiques selon la méthode de Furey-Gupta.
-        
-        Args:
-            flow_series : Série temporelle des débits [mm/jour]
-            k  : Coefficient lié au retard des eaux souterraines
-            c (float) : Ratio des coefficients (par défaut 1.1)
-            
-        Returns:
-            np.array : Série des débits de base (Qk).
-        """
-        
+    def compute(self, flow_series, previous_qbase):
         Q_base = np.zeros_like(flow_series)
+        Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
             Q_base[k] = (self.k*Q_base[k-1]/ (1+self.c)) + self.c * flow_series[k]/(1+self.c)
         return np.maximum(0, Q_base)
@@ -42,10 +31,9 @@ class Boughton(BaseFlowRoutine, BaseFlow):
         return Q_base_rev
     
     def calibration_routine(self,data : DataBaseFlow):
-        qbase = self.compute(data["qObs"])
+        qbase = self.compute(data["qObs"], data['prevObs'])
         qbase_previous = self.get_qbase_previous(data,qbase)
         qbase_rev = self.reverse_compute(qbase_previous, data['qsim'])
-        
         qbase_rev_corr = self.get_qbase_rev_corr(qbase_rev,qbase)
         return qbase_rev_corr
     

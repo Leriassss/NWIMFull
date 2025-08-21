@@ -95,10 +95,8 @@ class BaseFlowSimulation(QObject):
             parsed_dates = np.vectorize(self.check_and_convert_date)(data_dict_values["Dates"])
             data_dict_values["Dates"] = np.array([d.strftime("%Y-%m-%d") for d in parsed_dates]).tolist()
              
-
             df = pd.DataFrame(data_dict_values)
             dm_df = PTQ.daily_mean(df["Dates"],df["Q"])
-            dm_df = dm_df.where(dm_df == np.nan,0)
             expand_dm_df = PTQ.expand_flow(data_dict_values["Dates"], dm_df)
             self._df = df["Q"].fillna(expand_dm_df).tolist()
 

@@ -32,7 +32,7 @@ class ExponentialRecessionCurve(BaseFlow):
                 q_rec[start:end] = (-alpha*self.k*t)**(1/alpha)
         return q_rec    
     """
-    def compute(self, flow_series):
+    def compute(self, flow_series, prev):
         return self.ratio*flow_series
  
     def compute2(self, data : DataBaseFlow):
@@ -51,11 +51,13 @@ class ExponentialRecessionCurve(BaseFlow):
         """
 
         # Étape 1 : considérer les périodes sans pluie
-        debit_modifie = data['qsim'].where(data["p"] != 0)
-        
-        debit_sim = debit_modifie.dropna()
-        qb = (self.ratio * data['qObs']).where(data["p"] != 0).dropna()
-        self.a, self.b = BaseFlowRoutine.regBaseFlow(qb,debit_sim)
+        df2 = pd.DataFrame({
+            "dm" : data['qsim'].where(np.round(data["p"],1) != 0),
+              "qb" : (self.ratio * data['qObs']).where(np.round(data["p"],1)  != 0)
+              })
+        df = df2.dropna()
+        debit_modifie = df2["dm"]
+        self.a, self.b = BaseFlowRoutine.regBaseFlow(df["qb"], df["dm"])
         
         # Étape 2 : appliquer la loi a * Q^b quand c’est défini
         debit_modifie = debit_modifie.apply(lambda q: self.a * q**self.b if pd.notna(q) else np.nan)

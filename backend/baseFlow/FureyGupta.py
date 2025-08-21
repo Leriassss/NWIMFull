@@ -12,20 +12,9 @@ class FureyGupta(BaseFlowRoutine, BaseFlow):
         self.gamma = fureyGuptaModel.gamma
         self.cs_over_c = fureyGuptaModel.cs_over_c
 
-    def compute(self, flow_series):
-        """
-        Implémente le filtre basé sur les paramètres physiques selon la méthode de Furey-Gupta.
-        
-        Args:
-            flow_series : Série temporelle des débits [mm/jour]
-            gamma  : Coefficient lié au retard des eaux souterraines
-            cs_over_c (float) : Ratio des coefficients (par défaut 1.1)
-            
-        Returns:
-            np.array : Série des débits de base (Qk).
-        """
-        
-        Q_base = flow_series.copy()
+    def compute(self, flow_series, previous_qbase): 
+        Q_base = np.zeros_like(flow_series)
+        Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
             Q_base[k] =np.maximum(0, 
                                   (1 - self.gamma) * Q_base[k - 1] + self.gamma * (self.cs_over_c) * (flow_series[k - 1] - Q_base[k - 1])
@@ -43,7 +32,7 @@ class FureyGupta(BaseFlowRoutine, BaseFlow):
         return Q_base_rev
     
     def calibration_routine(self,data : DataBaseFlow):
-        qbase = self.compute(data["qObs"])
+        qbase = self.compute(data["qObs"], data['prevObs'])
         qbase_previous = self.get_qbase_previous(data,qbase)
         qbase_rev = self.reverse_compute(qbase_previous, data['qsim'])
         

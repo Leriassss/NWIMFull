@@ -40,29 +40,7 @@ class Regressor:
         nse_knn_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_validation)).get_metrics_by_list_names(self.Metrics)
 
         return SimulationModel(q_sim_calage, q_sim_validation, params, nse_knn_calage, nse_knn_validation), [nse_knn_calage, nse_knn_validation]
-    
-    def tuning(self, param_grid, model, models_results)  -> SimulationModel:
-        best_calibration_results, best_validation_results = self._prepare_data(models_results)
-
-        grid_search = RandomizedSearchCV(model, param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
-    
-        grid_search.fit(best_calibration_results, self.calage.q)
-
-        best_estim = grid_search.best_estimator_
-
-        return self.fitting(np.maximum(0, best_estim.predict(self.best_calibration_results)),
-                                      np.maximum(0, best_estim.predict(self.best_validation_results)),
-                                      grid_search.best_params_)
-
-    def run(self) -> SimulationModel:
-        params = svmModel.to_dict()
-        ridge_reg = SVR(**params)
-        ridge_reg.fit(self.best_calibration_results, self.regressor.calage.q)
-
-        return self.regressor.fitting(np.maximum(0, ridge_reg.predict(self.best_calibration_results)),
-                                      np.maximum(0, ridge_reg.predict(self.best_validation_results)),
-                                      params)
-    
+        
 
     def knn(self, models_results : SimulationModel):
         n = 100

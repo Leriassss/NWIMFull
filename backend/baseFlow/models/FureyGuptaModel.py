@@ -52,7 +52,7 @@ class FureyGuptaModel:
     def get_default_ranges():
         return {
             "gamma": [0.01,1],
-            "cs_over_c": [1,1.1]
+            "cs_over_c": [1,3.1]
         }
     
     @staticmethod

@@ -22,10 +22,10 @@ class DataManager:
             return dict_keys == list_keys
 
         def setDictValues(self, data, columnMapping):
-
+            """
             if int(pd.DataFrame(data).isna().sum().sum()) > 0 :
                 raise Exception("The series contains missing values !")
-
+            """
             data_dict_values = { key: data[value] for key, value in columnMapping.items() }
             if not self.check_keys_match(data_dict_values, ["Dates", "ETP", "Q", "P"]):
                 raise Exception("Data columns are missing!")

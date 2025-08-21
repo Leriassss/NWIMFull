@@ -437,7 +437,7 @@ Rectangle{
                                                             text : "MAE : "
                                                         }
                                                         Label{
-                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAPE"]
                                                             width: parent.labWidth
                                                         }
                                                         Label{
@@ -570,7 +570,7 @@ Rectangle{
                                                             text : "MAE : "
                                                         }
                                                         Label{
-                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAPE"]
                                                             width: parent.labWidth
                                                         }
                                                         Label{

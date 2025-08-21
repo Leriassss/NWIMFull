@@ -157,6 +157,7 @@ class ManualCalibration(QObject):
         print("step 4 - MC ", datetime.datetime.now())
         self._sim_finished = True
         print("------------------------- SIM (MC)---------------")
+        print("self.sim criteria : ", self._sim["CRITERIA"])
         self.simChanged.emit()
         print("step 5 - MC ", datetime.datetime.now())
 

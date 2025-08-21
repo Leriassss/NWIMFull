@@ -2,7 +2,7 @@ from backend.regressor.KNN import KNN, KNNModel
 from backend.regressor.RandomForest import RandomForest, RandomForestModel
 from backend.regressor.RidgeRegression import RidgeRegression, RidgeRegressionModel
 from backend.regressor.SVM import SVM, SVMModel
-#from backend.regressor.XGBoost import XGBoost, XGBoostModel
+from backend.regressor.XGBoost import XGBoost, XGBoostModel
 
 
 class MLFactory:
@@ -11,7 +11,7 @@ class MLFactory:
         "Ridge": [RidgeRegression, RidgeRegressionModel],
         "KNN": [KNN, KNNModel],
         "Random Forest": [RandomForest, RandomForestModel],
-        #"XGBoost" : [XGBoost, XGBoostModel]
+        "XGBoost" : [XGBoost, XGBoostModel]
     }
 
     """

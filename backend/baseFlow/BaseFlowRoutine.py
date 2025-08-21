@@ -1,6 +1,7 @@
 
 from scipy.optimize import curve_fit
-
+import numpy as np
+import pandas as pd
 from backend.contracts.Bundle import DataBaseFlow
 class BaseFlowRoutine:
     """
@@ -27,22 +28,32 @@ class BaseFlowRoutine:
         
     @staticmethod
     def regBaseFlow(Q_base, Q_obs):
+
         params_opt, _ = curve_fit(BaseFlowRoutine.modele_baseflow, Q_obs, Q_base, p0=[1, 1], maxfev=10000)
         return params_opt
 
 
     def get_qbase_previous(self,data : DataBaseFlow, qbase):
         qobs = data["qObs"] 
+        
+        df = pd.DataFrame({
+            "qbase" : qbase,
+            "qobs" : qobs
+        }).dropna()
 
         #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
-        self.a,self.b  = self.regBaseFlow(qbase , qobs)
+        self.a,self.b  = self.regBaseFlow(df["qbase"], df["qobs"] )
 
         #DETERMINATION DU DEBIT DE BASE PRECEDENT
         q_base_previous = self.modele_baseflow(data["prevObs"], self.a, self.b)
-        
         return q_base_previous
     
     def get_qbase_rev_corr(self, qbase_rev, qbase):
-        self.correc_factor = self.correction_factor(qbase_rev, qbase)
-        qbase_rev_corr =  self.correc_factor * qbase_rev
+        df = pd.DataFrame({
+            "qbase_rev" : qbase_rev,
+            "qbase" : qbase
+        })
+        df2 = df.dropna()
+        self.correc_factor = self.correction_factor(df2["qbase_rev"], df2["qbase"])
+        qbase_rev_corr =  self.correc_factor * df["qbase_rev"]
         return qbase_rev_corr

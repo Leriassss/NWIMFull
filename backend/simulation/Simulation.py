@@ -64,20 +64,18 @@ class Simulation:
         }
         net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
 
+        net_rainfall = np.nan_to_num(net_rainfall)
+
         self.qbase_model : BaseFlow = RecessionFactory.createInstance(self.methods["recession"],*kwargs["qb"])
 
 
         #-------- RECESSION WARMUP--------------------------------------
-        self.qbase_default = self.qbase_model.compute(self.ptq_calage.q)
+        #self.qbase_default = self.qbase_model.compute(self.ptq_calage.q)
 
         """ --------------- TRANSFER ROUTINE ----------------"""
-        self.qdirect_means = np.maximum(0, self.q_means - self.qbase_model.compute(self.q_means))
+        self.qdirect_means = np.maximum(0, self.q_means - self.qbase_model.compute(self.q_means, self.prev_q_calib))
         routing_bundle : DataSimulation = {
             "pn" : net_rainfall,
-            "qbase" : self.qbase_default,
-            "qobs" : self.ptq_calage.q,
-            "p" : self.ptq_calage.p,
-            "dates" : self.ptq_calage.dates,
             "qdirect_means": self.ptq_calage.expand_flow(self.ptq_calage.dates,self.qdirect_means)
         }
 
@@ -88,19 +86,22 @@ class Simulation:
         """ --------------- BASE FLOW ROUTINE ----------------"""
 
         baseflow_bundle : DataBaseFlow = {
-            "p" : self.ptq_calage.p,
             "qObs" : self.ptq_calage.q,
             "qsim" : pd.Series(qsim),
             "prevObs" : self.prev_q_calib,
-            "factors" : self.recession_factors
+            "p" : self.ptq_calage.p
         }
 
 
         qbase_rev_corr = self.qbase_model.calibration_routine(baseflow_bundle)
-
+        #raise ValueError("len(qbase_rev_corr) : ",len(qbase_rev_corr), "len(qsim) ", len(qsim))
+        print("qsim_total ------------------------ :", len(qsim))
+        print("qbase_rev_corr *****************************************:", len(qbase_rev_corr))
         qsim_total = qsim+qbase_rev_corr
+
         
-        evaluator = RegressionMetric((np.array(self.ptq_calage.q) + 1e-10) , (np.array(qsim_total) + 1e-10))
+        q = pd.DataFrame({"obs" : self.ptq_calage.q,"sim" : qsim_total}).dropna()
+        evaluator = RegressionMetric((np.array(q["obs"]) + 1e-10) , (np.array(q["sim"]) + 1e-10))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
         #◘plt.plot(qsim_total, "r")
@@ -117,11 +118,10 @@ class Simulation:
             "etp" : self.ptq_validation.etp
         }
         net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
-        
+        net_rainfall = np.nan_to_num(net_rainfall)
 
         datas_bundle : DataSimulation = {
             "pn" : net_rainfall,
-            "dates" : self.ptq_validation.dates,
             "qdirect_means": self.ptq_validation.expand_flow(self.ptq_validation.dates,self.qdirect_means)
         }
         qsim = self.routing_model.validation(datas_bundle)
@@ -130,15 +130,15 @@ class Simulation:
             "p" : self.ptq_validation.p,
             "qbase" : pd.Series(),
             "qsim" : pd.Series(qsim),
-            "prevObs" : self.prev_q_valid,
-            "factors" : self.recession_factors
+            "prevObs" : self.prev_q_valid
         }
 
 
         qbase_rev_corr = pd.Series(self.qbase_model.validation_routine(baseflow_bundle))
         qsim_total = qsim + qbase_rev_corr
+        q = pd.DataFrame({"obs" : self.ptq_validation.q,"sim" : qsim_total}).dropna()
+        evaluator = RegressionMetric((np.array(q["obs"]) + 1e-10) , (np.array(q["sim"]) + 1e-10))
 
-        evaluator = RegressionMetric((np.array(self.ptq_validation.q) + 1e-10), (np.array(qsim_total)+ 1e-10))
         results = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
         plt.plot(qsim_total, "r")

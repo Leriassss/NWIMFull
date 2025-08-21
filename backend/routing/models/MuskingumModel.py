@@ -3,7 +3,7 @@ class MuskingumModel:
     Modèle de données pour valider les paramètres nécessaires à la méthode Muskingum.
     """
 
-    def __init__(self, K, x, dt):
+    def __init__(self, K, x):
         """
         Initialise et valide les données pour la méthode Muskingum.
 
@@ -13,7 +13,6 @@ class MuskingumModel:
         """
         self.K = float(K)
         self.x = float(x)
-        self.dt = float(dt)
         self.validate()
 
     def validate(self):
@@ -28,8 +27,6 @@ class MuskingumModel:
             raise ValueError("Le paramètre 'x' doit être compris entre 0 et 0.5.")
         if self.K <= 0:
             raise ValueError("Le paramètre 'K' doit être strictement positif.")
-        if self.dt <= 0:
-            raise ValueError("Le paramètre 'dt' doit être strictement positif.")
 
     def to_dict(self):
         """
@@ -39,8 +36,7 @@ class MuskingumModel:
         """
         return {
             'K': self.K,
-            'x': self.x,
-            'dt': self.dt
+            'x': self.x
         }
 
     @staticmethod
@@ -52,24 +48,21 @@ class MuskingumModel:
         """
         return {
             "K": "K",
-            "x": "x",
-            "dt": "dt"
+            "x": "x"
         }
 
     @staticmethod
     def get_default_values():
         return {
-            "K": 10,
-            "x": 0.27,
-            "dt": 1
+            "K": 5,
+            "x": 0.27
     }
 
     @staticmethod
     def get_default_ranges():
         return {
-            "K": [1,10],
-            "x": [0,0.5],
-            "dt": [1,1.1]
+            "K": [5,10],
+            "x": [0.1,0.5]
             }
     
     @staticmethod
@@ -87,8 +80,6 @@ class MuskingumModel:
                 raise ValueError("Le paramètre 'x' doit être compris entre 0 et 0.5.")
             elif key == "K" and value <= 0:
                 raise ValueError("Le paramètre 'K' doit être strictement positif.")
-            elif key == "dt" and value <= 0:
-                raise ValueError("Le paramètre 'dt' doit être strictement positif.")
             return True
         except Exception as e:
             return str(e)

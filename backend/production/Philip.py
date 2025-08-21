@@ -25,32 +25,15 @@ class Philip(Production):
         :return: Série pandas du ruissellement.
         """
         prec = self.initial_loss
-        S = float(self._data_model.S)
         K = float(self._data_model.K)
 
         # Calcul de l'infiltration selon le modèle de Philip
-        infiltration_philip =  S + K
+        infiltration_philip =  K
 
         # Calcul du ruissellement
         ruissellement = np.maximum(0, prec - infiltration_philip)
         return ruissellement
 
-    def compute_hour(self):
-        """
-        Calcule l'infiltration et le ruissellement basé sur la méthode Philip.
-
-        :return: Série pandas du ruissellement.
-        """
-        prec = self.initial_loss
-        S = self._data_model.S
-        K = self._data_model.K
-
-        # Calcul de l'infiltration selon le modèle de Philip
-        infiltration_philip = np.power(prec.index + 1, -1 / 2) * S + K
-
-        # Calcul du ruissellement
-        ruissellement = np.maximum(0, prec - infiltration_philip)
-        return ruissellement
     @classmethod
     def help(cls):
         """

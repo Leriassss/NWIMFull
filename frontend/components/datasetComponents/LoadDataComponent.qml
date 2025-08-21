@@ -40,7 +40,24 @@ Rectangle{
         }
 
     }
-
+    Dialog {
+        id: errorDialog
+        title: "Errors"
+        standardButtons: Dialog.Ok
+        property string errorText: ""
+        Label {
+            text: errorDialog.errorText
+        }
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        modal: true
+        background: Rectangle{
+            anchors.fill:parent
+            border.color: "red"
+            color: "#f0f0f0"
+            border.width: 1
+        }
+    }
     CalendarDialog{
         id : chooseDatePopup
         width: 350
@@ -68,12 +85,15 @@ Rectangle{
     }
 
     Dialog {
-        id: errorDialog
-        title: "Erreur"
+        id: warningDialog
+        title: "Warnings"
         standardButtons: Dialog.Ok
+        modal: true
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
         property string text: ""
         Label {
-            text: errorDialog.text
+            text: warningDialog.text
         }
     }
 
@@ -127,8 +147,18 @@ Rectangle{
                     console.log(JSON.stringify(fileHandler.errors))
                 }
                 else{
+                    let qNaN = fileHandler.dataDict["Q"].some(Number.isNaN)
+                    let pNaN = fileHandler.dataDict["P"].some(Number.isNaN)
+                    let et0NaN = fileHandler.dataDict["ETP"].some(Number.isNaN)
+                    if( qNaN || pNaN ||et0NaN){
+                        warningDialog.text = "Missing values detected in : \n" +
+                                (qNaN ? "Q Series (Ignored for Prediction) " : "\n") + (pNaN ? "Rainfall Series " : " \n") + (et0NaN ? "PET Series " : " \n")
+                        columnMappingDialog.close()
+                        warningDialog.open()
+                    }
+
                     //populateTable(fileHandler.dataDict)
-                    fileHandler.calibrationTime()
+                    //fileHandler.calibrationTime()
 
                     /*dataTableModel.setData(fileHandler.dataDict)*/
                     //tableView.appendRow(fileHandler.displayData)

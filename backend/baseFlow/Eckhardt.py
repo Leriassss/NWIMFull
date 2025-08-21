@@ -15,18 +15,9 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
 
         self.a,self.b,self.correc_factor = 0, 0, 0
 
-    def compute(self,flow_series):
-        """
-        Implémente la méthode de séparation des écoulements selon la méthode de Chapman.
-        
-        Args:
-            flow_series : Série temporelle des débits de rivières (Yk).
-            alpha (float) : Coefficient alpha (par défaut 0.925).
-            
-        Returns:
-            np.array : Série des débits de base (Qk).
-        """
-        Q_base = flow_series.copy()
+    def compute(self,flow_series, previous_qbase):
+        Q_base = np.zeros_like(flow_series)
+        Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
             Q_base[k] = ((1-self.bfi_max) * self.alpha* Q_base[k-1] + 
                     (1-self.alpha)*self.bfi_max*flow_series[k])/(1-(self.alpha*self.bfi_max))
@@ -44,7 +35,7 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
         return Q_base_rev
 
     def calibration_routine(self,data : DataBaseFlow):
-        qbase = self.compute(data["qObs"])
+        qbase = self.compute(data["qObs"], data['prevObs'])
         qbase_previous = self.get_qbase_previous(data,qbase)
         qbase_rev = self.reverse_compute(qbase_previous, data['qsim'])
         

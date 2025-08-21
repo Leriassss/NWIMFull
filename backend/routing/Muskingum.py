@@ -15,7 +15,7 @@ class Muskingum(Routing):
         production = datas["pn"]
         K = self.muskingumModel.K
         x = self.muskingumModel.x
-        dt = self.muskingumModel.dt
+        dt = 1
         n = len(production)
 
         # Calcul des coefficients
@@ -41,7 +41,7 @@ class Muskingum(Routing):
         production = datas["pn"]
         K = self.muskingumModel.K
         x = self.muskingumModel.x
-        dt = self.muskingumModel.dt
+        dt = 1
         n = len(production)
 
         # Calcul des coefficients

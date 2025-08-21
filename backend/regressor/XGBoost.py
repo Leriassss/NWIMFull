@@ -4,7 +4,7 @@ from backend.regressor.MachineLearning import MachineLearning
 from backend.regressor.Regressor import Regressor
 from backend.regressor.models.XGBoostModel import XGBoostModel
 from backend.simulation.models.SimulationModel import SimulationModel
-import xgboost.XGBRegressor as XGBRegressor
+import xgboost as xgb
 from sklearn.model_selection import RandomizedSearchCV
 
 class XGBoost(MachineLearning):
@@ -22,7 +22,7 @@ class XGBoost(MachineLearning):
             'lambda': [0, 0.01, 0.05, 0.1, 0.5, 1]
         }
 
-        grid_search = RandomizedSearchCV(XGBRegressor(), parameters_grid, n_iter = 500, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1, random_state = 123)
+        grid_search = RandomizedSearchCV(xgb.XGBRegressor(), parameters_grid, n_iter = 500, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1, random_state = 123)
     
         grid_search.fit(self.best_calibration_results, self.regressor.calage.q)
 
@@ -34,7 +34,7 @@ class XGBoost(MachineLearning):
 
     def run(self, xgbModel : XGBoostModel) -> SimulationModel:
         params = xgbModel.to_dict()
-        ridge_reg = XGBRegressor(**params)
+        ridge_reg = xgb.XGBRegressor(**params)
         ridge_reg.fit(self.best_calibration_results, self.regressor.calage.q)
 
         return self.regressor.fitting(np.maximum(0, ridge_reg.predict(self.best_calibration_results)),

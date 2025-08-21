@@ -3,7 +3,7 @@ class PhilipModel:
     Modèle de données pour valider les paramètres nécessaires à la méthode Philip.
     """
 
-    def __init__(self, S: float, K: float):
+    def __init__(self, K: float):
         """
         Initialise et valide les données pour la méthode Philip.
 
@@ -11,7 +11,6 @@ class PhilipModel:
         :param S: Paramètre d'absorption (positif).
         :param K: Conductivité hydraulique (positif).
         """
-        self.S = float(S)
         self.K = float(K)
         self.validate()
 
@@ -20,9 +19,7 @@ class PhilipModel:
         Valide les paramètres du modèle.
         """
         try:
-            if self.S  <= 0:
-                raise ValueError("Le paramètre 'S' doit être strictement positif.")
-            elif self.K <= 0:
+            if self.K <= 0:
                 raise ValueError("Le paramètre 'K' doit être strictement positif.")
             return True  # Si aucune erreur, le paramètre est valide
         except Exception as e:
@@ -30,28 +27,24 @@ class PhilipModel:
 
     def to_dict(self):
         return {
-                'S': self.S,
                 "K" : self.K
             }
 
     @staticmethod
     def get_parameter_names():
             return {
-                'S': "S",
                 "K" : "K"
         }
 
     @staticmethod
     def get_default_ranges():
         return {
-                'S': [1,10],
                 "K" : [1,10]
         }
     
     @staticmethod
     def get_default_values():
         return {
-                'S': 10,
                 "K" : 10
             }
 
@@ -66,9 +59,7 @@ class PhilipModel:
         """
         try:
             value = float(value)  # S'assure que la valeur est un nombre
-            if key == "S" and value <= 0:
-                raise ValueError("Le paramètre 'S' doit être strictement positif.")
-            elif key == "K" and value <= 0:
+            if key == "K" and value <= 0:
                 raise ValueError("Le paramètre 'K' doit être strictement positif.")
             return True  # Si aucune erreur, le paramètre est valide
         except Exception as e:

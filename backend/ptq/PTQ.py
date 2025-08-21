@@ -34,6 +34,7 @@ class PTQ:
             val_after = merged.loc[idx + 1, "Q_obs"]
             # On remplace le NaN du 29 février par leur moyenne
             merged.loc[idx, "Q_obs"] = np.nanmean([val_before, val_after])
+            merged["Q_obs"] = merged["Q_obs"].fillna(0)
 
         return merged["Q_obs"]
 
