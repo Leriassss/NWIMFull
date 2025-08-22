@@ -40,6 +40,12 @@ class BaseFlowRoutine:
             "qbase" : qbase,
             "qobs" : qobs
         }).dropna()
+        """
+        raise Exception("na qobs : ", pd.Series(qobs).isna().sum(),
+                        " na qbase : ", pd.Series(qbase).isna().sum(),
+            "len(df[qbase]) : ", len(df["qbase"]),
+                         " len(df[qbase]) : ",  len(df["qobs"]))        
+        """
 
         #FITTING DES COEFFICIENTS POUR LA RELATION QBASE-QOBS
         self.a,self.b  = self.regBaseFlow(df["qbase"], df["qobs"] )

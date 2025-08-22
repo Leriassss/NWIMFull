@@ -16,10 +16,10 @@ class RecessionFactory:
         "Quadratic": [QuadraticRecessionCurve, SeparationModel],
         "Exponential": [ExponentialRecessionCurve, SeparationModel],
         "Eckhardt" : [Eckhardt, EckhardtModel],
-        "ChapmanMaxwell" : [ChapmanMaxwell, ChapmanMawxellModel],
+        #"ChapmanMaxwell" : [ChapmanMaxwell, ChapmanMawxellModel],
         "Boughton" : [Boughton, BoughtonModel],
-        "LyneHollick" : [LyneHollick, LyneHollickModel],
-        "NathanMcMahon" : [NathanMcMahon, NathanMcMahonModel]
+        #"LyneHollick" : [LyneHollick, LyneHollickModel],
+        #"NathanMcMahon" : [NathanMcMahon, NathanMcMahonModel]
     }
 
     """

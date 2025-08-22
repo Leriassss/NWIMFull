@@ -24,10 +24,12 @@ Dialog{
         "calibration": ["1985-01-01", "1996-12-31"],
         "validation": ["2001-01-01", "2006-12-31"]
     } // Atcherigbe*/
+
     /*property var user_calibration: {
-        "calibration": ["1995-01-01", "2006-12-31"],
-        "validation": ["2007-01-01", "2011-12-31"]
-    }*/
+        "calibration": ["1994-01-01", "2006-12-31"],
+        "validation": ["2007-01-01", "2010-12-31"]
+    } //kaboua*/
+
     /*property var user_calibration: {
             "calibration": ["1996-01-01", "2005-12-31"],
             "validation": ["2010-01-01", "2015-12-31"]
@@ -36,10 +38,14 @@ Dialog{
             "calibration": ["1987-01-01", "1999-12-31"],
             "validation": ["2000-01-01", "2005-12-31"]
         } //Bonou*/
-    property var user_calibration: {
+    /*property var user_calibration: {
             "calibration": ["1994-01-01", "2006-12-31"],
             "validation": ["2007-01-01", "2012-12-31"]
-        } //Dome
+        } //Dome*/
+    /*property var user_calibration: {
+            "calibration": ["1988-01-01", "2005-12-31"],
+            "validation": ["2009-01-01", "2019-12-31"]
+        } //Banankoro*/
     Row {
         width: parent.width
         height: parent.height

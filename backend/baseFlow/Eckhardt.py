@@ -19,8 +19,8 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
         Q_base = np.zeros_like(flow_series)
         Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
-            Q_base[k] = ((1-self.bfi_max) * self.alpha* Q_base[k-1] + 
-                    (1-self.alpha)*self.bfi_max*flow_series[k])/(1-(self.alpha*self.bfi_max))
+            Q_base[k] = np.fmax(0,((1-self.bfi_max) * self.alpha* Q_base[k-1] + 
+                    (1-self.alpha)*self.bfi_max*flow_series[k])/(1-(self.alpha*self.bfi_max)))
 
         return np.maximum(0,Q_base)
 

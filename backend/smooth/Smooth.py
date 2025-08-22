@@ -2,15 +2,15 @@ import pandas as pd
 import numpy as np
 
 class Smooth:
-    def laminage(self, o_l, a, index):
-        c = a.copy()
+    def laminage(self, o_l, qsim, index):
+        c = qsim.copy()
         excess = a[index] - o_l
         c[index] = o_l
         i = index
         while excess > 0 and i < len(c):
             a = c[i]
             c[i] = np.minimum(o_l, a + excess)
-            excess = a + excess - o_l
+            excess = np.fmax(0,a + excess - o_l)
             i += 1
         return c
     

@@ -152,7 +152,9 @@ Rectangle{
                     let et0NaN = fileHandler.dataDict["ETP"].some(Number.isNaN)
                     if( qNaN || pNaN ||et0NaN){
                         warningDialog.text = "Missing values detected in : \n" +
-                                (qNaN ? "Q Series (Ignored for Prediction) " : "\n") + (pNaN ? "Rainfall Series " : " \n") + (et0NaN ? "PET Series " : " \n")
+                                (qNaN ? "Q Series (Ignored for Prediction) " : "\n") +
+                                (pNaN ? "Rainfall Series " : " \n") +
+                                (et0NaN ? "PET Series " : " \n")
                         columnMappingDialog.close()
                         warningDialog.open()
                     }
@@ -163,11 +165,11 @@ Rectangle{
                     /*dataTableModel.setData(fileHandler.dataDict)*/
                     //tableView.appendRow(fileHandler.displayData)
                     //transformData(fileHandler.dataDict)
-                    let data_dates = fileHandler.dataDict["Dates"]
+                    //let data_dates = fileHandler.dataDict["Dates"]
                     //tempChart.updateChart(data_dates,fileHandler.dataDict["T"])
-                    qchart.updateCombinedChart(data_dates,fileHandler.dataDict["Q"], fileHandler.dataDict["P"])
+                    //qchart.updateCombinedChart(data_dates,fileHandler.dataDict["Q"], fileHandler.dataDict["P"])
                     //rainChart.updateChart(data_dates,fileHandler.dataDict["P"])
-                    etpChart.updateCombinedChart(data_dates,fileHandler.dataDict["ETP"],fileHandler.dataDict["P"])
+                    //etpChart.updateCombinedChart(data_dates,fileHandler.dataDict["ETP"],fileHandler.dataDict["P"])
                     columnMappingDialog.close()
                     chooseDatePopup.open()
 

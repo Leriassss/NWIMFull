@@ -232,8 +232,13 @@ class ManualCalibration(QObject):
                     "CALIBRATION" : sim["SIM"]["CALIBRATION"],
                     "VALIDATION" : sim["SIM"]["VALIDATION"]
                 }
-        evaluator_calib = RegressionMetric(np.array(sim["OBS"]["CALIBRATION"]), np.array(self._smoothness["CALIBRATION"]))
-        evaluator_valid = RegressionMetric(np.array(sim["OBS"]["VALIDATION"]), np.array(self._smoothness["VALIDATION"]))
+        q_calib = pd.DataFrame({"obs" : sim["OBS"]["CALIBRATION"],
+                            "sim" : self._smoothness["CALIBRATION"]}).dropna()
+        q_valid = pd.DataFrame({"obs" : sim["OBS"]["VALIDATION"],
+                            "sim" : self._smoothness["VALIDATION"]}).dropna()
+
+        evaluator_calib = RegressionMetric(1e-10+np.array(q_calib["obs"]),1e-10+np.array(q_calib["sim"]))
+        evaluator_valid = RegressionMetric(1e-10+np.array(q_valid["obs"]),1e-10+np.array(q_valid["sim"]))
 
         calibration_metric = evaluator_calib.get_metrics_by_list_names(["NSE", "KGE", "RMSE", "MAE", "MAPE", "R2"])
         validation_metric = evaluator_valid.get_metrics_by_list_names(["NSE", "KGE", "RMSE", "MAE", "MAPE", "R2"])

@@ -16,9 +16,9 @@ class FureyGupta(BaseFlowRoutine, BaseFlow):
         Q_base = np.zeros_like(flow_series)
         Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
-            Q_base[k] =np.maximum(0, 
+            Q_base[k] = np.fmax(0,np.maximum(0, 
                                   (1 - self.gamma) * Q_base[k - 1] + self.gamma * (self.cs_over_c) * (flow_series[k - 1] - Q_base[k - 1])
-                                  ) 
+                                  )) 
         return Q_base
     
 

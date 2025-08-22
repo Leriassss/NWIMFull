@@ -35,9 +35,9 @@ class Regressor:
 
     def fitting(self, q_sim_calage, q_sim_validation, params):
 
-        nse_knn_calage = RegressionMetric(np.array(self.calage.q),np.array(q_sim_calage)).get_metrics_by_list_names(self.Metrics)
+        nse_knn_calage = RegressionMetric(1e-10+np.array(self.calage.q),1e-10+np.array(q_sim_calage)).get_metrics_by_list_names(self.Metrics)
 
-        nse_knn_validation = RegressionMetric(np.array(self.validation.q),np.array(q_sim_validation)).get_metrics_by_list_names(self.Metrics)
+        nse_knn_validation = RegressionMetric(1e-10+np.array(self.validation.q),1e-10+np.array(q_sim_validation)).get_metrics_by_list_names(self.Metrics)
 
         return SimulationModel(q_sim_calage, q_sim_validation, params, nse_knn_calage, nse_knn_validation), [nse_knn_calage, nse_knn_validation]
         

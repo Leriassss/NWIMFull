@@ -95,8 +95,6 @@ class Simulation:
 
         qbase_rev_corr = self.qbase_model.calibration_routine(baseflow_bundle)
         #raise ValueError("len(qbase_rev_corr) : ",len(qbase_rev_corr), "len(qsim) ", len(qsim))
-        print("qsim_total ------------------------ :", len(qsim))
-        print("qbase_rev_corr *****************************************:", len(qbase_rev_corr))
         qsim_total = qsim+qbase_rev_corr
 
         

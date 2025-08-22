@@ -419,8 +419,11 @@ Rectangle{
                                                     property real labWidth: 40
                                                         //spacing: 5
                                                         Text{
-                                                            text: "NSE : "
-
+                                                            text:{
+                                                             console.log("manualCalibration.simulationValues : ",
+                                                                         JSON.stringify(manualCalibration.simulationValues["CRITERIA"]))
+                                                                "NSE : "
+                                                            }
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
@@ -437,7 +440,7 @@ Rectangle{
                                                             text : "MAE : "
                                                         }
                                                         Label{
-                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAPE"]
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
                                                             width: parent.labWidth
                                                         }
                                                         Label{
@@ -570,7 +573,7 @@ Rectangle{
                                                             text : "MAE : "
                                                         }
                                                         Label{
-                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAPE"]
+                                                            text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
                                                             width: parent.labWidth
                                                         }
                                                         Label{
@@ -725,6 +728,7 @@ Rectangle{
         let rolling = slideRolling.enabled ? parseInt(slideRolling.value) : 0
         let smoothing = slideSmoothing.enabled ? parseFloat(slideSmoothing.value) : 0
         manualCalibration.smoothness(manualCalibration.simulationValues, smoothing, rolling)
+
         let dates = manualCalibration.simulationValues["DATES"]
         let q_sim = manualCalibration.smoothnessValues
 

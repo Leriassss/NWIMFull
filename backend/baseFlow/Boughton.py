@@ -17,7 +17,7 @@ class Boughton(BaseFlowRoutine, BaseFlow):
         Q_base = np.zeros_like(flow_series)
         Q_base[0] = previous_qbase
         for k in range(1, len(flow_series)):
-            Q_base[k] = (self.k*Q_base[k-1]/ (1+self.c)) + self.c * flow_series[k]/(1+self.c)
+            Q_base[k] =  np.fmax(0,(self.k*Q_base[k-1]/ (1+self.c)) + self.c * flow_series[k]/(1+self.c))
         return np.maximum(0, Q_base)
     
 
