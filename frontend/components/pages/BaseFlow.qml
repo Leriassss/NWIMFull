@@ -12,7 +12,7 @@ import "../customComponents"
 import io.qml
 Dialog{
 
-    title: "DATA"
+    title: "BASEFLOW"
     implicitWidth:  1300
     implicitHeight: 700
     modal: true

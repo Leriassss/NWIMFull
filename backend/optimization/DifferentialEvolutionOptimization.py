@@ -42,7 +42,9 @@ class DifferentialEvolutionOptimization:
         }
         criteria_method =  self.simulation.crit
         qsim = self.simulation.manual_calibration(args)
-        criteria_value = self.simulation.calibration_metric[self.simulation.crit]
+        #criteria_value = self.simulation.calibration_metric[self.simulation.crit]
+
+        criteria_value = self.simulation.calibration_metric["NSE"]*0.3 + self.simulation.calibration_metric["KGE"]*0.7
         return -criteria_value
 
     def get_qsim_calibration(self, ga_variable):

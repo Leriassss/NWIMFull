@@ -81,13 +81,13 @@ class Simulation:
 
         self.routing_model : Routing = RoutingFactory.createInstance(self.methods["routing"],self.kwargs["sim"])
         
-        qsim = self.routing_model.calage(routing_bundle)
+        qsim = pd.Series(self.routing_model.calage(routing_bundle))
 
         """ --------------- BASE FLOW ROUTINE ----------------"""
 
         baseflow_bundle : DataBaseFlow = {
             "qObs" : self.ptq_calage.q,
-            "qsim" : pd.Series(qsim),
+            "qsim" : qsim,
             "prevObs" : self.prev_q_calib,
             "p" : self.ptq_calage.p
         }
@@ -139,6 +139,6 @@ class Simulation:
 
         results = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
-        plt.plot(qsim_total, "r")
-        plt.plot(self.ptq_validation.q, "b")
+        #plt.plot(qsim_total, "r")
+        #plt.plot(self.ptq_validation.q, "b")
         return results, qsim_total

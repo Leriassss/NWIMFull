@@ -16,6 +16,7 @@ Rectangle{
     border.color: "#ebebeb"
     border.width: 1
     clip: true
+    property string stationName
     property var parameter_bundle: {
         "pn":production_params.parameters,
         "qb":recession_params.parameters,
@@ -119,10 +120,6 @@ Rectangle{
                             height: parent.height
                         }*/
                     }
-
-
-
-
                     Rectangle{
                         width: parent.width*0.9
                         height: 1
@@ -660,7 +657,7 @@ Rectangle{
                             Layout.preferredHeight: parent.height
                             step: 0.5
                             from: 0
-                            to: 100
+                            to: 25
                             text: "Smoothing"
                             anchors.verticalCenter:  parent.verticalCenter
                             onReleasedAfterPressed: {

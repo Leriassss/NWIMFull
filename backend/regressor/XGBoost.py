@@ -24,7 +24,7 @@ class XGBoost(MachineLearning):
 
         grid_search = RandomizedSearchCV(xgb.XGBRegressor(), parameters_grid, n_iter = 500, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1, random_state = 123)
     
-        grid_search.fit(self.best_calibration_results, self.regressor.calage.q)
+        grid_search.fit(self.best_calibration_results, self.regressor.calage)
 
         best_rr = grid_search.best_estimator_
 
@@ -35,7 +35,7 @@ class XGBoost(MachineLearning):
     def run(self, xgbModel : XGBoostModel) -> SimulationModel:
         params = xgbModel.to_dict()
         ridge_reg = xgb.XGBRegressor(**params)
-        ridge_reg.fit(self.best_calibration_results, self.regressor.calage.q)
+        ridge_reg.fit(self.best_calibration_results, self.regressor.calage)
 
         return self.regressor.fitting(np.maximum(0, ridge_reg.predict(self.best_calibration_results)),
                                       np.maximum(0, ridge_reg.predict(self.best_validation_results)),

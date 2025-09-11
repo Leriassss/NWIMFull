@@ -67,7 +67,7 @@ Dialog {
                         }
 
                         console.log("--------- OPTIMIZE -----------------")
-                        automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,fileHandler.ptq)
+                        automaticCalibration.setParameters(dialogOptim.parameters_bundle, dialogOptim.optimization_bundle,metricsComboBox.currentValue, fileHandler.ptq)
                     }
                 }
             }
@@ -189,47 +189,6 @@ Dialog {
                         color : "#bae7fe"
                     }
                 }
-
-                CustomCheckDelegate{
-                    id : setGoal
-                    checked: true
-                    text: "Set Goal"
-                    font.bold: true
-                }
-
-                Rectangle{
-                    enabled: setGoal.checked ? true : false
-                    height: 70
-                    width: parent.width *0.5
-                    radius: 5
-                    anchors.left:  parent.left
-                    color: "#fcffff"
-                    border.color: "#ebebeb"
-                    border.width: 1
-                    Grid{
-                        leftPadding:10
-                        columns: 2
-                        rowSpacing: 10
-                        columnSpacing: 10
-                        Label{
-                            text: "Nb iterations "
-                        }
-                        CustomTextField{
-                            id : nbIter
-                            width : 75
-                            bottomPadding: 5
-                        }
-                        Label{
-                            text: "Target "
-                        }
-                        CustomTextField{
-                            id : target
-                            width : 75
-                        }
-
-                    }
-                }
-
 
                 Row{
                     spacing: 5

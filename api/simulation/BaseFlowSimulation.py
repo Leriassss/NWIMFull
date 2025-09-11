@@ -22,6 +22,7 @@ class BaseFlowSimulation(QObject):
         self._errors = []
         self._baseflow = {"Dates": None, "Baseflow" : None}
         self._activated = False
+        self._prev_qobs = 0
 
     headersChanged = Signal(list)
     dataChanged = Signal(list)
@@ -100,6 +101,11 @@ class BaseFlowSimulation(QObject):
             expand_dm_df = PTQ.expand_flow(data_dict_values["Dates"], dm_df)
             self._df = df["Q"].fillna(expand_dm_df).tolist()
 
+            date = pd.to_datetime(df["Dates"][0])
+            prev_day = date - pd.Timedelta(days=1)
+            jour_annee = prev_day.dayofyear
+            self._prev_qobs = self._df[jour_annee-1]
+
         except Exception as e:
             self._errors = e.args[0].split(";")
             return
@@ -120,7 +126,7 @@ class BaseFlowSimulation(QObject):
         prametersValues =  params_dict['parameterValues']
         currentMethod = params_dict["currentMethod"]
 
-        self._baseflow["Baseflow"] = RecessionFactory.createInstance(currentMethod,*prametersValues).compute(np.array(self._df)).tolist()
+        self._baseflow["Baseflow"] = RecessionFactory.createInstance(currentMethod,*prametersValues).compute(np.array(self._df),self._prev_qobs).tolist()
         self.baseflowChanged.emit()
 
     @Slot(str)

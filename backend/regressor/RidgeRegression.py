@@ -15,12 +15,12 @@ class RidgeRegression(MachineLearning):
     def tuning(self)  -> SimulationModel:
         
         param_grid = {
-            "alpha" : list(range(-250,250))
+            "alpha" : list(range(0,250))
         }
 
         grid_search = GridSearchCV(linear_model.Ridge(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
     
-        grid_search.fit(self.best_calibration_results, self.regressor.calage.q)
+        grid_search.fit(self.best_calibration_results, self.regressor.calage)
 
         best_rr = grid_search.best_estimator_
 
@@ -30,7 +30,7 @@ class RidgeRegression(MachineLearning):
 
     def run(self, ridgeRegressionModel : RidgeRegressionModel) -> SimulationModel:
         ridge_reg = linear_model.Ridge(**ridgeRegressionModel.to_dict())
-        ridge_reg.fit(self.best_calibration_results, self.regressor.calage.q)
+        ridge_reg.fit(self.best_calibration_results, self.regressor.calage)
 
         return self.regressor.fitting(np.maximum(0, ridge_reg.predict(self.best_calibration_results)),
                                       np.maximum(0, ridge_reg.predict(self.best_validation_results)),

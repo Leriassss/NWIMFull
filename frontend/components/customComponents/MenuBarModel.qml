@@ -60,10 +60,6 @@ MenuBar {
 
     }
     Menu {
-        title: qsTr("Forecasting")
-        Action { text: qsTr("Sim") }
-    }
-    Menu {
         title: qsTr("&Help")
         Action { text: qsTr("About") }
     }

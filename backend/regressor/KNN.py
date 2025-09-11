@@ -25,7 +25,7 @@ class KNN(MachineLearning):
 
         grid_search = GridSearchCV(KNeighborsRegressor(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
         #grid_search = GridSearchCV(knn, param_grid, cv=5, scoring=make_scorer(Regressor.custom_scoring, greater_is_better = False), n_jobs=-1)
-        grid_search.fit(self.best_calibration_results, self.regressor.calage.q)
+        grid_search.fit(self.best_calibration_results, self.regressor.calage)
 
         best_knn = grid_search.best_estimator_
         
@@ -36,7 +36,7 @@ class KNN(MachineLearning):
 
     def run(self, knnModel : KNNModel) -> SimulationModel:
         knn = KNeighborsRegressor(**knnModel.to_dict())
-        knn.fit(self.best_calibration_results, self.regressor.calage.q)
+        knn.fit(self.best_calibration_results, self.regressor.calage)
 
         q_sim_knn_calage = np.maximum(0, knn.predict(self.best_calibration_results))
         q_sim_knn_validation = np.maximum(0, knn.predict(self.best_validation_results))

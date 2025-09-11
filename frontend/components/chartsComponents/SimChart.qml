@@ -23,7 +23,6 @@ Rectangle {
         legend.visible: true
 
 
-
         DateTimeAxis {
             id: daxisX
             format: fileHandler.userFormat

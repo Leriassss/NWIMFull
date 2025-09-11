@@ -4,7 +4,7 @@ import numpy as np
 class Smooth:
     def laminage(self, o_l, qsim, index):
         c = qsim.copy()
-        excess = a[index] - o_l
+        excess = c[index] - o_l
         c[index] = o_l
         i = index
         while excess > 0 and i < len(c):

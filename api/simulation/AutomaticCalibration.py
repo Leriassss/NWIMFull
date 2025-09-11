@@ -59,10 +59,15 @@ class AutomaticCalibration(QObject):
     def optimParams(self):
         return self._optim_result
 
-    @Slot(dict, list, dict)
-    def setParameters(self, params_dict, optim_list, ptq):
+    @Slot(dict, list, str, dict)
+    def setParameters(self, params_dict, optim_list, metric, ptq):
         self._errors = []
         self._best_metrics = ["",""]
+
+        if not metric in self._metrics:
+            self._errors.append("Metric not found")
+            return
+        self._optim_metric = metric
 
         self._parameter_bundle =  {
         "pn":None,"qb":None,"sim": None,"loss" : None

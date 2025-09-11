@@ -8,7 +8,7 @@ Dialog{
     /*property var user_calibration: {
         "calibration": ["1985-01-01", "2006-12-31"],
         "validation": ["2007-01-01", "2015-12-31"]
-    } //*/
+    } //Beterou*/
 
     /*property var user_calibration: {
         "calibration": ["1999-01-01", "2001-12-31"],
@@ -26,7 +26,7 @@ Dialog{
     } // Atcherigbe*/
 
     /*property var user_calibration: {
-        "calibration": ["1994-01-01", "2006-12-31"],
+        "calibration": ["1995-01-01", "2006-12-31"],
         "validation": ["2007-01-01", "2010-12-31"]
     } //kaboua*/
 
@@ -42,10 +42,10 @@ Dialog{
             "calibration": ["1994-01-01", "2006-12-31"],
             "validation": ["2007-01-01", "2012-12-31"]
         } //Dome*/
-    /*property var user_calibration: {
-            "calibration": ["1988-01-01", "2005-12-31"],
+    property var user_calibration: {
+            "calibration": ["1988-01-01", "2004-12-31"],
             "validation": ["2009-01-01", "2019-12-31"]
-        } //Banankoro*/
+        } //Banankoro
     Row {
         width: parent.width
         height: parent.height

@@ -36,6 +36,7 @@ Dialog {
     }
     header: ToolBar {
             id: toolBar
+
             height: 30
             //implicitHeight: 35
             implicitWidth:  200
@@ -279,7 +280,7 @@ Dialog {
         nameFilters: ["Images (*.png *.jpg *.jpeg)"]
         onAccepted: {
             regChart.grabToImage(function(result) {
-                let fileName = cleanFilePath(saveGraphic.file.toString());
+                let fileName = cleanFilePath(saveRegressionGraphic.file.toString());
                 result.saveToFile(fileName)
             })
         }

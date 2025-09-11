@@ -88,36 +88,6 @@ Dialog{
                 }
             }
         }
-        /*TabButton {
-            height: parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            background: Rectangle{
-                height: parent.height
-                width: parent.width - 1
-                color: "#fcffff"
-
-                Rectangle{
-                    anchors.fill: parent
-                    color: parent.parent.focus ? "#bae7fe" : "#fcffff"
-                    Button{
-                        hoverEnabled: false
-                        text: qsTr("    T")
-                        icon.source: "../icons/tmin.png"
-                        icon.height: 15
-                        icon.width: 50
-                        icon.color: "#000000"
-                        anchors.centerIn: parent
-                        width: 75
-                        background: Rectangle{
-                            anchors.fill: parent
-                            radius: 5
-                            color: "#fcffff"
-                        }
-                    }
-                }
-            }
-        }
-        */
         TabButton {
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -177,72 +147,56 @@ Dialog{
         }
 
     }
-
     StackLayout {
-        anchors.fill: parent
-        currentIndex: bar.currentIndex
-        anchors.centerIn: parent
-        Rectangle{
-            Layout.alignment : Qt.AlignCenter
             anchors.fill: parent
-            color: "white"
-            border.width: 1
-            LoadDataComponent{
-                width: parent.width
-                height: parent.height
-            }
+            currentIndex: bar.currentIndex
+            anchors.centerIn: parent
+            Rectangle{
+                Layout.alignment : Qt.AlignCenter
+                anchors.fill: parent
+                color: "white"
+                border.width: 1
+                LoadDataComponent{
+                    width: parent.width
+                    height: parent.height
+                }
 
+            }
+            Rectangle{
+                Layout.alignment : Qt.AlignCenter
+                anchors.fill: parent
+                color: "white"
+                border.width: 1
+                RainComponent{
+                    width: parent.width
+                    height: parent.height *0.9
+                    padding: 10
+                }
+
+            }
+            Rectangle{
+                Layout.alignment : Qt.AlignCenter
+                anchors.fill: parent
+                color: "white"
+                border.width: 1
+                QobsComponent{
+                    width: parent.width
+                    height: parent.height *0.9
+                    padding: 10
+                }
+
+            }
+            Rectangle{
+                Layout.alignment : Qt.AlignCenter
+                anchors.fill: parent
+                color: "white"
+                border.width: 1
+                ETPComponent{
+                    width: parent.width
+                    height: parent.height *0.9
+                    padding: 10
+                }
+
+            }
         }
-        /*Rectangle{
-            Layout.alignment : Qt.AlignCenter
-            anchors.fill: parent
-            color: "white"
-            border.width: 1
-            RainComponent{
-                width: parent.width
-                height: parent.height *0.9
-                padding: 10
-            }
-
-        }*/
-        /*Rectangle{
-            Layout.alignment : Qt.AlignCenter
-            anchors.fill: parent
-            color: "white"
-            border.width: 1
-            TempComponent{
-                width: parent.width
-                height: parent.height *0.9
-                padding: 10
-            }
-
-        }*/
-/*
-        Rectangle{
-            Layout.alignment : Qt.AlignCenter
-            anchors.fill: parent
-            color: "white"
-            border.width: 1
-            QobsComponent{
-                width: parent.width
-                height: parent.height *0.9
-                padding: 10
-            }
-
-        }
-        Rectangle{
-            Layout.alignment : Qt.AlignCenter
-            anchors.fill: parent
-            color: "white"
-            border.width: 1
-            ETPComponent{
-                width: parent.width
-                height: parent.height *0.9
-                padding: 10
-            }
-
-        */
-    }
-
-
 }

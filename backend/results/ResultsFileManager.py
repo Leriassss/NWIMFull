@@ -95,7 +95,6 @@ class ResultsFileManager:
         except Exception as e:
             raise Exception(f"Une erreur inattendue s'est produite lors de la lecture : {e}")
 
-        print("data ----------------- ", data)
         if set(data.keys()) != set(ResultsFileManager.modelFileIds):
             raise ValueError("Le fichier n'est pas un fichier de modèle valide")
 
