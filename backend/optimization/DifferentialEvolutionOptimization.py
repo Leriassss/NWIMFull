@@ -40,11 +40,14 @@ class DifferentialEvolutionOptimization:
             'sim': X[sum(self.kwargs_length[:2]) : sum(self.kwargs_length[:3])],
             'loss':X[sum(self.kwargs_length[:3]) : sum(self.kwargs_length[:4])]
         }
-        criteria_method =  self.simulation.crit
+        #criteria_method =  self.simulation.crit
         qsim = self.simulation.manual_calibration(args)
         #criteria_value = self.simulation.calibration_metric[self.simulation.crit]
+        try :
+            criteria_value = self.simulation.calibration_metric["NSE"]*self.simulation.weightNSE + self.simulation.calibration_metric["KGE"]*self.simulation.weightKGE
+        except Exception as e:
+            print(e, criteria_value)
 
-        criteria_value = self.simulation.calibration_metric["NSE"]*0.3 + self.simulation.calibration_metric["KGE"]*0.7
         return -criteria_value
 
     def get_qsim_calibration(self, ga_variable):

@@ -51,7 +51,8 @@ class GeneticalAlgorithmOptimization(Optimization):
         }
         
         qsim = self.simulation.manual_calibration(args)
-        criteria_value = self.simulation.calibration_metric[self.simulation.crit]
+        #criteria_value = self.simulation.calibration_metric[self.simulation.crit]
+        criteria_value = self.simulation.calibration_metric["NSE"]*float(self.simulation.weightNSE) + self.simulation.calibration_metric["KGE"]*float(self.simulation.weightKGE)
         return -criteria_value
 
     def get_qsim_calibration(self, ga_variable):

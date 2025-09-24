@@ -411,16 +411,16 @@ Rectangle{
                                                     width: parent.width * 0.5
                                                     height:  parent.height * 0.7
                                                     rowSpacing: 10
+                                                    columnSpacing: 25
                                                     columns: 4
                                                     leftPadding: 10
                                                     property real labWidth: 40
                                                         //spacing: 5
                                                         Text{
                                                             text:{
-                                                             console.log("manualCalibration.simulationValues : ",
-                                                                         JSON.stringify(manualCalibration.simulationValues["CRITERIA"]))
                                                                 "NSE : "
                                                             }
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
@@ -428,6 +428,7 @@ Rectangle{
                                                         }
                                                         Text{
                                                             text: "KGE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
@@ -435,6 +436,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "MAE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
@@ -442,6 +444,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "RMSE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["RMSE"]
@@ -462,32 +465,37 @@ Rectangle{
                                                     leftPadding: 10
                                                     property real labWidth: 40
                                                     rowSpacing: 10
+                                                    columnSpacing: 25
                                                         Label{
                                                             text: "P : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text: ""
+                                                            text: (""+manualCalibration.bilanValues["P"][0]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text: "I : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text: ""
+                                                            text: (""+manualCalibration.bilanValues["I"][0]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "R : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text : ""
+                                                            text : (""+manualCalibration.bilanValues["R"][0]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "DS : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text : ""
+                                                            text : (""+manualCalibration.bilanValues["DS"][0]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                 }
@@ -552,8 +560,10 @@ Rectangle{
                                                     leftPadding: 10
                                                     property real labWidth: 40
                                                     rowSpacing: 10
+                                                    columnSpacing: 25
                                                         Label{
                                                             text: "NSE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["NSE"]
@@ -561,6 +571,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text: "KGE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["KGE"]
@@ -568,6 +579,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "MAE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
@@ -575,6 +587,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "RMSE : "
+                                                            font.bold: true
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["RMSE"]
@@ -595,32 +608,37 @@ Rectangle{
                                                     leftPadding: 10
                                                     property real labWidth: 40
                                                     rowSpacing: 10
+                                                    columnSpacing: 25
                                                         Label{
                                                             text: "P : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text: ""
+                                                            text: (""+manualCalibration.bilanValues["P"][1]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text: "I : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text: ""
+                                                            text: (""+manualCalibration.bilanValues["I"][1]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "R : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text : ""
+                                                            text : (""+manualCalibration.bilanValues["R"][1]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "DS : "
+                                                            font.bold: true
                                                         }
                                                         Label{
-                                                            text : ""
+                                                            text : (""+manualCalibration.bilanValues["DS"][1]).toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                 }

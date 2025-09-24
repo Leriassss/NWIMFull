@@ -59,15 +59,10 @@ class AutomaticCalibration(QObject):
     def optimParams(self):
         return self._optim_result
 
-    @Slot(dict, list, str, dict)
-    def setParameters(self, params_dict, optim_list, metric, ptq):
+    @Slot(dict, list, str, str, dict)
+    def setParameters(self, params_dict, optim_list, weightNSE, weightKGE,  ptq):
         self._errors = []
         self._best_metrics = ["",""]
-
-        if not metric in self._metrics:
-            self._errors.append("Metric not found")
-            return
-        self._optim_metric = metric
 
         self._parameter_bundle =  {
         "pn":None,"qb":None,"sim": None,"loss" : None
@@ -121,7 +116,10 @@ class AutomaticCalibration(QObject):
         sim = Simulation(self._parameters_methods["pn"],self._parameters_methods["qb"],
         self._parameters_methods["sim"],self._parameters_methods["loss"], ptq_calibration, ptq_validation)
 
-        sim.crit = self._optim_metric
+
+        sim.weightNSE = float(weightNSE) if 0 <= float(weightNSE) <= 1 else 1
+        sim.weightKGE = 1 - sim.weightNSE
+        sim.crit = "KGE" if sim.weightNSE < sim.weightKGE else "NSE"
 
         optim = optim_list[0]
         optim_parameters = optim.property('parameters')
@@ -146,6 +144,7 @@ class AutomaticCalibration(QObject):
             original_dict[section] = {model: param_dict}
 
         self._optim_result = original_dict
+        print("METRICS ----------------  : ", sim_r_hun.calibration_metric,sim_r_hun.validation_metric)
         self._best_metrics = [float(np.round(sim_r_hun.calibration_metric,3)),
                                 float(np.round(sim_r_hun.validation_metric,3))]
 

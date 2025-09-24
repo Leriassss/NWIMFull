@@ -20,7 +20,8 @@ Dialog {
         anchors.fill: parent
         color : "#ffffff"
     }
-
+    property real weightNSE : 1
+    property real weightKGE : 0
 
 
     header: ToolBar {
@@ -82,7 +83,7 @@ Dialog {
                             return
                         }
                         try{
-                            gridCalibration.gridCalibration(grid_calibration_bundle, [optimizationParameter.parameterModel], metricsComboBox.currentValue, fileHandler.ptq)
+                            gridCalibration.gridCalibration(grid_calibration_bundle, [optimizationParameter.parameterModel], weightNSE, weightKGE, fileHandler.ptq)
                         }catch(e){
                             gridCalibrationErrors.errors = [e+""]
                             gridCalibrationErrors.open()
@@ -280,29 +281,71 @@ Dialog {
                     leftPadding: 10
                     Column{
                         height: parent.height
-                        width: parent.width*0.3
+                        width: parent.width*0.5
                         spacing : 10
 
                         Label{
-                            text : "Criteria"
+                            text : "Criteria & Weight"
                             font.bold: true
                         }
 
                         Rectangle{
                             height: 100
-                            width: parent.width *0.8
+                            width: parent.width *0.7
                             radius: 5
                             color: "#fcffff"
                             border.color: "#ebebeb"
                             border.width: 1
-                            ComboBox {
-                                leftPadding: 10
-                                width: parent.width * 0.8
-                                height:  25
-                                id: metricsComboBox
-                                model: gridCalibration.metrics
+                            Grid{
+                                width : parent.width * 0.9
+                                height: childrenRect.height
                                 anchors.centerIn: parent
+                                columns: 2
+                                Label {
+                                    width: 75
+                                    height:  25
+                                    text : "NSE"
+                                }
+                                TextField{
+                                    width : 75
+                                    height:  25
+                                    text : weightNSE + ""
+                                    id: metric1
+                                    horizontalAlignment: Text.AlignHCenter
+                                    validator: DoubleValidator {
+                                        bottom: 0
+                                        top: 1
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+                                    onTextChanged: {
+                                        weightKGE = (1- ( text === "" ? 0 : parseFloat(text))).toFixed(getDigits(text))
+                                    }
+                                }
+                                Label {
+                                    width: 75
+                                    height:  25
+                                    text : "KGE"
+                                }
+                                TextField{
+                                    width : 75
+                                    height:  25
+                                    text : weightKGE +""
+                                    id: metric2
+                                    horizontalAlignment: Text.AlignHCenter
+                                    validator: DoubleValidator {
+                                        bottom: 0
+                                        top: 1
+                                        notation: DoubleValidator.StandardNotation
+                                    }
+                                    onTextChanged: {
+
+                                        weightNSE = (1- ( text === "" ? 0 : parseFloat(text))).toFixed(getDigits(text))
+
+                                    }
+                                }
                             }
+
+
 
                         }
 
@@ -314,7 +357,7 @@ Dialog {
                     Column{
 
                         height: parent.height
-                        width: parent.width*0.7 - parent.spacing -2*parent.leftPadding
+                        width: parent.width*0.5 - parent.spacing -2*parent.leftPadding
                         //border.width: 1
                         spacing : 10
                         Label{
@@ -528,5 +571,15 @@ Dialog {
         }
 
     }
+    function getDigits(nombre){
+        let chaineNombre = nombre.toString(); // chaineNombre devient "123.4567"
+        let parties = chaineNombre.split('.'); // parties devient ["123", "4567"]
 
+        let nombreDecimal = 0;
+        if (parties.length > 1) {
+          nombreDecimal = parties[1].length;
+
+        }
+        return nombreDecimal
+    }
 }

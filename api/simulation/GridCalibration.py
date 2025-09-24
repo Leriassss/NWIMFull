@@ -60,9 +60,8 @@ class GridCalibration(QObject):
     def paramsBundle(self):
         return self._parameter_bundle
 
-    @Slot(dict, list, str, dict)
-    def gridCalibration(self, params_dict, optim_list, metric, ptq):
-        print("Metrics- GC  :", metric)
+    @Slot(dict, list, str, str, dict)
+    def gridCalibration(self, params_dict, optim_list, weightNSE, weightKGE,  ptq):
         self._errors = []
         self._optim_result = None
 
@@ -82,12 +81,6 @@ class GridCalibration(QObject):
         if len(self._ptq["CALIBRATION"]) == 0 or len(self._ptq["VALIDATION"]) == 0:
             self._errors.append("Calibration and validation datas not not provided")
             return
-
-        if not metric in self._metrics:
-            self._errors.append("Metric not found")
-            return
-
-        self._optim_metric = metric
 
         if self.check_keys_match(params_dict, self.parameters_type):
             for key in self.parameters_type :
@@ -134,6 +127,10 @@ class GridCalibration(QObject):
         ptq_validation = PTQ(validation_df["P"], validation_df["ETP"],
             validation_df["Q"], validation_df["Dates"])
 
+        m_weightNSE = float(weightNSE) if 0 <= float(weightNSE) <= 1 else 1
+        m_weightKGE = 1 - m_weightNSE
+
+
         optim = optim_list[0]
         optim_parameters = optim.property('parameters')
         optimizator_name = optim.property('currentMethod')
@@ -143,7 +140,7 @@ class GridCalibration(QObject):
         grid_search_ga = Grid(gm, ptq_calibration, ptq_validation)
 
 
-        grid_results_ga, combn = grid_search_ga.grid_optimization(metric, optimizator_name, **optim_parameters)
+        grid_results_ga, combn = grid_search_ga.grid_optimization(m_weightNSE,m_weightKGE, optimizator_name, **optim_parameters)
 
 
         print(" ------ optim res -------")

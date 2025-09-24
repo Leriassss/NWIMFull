@@ -28,6 +28,13 @@ class ManualCalibration(QObject):
                     "DATES" : {"CALIBRATION":[], "VALIDATION":[]},
                     "CRITERIA" : {"CALIBRATION":[], "VALIDATION":[]}
                     }
+        self._bilan = {
+                        "R" : [None,None],
+                        "I" : [None,None],
+                        "P" : [None,None],
+                        "DS" : [None, None]
+                    }
+
         self._sim_finished = False
         self._smooth = Smooth()
         self._smoothing = {}
@@ -58,6 +65,10 @@ class ManualCalibration(QObject):
     @Property(list, notify=errorsChanged)
     def errors(self):
         return self._errors
+
+    @Property(dict, notify=simChanged)
+    def bilanValues(self):
+        return self._bilan
 
     @Property(dict, notify=simChanged)
     def simulationValues(self):
@@ -154,6 +165,8 @@ class ManualCalibration(QObject):
 
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  sim.calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  hun_sim_val[0].items()}
+
+        self._bilan = sim.bilan
         print("step 4 - MC ", datetime.datetime.now())
         self._sim_finished = True
         print("------------------------- SIM (MC)---------------")
@@ -245,6 +258,13 @@ class ManualCalibration(QObject):
 
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  validation_metric.items()}
+
+        self._bilan["R"] = [np.nansum(q_calib["sim"]),np.nansum(q_valid["sim"])]
+        self._bilan["I"] =  self._bilan["I"]
+        self._bilan["P"] = self._bilan["P"]
+        self._bilan["DS"] = [self._bilan["P"][0] - (self._bilan["R"][0] + self._bilan["I"][0]),
+                                self._bilan["P"][1] - (self._bilan["R"][1] + self._bilan["I"][1])]
+
         self.simChanged.emit()
         self.smoothnessChanged.emit()
 

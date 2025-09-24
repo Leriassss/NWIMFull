@@ -24,6 +24,7 @@ Dialog {
                     //color: "lightgray"
                     border.color: "gray"
                     Text {
+                        width: parent.width
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         padding: 5

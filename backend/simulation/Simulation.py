@@ -28,6 +28,8 @@ class Simulation:
         self.routing_model = []
 
         self.crit = "NSE"
+        self.weightNSE = 1
+        self.weightKGE = 0
 
         self.ptq_calage = ptq_calage
         self.ptq_validation = ptq_validation
@@ -50,6 +52,9 @@ class Simulation:
         self.direct_flow_default = None
 
         self.recession_factors = None
+        self.bilan = {
+            "R": [None,None], "I" : [None,None], "P" : [None,None], "DS" : [None, None]
+        }
 
         
     
@@ -104,6 +109,11 @@ class Simulation:
         print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
         #◘plt.plot(qsim_total, "r")
         #plt.plot(self.ptq_calage.q, "b")
+        self.bilan["R"][0] = float(np.nansum(qsim))
+        self.bilan["I"][0] = float(np.nansum(np.maximum(0,self.ptq_calage.p-prod_rainfall)))
+        self.bilan["P"][0] = float(np.nansum(self.ptq_calage.p))
+        self.bilan["DS"][0] = self.bilan["P"][0] - (self.bilan["R"][0] + self.bilan["I"][0])
+
         return qsim_total
     
 
@@ -141,4 +151,8 @@ class Simulation:
         print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
         #plt.plot(qsim_total, "r")
         #plt.plot(self.ptq_validation.q, "b")
+        self.bilan["R"][1] = float(np.nansum(qsim))
+        self.bilan["I"][1] = float(np.nansum(np.maximum(0,self.ptq_calage.p-prod_rainfall)))
+        self.bilan["P"][1] = float(np.nansum(self.ptq_calage.p))
+        self.bilan["DS"][1] = self.bilan["P"][1] - (self.bilan["R"][1] + self.bilan["I"][1])
         return results, qsim_total

@@ -59,7 +59,7 @@ class LatinHypercubeOptimization:
         return parameters_df
 
     def optim(self):
-        crit =self.simulation.crit
+        crit = "KGE" if self.simulation.weightNSE < self.simulation.weightKGE else "NSE"
         parameters = self.population(self.param_ranges,self.n_samples)
         print("parameters optim LHS ------------- : ", parameters)
         results =  []

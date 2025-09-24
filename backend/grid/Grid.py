@@ -13,18 +13,23 @@ class Grid:
         self.ptq_validation = ptq_validation
         self.combin = []
 
-    def _evaluate_combination(self, names, bundle, metric, optim_name, optim_params):
+    def _evaluate_combination(self, names, bundle, m_weightNSE, m_weightKGE, optim_name, optim_params):
         """Évalue une combinaison et retourne son score et le modèle correspondant."""
         sim = Simulation(*names, self.ptq_calage, self.ptq_validation)
-        sim.crit = metric
+
+        sim.weightNSE = m_weightNSE
+        sim.weightKGE = m_weightKGE
+
+        sim.crit = "KGE" if sim.weightNSE < sim.weightKGE else "NSE"
+
         optim_method: Optimization = OptimizationFactory.createInstance(optim_name, sim, bundle, optim_params)
         optimization_results: SimulationModel = optim_method.optim()
         return optimization_results.validation_metric, names, optimization_results
 
-    def grid_optimization(self, metric, optim_name, **optim_params):
+    def grid_optimization(self, m_weightNSE,m_weightKGE, optim_name, **optim_params):
         
         results = Parallel(n_jobs=-1, backend="loky")(
-            delayed(self._evaluate_combination)(names, bundle, metric,  optim_name, optim_params)
+            delayed(self._evaluate_combination)(names, bundle, m_weightNSE, m_weightKGE,  optim_name, optim_params)
             for bundle, names in zip(self.combinaisons, self.combin_names)
         )
 
