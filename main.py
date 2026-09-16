@@ -1,0 +1,91 @@
+import sys
+import os
+
+
+from PySide6.QtWidgets import QApplication
+from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQml import qmlRegisterType
+from PySide6 import QtCore
+from PySide6.QtCore import QUrl, QtMsgType, QFileInfo, QFile
+
+from pathlib import Path
+
+from api.RangeParametersQML import RangeParametersQML
+from api.TestQML import TestQML
+from api.load_data.PandasModel import PandasModel
+from api.GridParametersQML import GridParametersQML
+from api.load_data.FileHandler import FileHandler
+from api.load_data.TableModel import TableModel
+from api.load_data.EToManager import EToManager
+from api.load_data.RegressionFile import RegressionFile
+from api.FactoryManager import FactoryManager
+from api.simulation.ManualCalibration import ManualCalibration
+from api.simulation.GridCalibration import GridCalibration
+from api.simulation.AutomaticCalibration import AutomaticCalibration
+from api.simulation.BaseFlowSimulation import BaseFlowSimulation
+
+# Implémentation de votre Message Handler
+def qtMessageHandler(mode, context, message):
+    match mode:
+        case QtMsgType.QtDebugMsg:
+            modeStr = "Debug"
+        case QtMsgType.QtInfoMsg:
+            modeStr = "Information"
+        case QtMsgType.QtWarningMsg:
+            modeStr = "Warning"
+        case QtMsgType.QtCriticalMsg:
+            modeStr = "Critical"
+        case _:
+            modeStr = "Fatal"
+    fileName = QFileInfo(QFile(context.file).fileName()).fileName()
+    print(f"QML - {modeStr}: {message} ({fileName}:{context.line})")
+
+if __name__ == "__main__":
+    # Solution A : Forcer OpenGL (souvent plus stable que D3D11 sur certains GPU)
+    os.environ["QSG_RHI_BACKEND"] = "opengl"
+
+    # Solution B : Si OpenGL échoue, forcer le rendu logiciel (CPU)
+    #os.environ["QSG_RHI_BACKEND"] = "software"
+
+    #os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
+    #QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+
+    app = QApplication(sys.argv)
+
+    # Créer une instance de ProductionQML sans modèle spécifique
+
+    engine = QQmlApplicationEngine()
+
+    #os.environ["QT_QUICK_CONTROLS_STYLE"] = "Fusion"
+
+    file_handler = FileHandler()
+    eto_manager = EToManager()
+    model = TableModel()
+    factory_manager = FactoryManager()
+    manual_calibration = ManualCalibration()
+    automatic_calibration = AutomaticCalibration()
+    regression_file = RegressionFile()
+    baseflow_simulation = BaseFlowSimulation()
+    grid_calibration = GridCalibration()
+
+    engine.rootContext().setContextProperty("gridCalibration", grid_calibration)
+    engine.rootContext().setContextProperty("baseFlowSimulation", baseflow_simulation)
+    engine.rootContext().setContextProperty("regressionFile", regression_file)
+    engine.rootContext().setContextProperty("manualCalibration", manual_calibration)
+    engine.rootContext().setContextProperty("automaticCalibration", automatic_calibration)
+    engine.rootContext().setContextProperty("dataTableModel", model)
+    engine.rootContext().setContextProperty("fileHandler", file_handler)
+    engine.rootContext().setContextProperty("etoManager", eto_manager)
+    engine.rootContext().setContextProperty("factoryManager", factory_manager)
+
+    qmlRegisterType(GridParametersQML, "io.qml", 1, 0, "GridParametersQML")
+
+
+    QtCore.qInstallMessageHandler(qtMessageHandler)
+    qml_file = Path(__file__).resolve().parent / "main.qml"
+    engine.load(qml_file)
+
+    if not engine.rootObjects():
+        sys.exit(-1)
+
+    sys.exit(app.exec())

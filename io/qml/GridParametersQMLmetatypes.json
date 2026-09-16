@@ -1,0 +1,156 @@
+[
+    {
+        "classes": [
+            {
+                "className": "GridParametersQML",
+                "qualifiedClassName": "GridParametersQML",
+                "object": true,
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ],
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "auto"
+                    }
+                ],
+                "properties": [
+                    {
+                        "name": "methodKeys",
+                        "type": "QVariant",
+                        "index": 0,
+                        "read": "methodKeys"
+                    },
+                    {
+                        "name": "currentMethod",
+                        "type": "QString",
+                        "index": 1,
+                        "read": "currentMethod",
+                        "notify": "methodChanged"
+                    },
+                    {
+                        "name": "availableMethods",
+                        "type": "QVariant",
+                        "index": 2,
+                        "read": "availableMethods"
+                    },
+                    {
+                        "name": "parameterNames",
+                        "type": "QVariant",
+                        "index": 3,
+                        "read": "parameterNames",
+                        "notify": "parametersNamesChanged"
+                    },
+                    {
+                        "name": "parameters",
+                        "type": "QVariant",
+                        "index": 4,
+                        "read": "parameters",
+                        "notify": "parametersChanged"
+                    },
+                    {
+                        "name": "parameterValues",
+                        "type": "QVariant",
+                        "index": 5,
+                        "read": "parameterValues",
+                        "notify": "parametersValuesChanged"
+                    },
+                    {
+                        "name": "parameterErrors",
+                        "type": "QVariant",
+                        "index": 6,
+                        "read": "parameterErrors",
+                        "notify": "parameterErrorChanged"
+                    }
+                ],
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "parametersChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersNamesChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parametersValuesChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "methodChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "parameterErrorChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "public",
+                        "name": "setFactory",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "QString"
+                            }
+                        ],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "setMethod",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "QString"
+                            }
+                        ],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "updateParameter",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "QString"
+                            },
+                            {
+                                "name": "a2",
+                                "type": "float"
+                            },
+                            {
+                                "name": "a3",
+                                "type": "float"
+                            }
+                        ],
+                        "returnType": "void"
+                    }
+                ]
+            }
+        ],
+        "outputRevision": 68,
+        "QML_IMPORT_NAME": "io.qml",
+        "QML_IMPORT_MAJOR_VERSION": 1,
+        "QML_IMPORT_MINOR_VERSION": 0,
+        "QT_MODULES": [
+            "QtCore",
+            "QtQml"
+        ],
+        "inputFile": "C:/Users/HP/Documents/sans_titre2/api/GridParametersQML.py"
+    }
+]

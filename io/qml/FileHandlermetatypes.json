@@ -1,0 +1,85 @@
+[
+    {
+        "classes": [
+            {
+                "className": "FileHandler",
+                "qualifiedClassName": "FileHandler",
+                "object": true,
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ],
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "auto"
+                    }
+                ],
+                "properties": [
+                    {
+                        "name": "headers",
+                        "type": "list",
+                        "index": 0,
+                        "read": "headers",
+                        "notify": "headersChanged"
+                    },
+                    {
+                        "name": "data",
+                        "type": "list",
+                        "index": 1,
+                        "read": "data",
+                        "notify": "dataChanged"
+                    }
+                ],
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "headersChanged",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "list"
+                            }
+                        ],
+                        "returnType": "void"
+                    },
+                    {
+                        "access": "public",
+                        "name": "dataChanged",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "list"
+                            }
+                        ],
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "public",
+                        "name": "readFile",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "QString"
+                            }
+                        ],
+                        "returnType": "void"
+                    }
+                ]
+            }
+        ],
+        "outputRevision": 68,
+        "QML_IMPORT_NAME": "io.qml",
+        "QML_IMPORT_MAJOR_VERSION": 1,
+        "QML_IMPORT_MINOR_VERSION": 0,
+        "QT_MODULES": [
+            "QtCore",
+            "QtQml"
+        ],
+        "inputFile": "C:/Users/HP/Documents/sans_titre2/api/load_data/FileHandler.py"
+    }
+]

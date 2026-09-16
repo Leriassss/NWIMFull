@@ -1,0 +1,6 @@
+module io.qml
+typeinfo FileHandler.qmltypes
+typeinfo GridParametersQML.qmltypes
+typeinfo PandasModel.qmltypes
+typeinfo RangeParametersQML.qmltypes
+typeinfo TestQML.qmltypes

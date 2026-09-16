@@ -1,0 +1,58 @@
+[
+    {
+        "classes": [
+            {
+                "className": "PandasModel",
+                "qualifiedClassName": "PandasModel",
+                "object": true,
+                "superClasses": [
+                    {
+                        "access": "public",
+                        "name": "QAbstractTableModel"
+                    },
+                    {
+                        "access": "public",
+                        "name": "QObject"
+                    }
+                ],
+                "classInfos": [
+                    {
+                        "name": "QML.Element",
+                        "value": "auto"
+                    }
+                ],
+                "signals": [
+                    {
+                        "access": "public",
+                        "name": "dataframeChanged",
+                        "arguments": [],
+                        "returnType": "void"
+                    }
+                ],
+                "slots": [
+                    {
+                        "access": "public",
+                        "name": "setData",
+                        "arguments": [
+                            {
+                                "name": "a1",
+                                "type": "QVariantMap"
+                            }
+                        ],
+                        "returnType": "void"
+                    }
+                ]
+            }
+        ],
+        "outputRevision": 68,
+        "QML_IMPORT_NAME": "io.qml",
+        "QML_IMPORT_MAJOR_VERSION": 1,
+        "QML_IMPORT_MINOR_VERSION": 0,
+        "QT_MODULES": [
+            "QtCore",
+            "QtQml",
+            "QtWidgets"
+        ],
+        "inputFile": "C:/Users/HP/Documents/sans_titre2/api/load_data/PandasModel.py"
+    }
+]
