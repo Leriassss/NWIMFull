@@ -85,7 +85,7 @@ Le module `backend/simulation/Simulation.py` orchestre l'ensemble de la chaîne 
 
 ## Prérequis
 
-- Python 3.10 ou supérieur (le projet a été packagé avec Python 3.11)
+- Python 3.10 ou supérieur
 - pip
 
 ## Installation
