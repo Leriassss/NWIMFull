@@ -46,6 +46,7 @@
         "frontend/components/CustomTextField.qml",
         "frontend/components/CustomSlider.qml",
         "frontend/components/BaseFlow.qml",
-        "api/simulation/BaseFlowSimulation.py"
+        "api/simulation/BaseFlowSimulation.py",
+        "backend/workers/BackendThread.py"
     ]
 }

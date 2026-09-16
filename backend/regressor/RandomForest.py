@@ -20,7 +20,7 @@ class RandomForest(MachineLearning):
             'min_samples_split': list(range(2,10)),
         }
 
-        grid_search = RandomizedSearchCV(RandomForestRegressor(), param_grid, n_iter = 250, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1, random_state = 123)
+        grid_search = RandomizedSearchCV(RandomForestRegressor(), param_grid, n_iter = 250, cv=5, scoring="neg_root_mean_squared_error", n_jobs=1, random_state = 123)
     
         grid_search.fit(self.best_calibration_results, self.regressor.calage)
 

@@ -8,6 +8,8 @@ from PySide6.QtQml import qmlRegisterType
 from PySide6 import QtCore
 from PySide6.QtCore import QUrl, QtMsgType, QFileInfo, QFile
 
+from pathlib import Path
+
 from api.RangeParametersQML import RangeParametersQML
 from api.TestQML import TestQML
 from api.load_data.PandasModel import PandasModel
@@ -39,6 +41,15 @@ def qtMessageHandler(mode, context, message):
     print(f"QML - {modeStr}: {message} ({fileName}:{context.line})")
 
 if __name__ == "__main__":
+    # Solution A : Forcer OpenGL (souvent plus stable que D3D11 sur certains GPU)
+    os.environ["QSG_RHI_BACKEND"] = "opengl"
+
+    # Solution B : Si OpenGL échoue, forcer le rendu logiciel (CPU)
+    #os.environ["QSG_RHI_BACKEND"] = "software"
+
+    #os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "1"
+    #QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+
     app = QApplication(sys.argv)
 
     # Créer une instance de ProductionQML sans modèle spécifique
@@ -71,7 +82,8 @@ if __name__ == "__main__":
 
 
     QtCore.qInstallMessageHandler(qtMessageHandler)
-    engine.load("main.qml")
+    qml_file = Path(__file__).resolve().parent / "main.qml"
+    engine.load(qml_file)
 
     if not engine.rootObjects():
         sys.exit(-1)

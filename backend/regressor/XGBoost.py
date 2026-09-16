@@ -22,7 +22,7 @@ class XGBoost(MachineLearning):
             'lambda': [0, 0.01, 0.05, 0.1, 0.5, 1]
         }
 
-        grid_search = RandomizedSearchCV(xgb.XGBRegressor(), parameters_grid, n_iter = 500, cv=5, scoring="neg_mean_absolute_error", n_jobs=-1, random_state = 123)
+        grid_search = RandomizedSearchCV(xgb.XGBRegressor(), parameters_grid, n_iter = 500, cv=5, scoring="neg_mean_absolute_error", n_jobs=1, random_state = 123)
     
         grid_search.fit(self.best_calibration_results, self.regressor.calage)
 

@@ -32,7 +32,7 @@ class ManualCalibration(QObject):
                         "R" : [None,None],
                         "I" : [None,None],
                         "P" : [None,None],
-                        "DS" : [None, None]
+                        "ETR" : [None, None]
                     }
 
         self._sim_finished = False
@@ -259,12 +259,9 @@ class ManualCalibration(QObject):
         self._sim["CRITERIA"]["CALIBRATION"] = {key : np.round(value,3).tolist() for key,value in  calibration_metric.items()}
         self._sim["CRITERIA"]["VALIDATION"] = {key : np.round(value,3).tolist() for key,value in  validation_metric.items()}
 
-        self._bilan["R"] = [np.nansum(q_calib["sim"]),np.nansum(q_valid["sim"])]
-        self._bilan["I"] =  self._bilan["I"]
-        self._bilan["P"] = self._bilan["P"]
-        self._bilan["DS"] = [self._bilan["P"][0] - (self._bilan["R"][0] + self._bilan["I"][0]),
-                                self._bilan["P"][1] - (self._bilan["R"][1] + self._bilan["I"][1])]
+        self._bilan["R"] = [float(np.nansum(q_calib["sim"])),float(np.nansum(q_valid["sim"]))]
 
+        print("MC -- Smoothness : ---------- ", self._bilan)
         self.simChanged.emit()
         self.smoothnessChanged.emit()
 

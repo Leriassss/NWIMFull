@@ -53,7 +53,7 @@ class Simulation:
 
         self.recession_factors = None
         self.bilan = {
-            "R": [None,None], "I" : [None,None], "P" : [None,None], "DS" : [None, None]
+            "R": [None,None], "I" : [None,None], "P" : [None,None], "ETR" : [None, None]
         }
 
         
@@ -67,7 +67,7 @@ class Simulation:
             "net_rainfall" : prod_rainfall,
             "etp" : self.ptq_calage.etp
         }
-        net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
+        net_rainfall, etr = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*kwargs["loss"]).compute()
 
         net_rainfall = np.nan_to_num(net_rainfall)
 
@@ -107,12 +107,26 @@ class Simulation:
         evaluator = RegressionMetric((np.array(q["obs"]) + 1e-10) , (np.array(q["sim"]) + 1e-10))
         self.calibration_metric = evaluator.get_metrics_by_list_names(self.Metrics)
         print("NSE CALIBRATION ----------- : ", evaluator.get_metrics_by_list_names(self.calibration_metric))
+
+        df_bilan = pd.DataFrame({
+        "Dates" : pd.to_datetime(self.ptq_calage.dates),
+        "R" : qsim,
+        "I" : self.ptq_calage.p-prod_rainfall,
+        "P" : self.ptq_calage.p,
+        "ETR" : etr})
+        # Cette version est la plus robuste car elle gère les NaN à chaque étape
+        df_bilan_interannual = (
+            df_bilan.groupby(df_bilan.Dates.dt.year)
+            .apply(lambda x: x[["R", "I", "P", "ETR"]].sum(skipna=True))
+            .mean(skipna=True)
+        )
+        self.bilan["R"][0] = float(df_bilan_interannual["R"])
+        self.bilan["I"][0] = float(df_bilan_interannual["I"])
+        self.bilan["P"][0] = float(df_bilan_interannual["P"])
+        self.bilan["ETR"][0] = float(df_bilan_interannual["ETR"])
         #◘plt.plot(qsim_total, "r")
         #plt.plot(self.ptq_calage.q, "b")
-        self.bilan["R"][0] = float(np.nansum(qsim))
-        self.bilan["I"][0] = float(np.nansum(np.maximum(0,self.ptq_calage.p-prod_rainfall)))
-        self.bilan["P"][0] = float(np.nansum(self.ptq_calage.p))
-        self.bilan["DS"][0] = self.bilan["P"][0] - (self.bilan["R"][0] + self.bilan["I"][0])
+
 
         return qsim_total
     
@@ -125,7 +139,7 @@ class Simulation:
             "net_rainfall" : prod_rainfall,
             "etp" : self.ptq_validation.etp
         }
-        net_rainfall = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
+        net_rainfall,etr = InitialLossFactory.createInstance(self.methods["initial_loss"],ia_bundle,*self.kwargs["loss"]).compute()
         net_rainfall = np.nan_to_num(net_rainfall)
 
         datas_bundle : DataSimulation = {
@@ -151,8 +165,20 @@ class Simulation:
         print("NSE VALIDATION ----------- : ", evaluator.get_metrics_by_list_names(self.Metrics))
         #plt.plot(qsim_total, "r")
         #plt.plot(self.ptq_validation.q, "b")
-        self.bilan["R"][1] = float(np.nansum(qsim))
-        self.bilan["I"][1] = float(np.nansum(np.maximum(0,self.ptq_calage.p-prod_rainfall)))
-        self.bilan["P"][1] = float(np.nansum(self.ptq_calage.p))
-        self.bilan["DS"][1] = self.bilan["P"][1] - (self.bilan["R"][1] + self.bilan["I"][1])
+        df_bilan = pd.DataFrame({
+        "Dates" : pd.to_datetime(self.ptq_validation.dates),
+        "R" : qsim,
+        "I" : self.ptq_validation.p-prod_rainfall,
+        "P" : self.ptq_validation.p,
+        "ETR" : etr})
+        # Cette version est la plus robuste car elle gère les NaN à chaque étape
+        df_bilan_interannual = (
+            df_bilan.groupby(df_bilan.Dates.dt.year)
+            .apply(lambda x: x[["R", "I", "P", "ETR"]].sum(skipna=True))
+            .mean(skipna=True)
+        )
+        self.bilan["R"][1] = float(df_bilan_interannual["R"])
+        self.bilan["I"][1] = float(df_bilan_interannual["I"])
+        self.bilan["P"][1] = float(df_bilan_interannual["P"])
+        self.bilan["ETR"][1] = float(df_bilan_interannual["ETR"])
         return results, qsim_total

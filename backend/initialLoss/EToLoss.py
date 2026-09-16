@@ -19,7 +19,9 @@ class EToLoss(Loss) :
     
     
     def etp_loss(self,rain,etp, alpha):
-        return np.maximum(0, rain - alpha*etp)
+        net_rainfall= np.maximum(0, rain - alpha*etp)
+        etr = np.minimum(rain, alpha*etp)
+        return net_rainfall, etr
     
     def help():
         pass

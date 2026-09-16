@@ -87,7 +87,7 @@ Dialog {
                         }catch(e){
                             gridCalibrationErrors.errors = [e+""]
                             gridCalibrationErrors.open()
-                            console.log(e)
+                            //console.log(e)
                         }
 
                     }

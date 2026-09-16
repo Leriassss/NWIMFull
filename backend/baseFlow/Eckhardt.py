@@ -26,7 +26,6 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
 
 
     def reverse_compute(self,previous_qbase, Q_direct):
-        
         Q_base_rev = np.zeros(len(Q_direct))
         Q_base_rev[0]  = previous_qbase
         alpha_bfi = (1-self.alpha)/(1-self.bfi_max)
@@ -47,7 +46,8 @@ class Eckhardt(BaseFlowRoutine, BaseFlow):
         q_base_previous = self.modele_baseflow(data["prevObs"], self.a, self.b)
         #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
         qbase_rev = self.reverse_compute(q_base_previous, data['qsim'])
-        return qbase_rev
+        qbase_rev_corr = self.get_qbase_rev_corr_validation(qbase_rev)
+        return qbase_rev_corr
     
 
     @staticmethod

@@ -420,7 +420,7 @@ Rectangle{
                                                             text:{
                                                                 "NSE : "
                                                             }
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["NSE"]
@@ -428,7 +428,7 @@ Rectangle{
                                                         }
                                                         Text{
                                                             text: "KGE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["KGE"]
@@ -436,7 +436,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "MAE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["MAE"]
@@ -444,7 +444,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "RMSE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["CALIBRATION"]["RMSE"]
@@ -468,34 +468,34 @@ Rectangle{
                                                     columnSpacing: 25
                                                         Label{
                                                             text: "P : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text: (""+manualCalibration.bilanValues["P"][0]).toFixed(1)
+                                                            text: ""+manualCalibration.bilanValues["P"][0].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text: "I : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text: (""+manualCalibration.bilanValues["I"][0]).toFixed(1)
+                                                            text: ""+manualCalibration.bilanValues["I"][0].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "R : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text : (""+manualCalibration.bilanValues["R"][0]).toFixed(1)
+                                                            text : ""+manualCalibration.bilanValues["R"][0].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
-                                                            text : "DS : "
-                                                            font.bold: true
+                                                            text : "ETR : "
+
                                                         }
                                                         Label{
-                                                            text : (""+manualCalibration.bilanValues["DS"][0]).toFixed(1)
+                                                            text : ""+manualCalibration.bilanValues["ETR"][0].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                 }
@@ -563,7 +563,7 @@ Rectangle{
                                                     columnSpacing: 25
                                                         Label{
                                                             text: "NSE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["NSE"]
@@ -571,7 +571,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text: "KGE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text: manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["KGE"]
@@ -579,7 +579,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "MAE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["MAE"]
@@ -587,7 +587,7 @@ Rectangle{
                                                         }
                                                         Label{
                                                             text : "RMSE : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
                                                             text : manualCalibration.simulationValues["CRITERIA"]["VALIDATION"]["RMSE"]
@@ -611,34 +611,34 @@ Rectangle{
                                                     columnSpacing: 25
                                                         Label{
                                                             text: "P : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text: (""+manualCalibration.bilanValues["P"][1]).toFixed(1)
+                                                            text: ""+manualCalibration.bilanValues["P"][1].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text: "I : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text: (""+manualCalibration.bilanValues["I"][1]).toFixed(1)
+                                                            text: ""+manualCalibration.bilanValues["I"][1].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
                                                             text : "R : "
-                                                            font.bold: true
+
                                                         }
                                                         Label{
-                                                            text : (""+manualCalibration.bilanValues["R"][1]).toFixed(1)
+                                                            text : ""+manualCalibration.bilanValues["R"][1].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                         Label{
-                                                            text : "DS : "
-                                                            font.bold: true
+                                                            text : "ETR : "
+
                                                         }
                                                         Label{
-                                                            text : (""+manualCalibration.bilanValues["DS"][1]).toFixed(1)
+                                                            text : ""+manualCalibration.bilanValues["ETR"][1].toFixed(1)
                                                             width: parent.labWidth
                                                         }
                                                 }

@@ -13,10 +13,8 @@ import "frontend/components/customComponents"
 
 ApplicationWindow {
     visible: true
-    minimumWidth: 1350
-    minimumHeight: 750
-    maximumWidth: 1350
-    maximumHeight: 750
+    width:  1350
+    height:  750
     title: qsTr("NWIM")
     //Material.theme: Material.Light
     //Material.accent: Material.Blue

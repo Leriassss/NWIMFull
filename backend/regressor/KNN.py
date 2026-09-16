@@ -23,7 +23,7 @@ class KNN(MachineLearning):
             'metric': ['euclidean', 'manhattan', 'minkowski']
         }
 
-        grid_search = GridSearchCV(KNeighborsRegressor(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
+        grid_search = GridSearchCV(KNeighborsRegressor(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=1)
         #grid_search = GridSearchCV(knn, param_grid, cv=5, scoring=make_scorer(Regressor.custom_scoring, greater_is_better = False), n_jobs=-1)
         grid_search.fit(self.best_calibration_results, self.regressor.calage)
 

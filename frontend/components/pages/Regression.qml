@@ -80,7 +80,7 @@ Dialog {
                     text: qsTr("🟢")
                     opacity : enabled ? 1 : 0.8
                     ToolTip.text: qsTr("Tuning")
-                    enabled: fileHandler.activate && regressionFile.parametersList.length >0
+                    enabled: fileHandler.activate && (regressionFile.parametersList.length >0 || regressionFile.qSimList.length >0)
                     onClicked: {
                         console.log("modelRegression ", modelRegression)
                         console.log("qSimRegression ", qSimRegression)
@@ -696,7 +696,7 @@ Dialog {
 
                                     Label{
                                         id : hyperparametersLabel
-                                        visible: modelRegression
+                                        //visible: modelRegression
                                         text : JSON.stringify(regressionFile?.currentRegressor["hyperparameters"]).replace(/["{}}]/g, " ")
                                         leftPadding: 5
                                         wrapMode: Text.Wrap

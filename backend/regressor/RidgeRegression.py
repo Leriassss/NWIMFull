@@ -18,7 +18,7 @@ class RidgeRegression(MachineLearning):
             "alpha" : list(range(0,250))
         }
 
-        grid_search = GridSearchCV(linear_model.Ridge(), param_grid, cv=5, scoring="neg_root_mean_squared_error", n_jobs=-1)
+        grid_search = GridSearchCV(linear_model.Ridge(), param_grid, cv=5, scoring="neg_root_mean_squared_error")
     
         grid_search.fit(self.best_calibration_results, self.regressor.calage)
 

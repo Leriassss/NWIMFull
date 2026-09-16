@@ -1,3 +1,4 @@
+
 from backend.baseFlow.BaseFlow import BaseFlow
 from backend.baseFlow.models.BoughtonModel import BoughtonModel
 from backend.baseFlow.BaseFlowRoutine import BaseFlowRoutine
@@ -42,7 +43,8 @@ class Boughton(BaseFlowRoutine, BaseFlow):
         q_base_previous = self.modele_baseflow(data["prevObs"], self.a, self.b)
         #CALCUL DU DEBIT DE BASE PAR LA METHODE REVERSE
         qbase_rev = self.reverse_compute(q_base_previous, data['qsim'])
-        return qbase_rev
+        qbase_rev_corr = self.get_qbase_rev_corr_validation(qbase_rev)
+        return qbase_rev_corr
     
     @staticmethod
     def help():

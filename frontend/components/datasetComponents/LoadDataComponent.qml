@@ -417,7 +417,7 @@ Rectangle{
                     font.bold: true
                 }
                 Rectangle{
-                    width: 350 //parent.width - parent.spacing-parent.padding
+                    width: 280 //parent.width - parent.spacing-parent.padding
                     height: parent.height * 0.6 - parent.padding - parent.spacing*6
                     color : "#fcffff"
 
@@ -426,7 +426,7 @@ Rectangle{
                         anchors.left: tableView.left
                         anchors.top: parent.top
                         syncView: tableView
-                        model: [ "Dates","P","T", "Q", "ETP"]
+                        model: [ "Dates","P", "Q", "ETP"]
                         clip: true
                         delegate: Label {
                             color: "#000000"
@@ -462,16 +462,15 @@ Rectangle{
                             id: tableModel
                             TableModelColumn { display: "Dates" }
                             TableModelColumn { display: "P" }
-                            TableModelColumn { display: "T" }
                             TableModelColumn { display: "Q" }
                             TableModelColumn { display: "ETP" }
                             rows: [
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
-                                    { Dates: "", P: "", T: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
+                                    { Dates: "", P: "", Q: "", ETP: "" },
                                 ]
                             //rows : fileHandler.displayData
                         }
@@ -541,7 +540,7 @@ Rectangle{
 
     function populateTable(columnMapping) {
         tableModel.clear();
-        const keys = ["Dates", "P", "T", "Q", "ETP"];
+        const keys = ["Dates", "P", "Q", "ETP"];
 
         // Trouver la longueur maximale en une seule passe
         const maxLength = keys.reduce((max, key) => Math.max(max, columnMapping[key]?.length || 0), 0);
@@ -556,7 +555,7 @@ Rectangle{
 
     function transformData(data) {
         tableModel.clear();
-        const keys = ["Dates", "P", "T", "Q", "ETP"];
+        const keys = ["Dates", "P", "Q", "ETP"];
 
         // Trouver la longueur des tableaux
         const length = data[keys[0]].length;
